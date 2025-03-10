@@ -1,5 +1,5 @@
-import React, { useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Edit,
   Save,
@@ -9,6 +9,8 @@ import {
   Mail,
   Calendar,
   X,
+  Heart,
+  User,
 } from "lucide-react";
 
 const Profile = () => {
@@ -32,10 +34,8 @@ const Profile = () => {
         phoneNumber: "",
       },
       address: {
-        street: "",
         city: "",
         state: "",
-        zipCode: "",
         country: "",
       },
       healthMetrics: {
@@ -43,15 +43,29 @@ const Profile = () => {
         weight: "",
         bloodType: "",
       },
-      fitnessGoals: [],
-      dietaryRestrictions: [],
-      medicalConditions: [],
-      medications: [],
     }
   );
 
   const [editMode, setEditMode] = useState(false);
   const [tempUser, setTempUser] = useState({ ...user });
+  const [bmi, setBmi] = useState("--");
+
+  // Calculate BMI when height or weight changes
+  useEffect(() => {
+    if (user.healthMetrics.height && user.healthMetrics.weight) {
+      // Assuming height in cm and weight in kg
+      const heightInMeters = parseFloat(user.healthMetrics.height) / 100;
+      const weightInKg = parseFloat(user.healthMetrics.weight);
+
+      if (heightInMeters > 0 && weightInKg > 0) {
+        const calculatedBmi = (
+          weightInKg /
+          (heightInMeters * heightInMeters)
+        ).toFixed(1);
+        setBmi(calculatedBmi);
+      }
+    }
+  }, [user.healthMetrics.height, user.healthMetrics.weight]);
 
   // Handle image upload
   const handleImageUpload = (e) => {
@@ -78,24 +92,6 @@ const Profile = () => {
     } else {
       setTempUser({ ...tempUser, [field]: e.target.value });
     }
-  };
-
-  // Handle array field changes (fitness goals, dietary restrictions, etc.)
-  const handleArrayChange = (index, value, field) => {
-    const updatedArray = [...tempUser[field]];
-    updatedArray[index] = value;
-    setTempUser({ ...tempUser, [field]: updatedArray });
-  };
-
-  // Add new item to array fields
-  const addArrayItem = (field) => {
-    setTempUser({ ...tempUser, [field]: [...tempUser[field], ""] });
-  };
-
-  // Remove item from array fields
-  const removeArrayItem = (index, field) => {
-    const updatedArray = tempUser[field].filter((_, i) => i !== index);
-    setTempUser({ ...tempUser, [field]: updatedArray });
   };
 
   // Save profile changes
@@ -133,63 +129,25 @@ const Profile = () => {
     return age;
   };
 
-  // if (!storedUser) {
-  //   return (
-  //     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-  //       <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-  //         Please log in to view your profile
-  //       </h2>
-  //       <Link
-  //         to="/login"
-  //         className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600"
-  //       >
-  //         Go to Login
-  //       </Link>
-  //     </div>
-  //   );
-  // }
+  // Format display for a field
+  const formatField = (value, placeholder = "Not specified") => {
+    return value ? value : placeholder;
+  };
 
   return (
-    <div className="max-w-4xl mx-auto my-8 p-6 bg-white shadow-lg rounded-lg">
-      {/* Header with profile image and name */}
-      <div className="relative">
-        <div className="w-full h-40 bg-gradient-to-r from-blue-400 to-teal-500 rounded-t-lg"></div>
-        <div className="absolute -bottom-16 left-8">
-          <div className="relative group">
-            <img
-              src={
-                editMode
-                  ? tempUser.profilePicture
-                  : user.profilePicture || "/images/default-profile.png"
-              }
-              alt="Profile"
-              className="w-32 h-32 rounded-full border-4 border-white object-cover bg-white"
-            />
-            {editMode && (
-              <div
-                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full cursor-pointer"
-                onClick={() => fileInputRef.current.click()}
-              >
-                <Camera className="text-white" size={24} />
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  accept="image/*"
-                />
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="flex justify-end p-4">
+    <div className="w-full mx-auto my-8 p-6 bg-white shadow-lg rounded-lg">
+      {/* Header with actions */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-800">
+          Profile Information
+        </h1>
+        <div>
           {!editMode ? (
             <button
               onClick={() => setEditMode(true)}
               className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
             >
-              <Edit size={16} className="mr-2" /> Edit Profile
+              <Edit size={16} className="mr-2" /> Edit
             </button>
           ) : (
             <div className="flex space-x-2">
@@ -211,224 +169,62 @@ const Profile = () => {
       </div>
 
       {/* Profile content */}
-      <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Basic Information */}
-        <div className="md:col-span-2">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Left column - Photo and basic info */}
+        <div className="md:col-span-1 flex flex-col items-center">
+          <div className="relative mb-4 w-40 h-40">
+            <img
+              src={
+                editMode
+                  ? tempUser.profilePicture
+                  : user.profilePicture || "/images/default-profile.png"
+              }
+              alt="Profile"
+              className="w-40 h-40 rounded-full object-cover border-4 border-gray-200 bg-gray-100"
+            />
+            {editMode && (
+              <div
+                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full cursor-pointer"
+                onClick={() => fileInputRef.current.click()}
+              >
+                <Camera className="text-white" size={24} />
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  accept="image/*"
+                />
+              </div>
+            )}
+          </div>
+
+          <h2 className="text-xl font-bold text-center mb-2">
             {editMode ? (
               <input
                 type="text"
                 value={tempUser.fullName}
                 onChange={(e) => handleChange(e, null, "fullName")}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2 border border-gray-300 rounded text-center"
+                placeholder="Full Name"
               />
             ) : (
-              user.fullName
+              formatField(user.fullName, "User Name")
             )}
           </h2>
 
-          <div className="space-y-4">
-            <div className="flex items-center text-gray-600">
-              <Mail size={18} className="mr-2 text-blue-500" />
-              {editMode ? (
-                <input
-                  type="email"
-                  value={tempUser.email}
-                  onChange={(e) => handleChange(e, null, "email")}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-              ) : (
-                user.email
-              )}
-            </div>
-
-            <div className="flex items-center text-gray-600">
-              <Phone size={18} className="mr-2 text-blue-500" />
-              {editMode ? (
-                <input
-                  type="tel"
-                  value={tempUser.phoneNumber}
-                  onChange={(e) => handleChange(e, null, "phoneNumber")}
-                  className="w-full p-2 border border-gray-300 rounded"
-                  placeholder="Phone Number"
-                />
-              ) : (
-                user.phoneNumber || "No phone number added"
-              )}
-            </div>
-
-            <div className="flex items-center text-gray-600">
-              <Calendar size={18} className="mr-2 text-blue-500" />
-              {editMode ? (
-                <input
-                  type="date"
-                  value={tempUser.dateOfBirth}
-                  onChange={(e) => handleChange(e, null, "dateOfBirth")}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-              ) : (
-                <span>
-                  {user.dateOfBirth ? (
-                    <>
-                      {new Date(user.dateOfBirth).toLocaleDateString()} (Age:{" "}
-                      {calculateAge(user.dateOfBirth)})
-                    </>
-                  ) : (
-                    "No birth date added"
-                  )}
-                </span>
-              )}
-            </div>
-
-            <div className="flex items-start text-gray-600">
-              <MapPin size={18} className="mr-2 mt-1 text-blue-500" />
-              {editMode ? (
-                <div className="w-full space-y-2">
-                  <input
-                    type="text"
-                    value={tempUser.address.street}
-                    onChange={(e) => handleChange(e, "address", "street")}
-                    className="w-full p-2 border border-gray-300 rounded"
-                    placeholder="Street Address"
-                  />
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      value={tempUser.address.city}
-                      onChange={(e) => handleChange(e, "address", "city")}
-                      className="p-2 border border-gray-300 rounded"
-                      placeholder="City"
-                    />
-                    <input
-                      type="text"
-                      value={tempUser.address.state}
-                      onChange={(e) => handleChange(e, "address", "state")}
-                      className="p-2 border border-gray-300 rounded"
-                      placeholder="State/Province"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      value={tempUser.address.zipCode}
-                      onChange={(e) => handleChange(e, "address", "zipCode")}
-                      className="p-2 border border-gray-300 rounded"
-                      placeholder="ZIP/Postal Code"
-                    />
-                    <input
-                      type="text"
-                      value={tempUser.address.country}
-                      onChange={(e) => handleChange(e, "address", "country")}
-                      className="p-2 border border-gray-300 rounded"
-                      placeholder="Country"
-                    />
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  {user.address &&
-                  (user.address.street || user.address.city) ? (
-                    <>
-                      {user.address.street && <div>{user.address.street}</div>}
-                      {user.address.city && user.address.state && (
-                        <div>
-                          {user.address.city}, {user.address.state}{" "}
-                          {user.address.zipCode}
-                        </div>
-                      )}
-                      {user.address.country && (
-                        <div>{user.address.country}</div>
-                      )}
-                    </>
-                  ) : (
-                    "No address added"
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Emergency Contact */}
-          <div className="mt-8">
-            <h3 className="text-xl font-semibold text-gray-800 mb-3">
-              Emergency Contact
+          <div className="bg-blue-50 p-4 rounded-lg w-full mt-4">
+            <h3 className="font-semibold text-blue-800 mb-2 flex items-center">
+              <User size={16} className="mr-2" /> Personal Info
             </h3>
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-3">
-              {editMode ? (
-                <>
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      value={tempUser.emergencyContact.name}
-                      onChange={(e) =>
-                        handleChange(e, "emergencyContact", "name")
-                      }
-                      className="p-2 border border-gray-300 rounded"
-                      placeholder="Contact Name"
-                    />
-                    <input
-                      type="text"
-                      value={tempUser.emergencyContact.relationship}
-                      onChange={(e) =>
-                        handleChange(e, "emergencyContact", "relationship")
-                      }
-                      className="p-2 border border-gray-300 rounded"
-                      placeholder="Relationship"
-                    />
-                  </div>
-                  <input
-                    type="tel"
-                    value={tempUser.emergencyContact.phoneNumber}
-                    onChange={(e) =>
-                      handleChange(e, "emergencyContact", "phoneNumber")
-                    }
-                    className="w-full p-2 border border-gray-300 rounded"
-                    placeholder="Emergency Contact Phone"
-                  />
-                </>
-              ) : (
-                <>
-                  {user.emergencyContact && user.emergencyContact.name ? (
-                    <>
-                      <div className="font-medium">
-                        {user.emergencyContact.name}
-                      </div>
-                      {user.emergencyContact.relationship && (
-                        <div className="text-sm text-gray-500">
-                          {user.emergencyContact.relationship}
-                        </div>
-                      )}
-                      {user.emergencyContact.phoneNumber && (
-                        <div className="flex items-center">
-                          <Phone size={16} className="mr-2 text-blue-500" />
-                          {user.emergencyContact.phoneNumber}
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <p className="text-gray-500">No emergency contact added</p>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Health Information */}
-        <div className="md:col-span-1">
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <h3 className="text-xl font-semibold text-gray-800 mb-3">
-              Health Details
-            </h3>
-
-            <div className="space-y-4">
+            <div className="space-y-2 text-sm">
               <div>
-                <p className="text-sm text-gray-500">Gender</p>
+                <span className="text-gray-500">Gender: </span>
                 {editMode ? (
                   <select
                     value={tempUser.gender}
                     onChange={(e) => handleChange(e, null, "gender")}
-                    className="w-full p-2 border border-gray-300 rounded"
+                    className="p-1 border border-gray-300 rounded w-full mt-1"
                   >
                     <option value="">Select gender</option>
                     <option value="Male">Male</option>
@@ -437,53 +233,259 @@ const Profile = () => {
                     <option value="Prefer not to say">Prefer not to say</option>
                   </select>
                 ) : (
-                  <p className="font-medium">
-                    {user.gender || "Not specified"}
-                  </p>
+                  <span>{formatField(user.gender)}</span>
                 )}
               </div>
+              <div>
+                <span className="text-gray-500">Date of Birth: </span>
+                {editMode ? (
+                  <input
+                    type="date"
+                    value={tempUser.dateOfBirth}
+                    onChange={(e) => handleChange(e, null, "dateOfBirth")}
+                    className="p-1 border border-gray-300 rounded w-full mt-1"
+                  />
+                ) : (
+                  <span>
+                    {user.dateOfBirth ? (
+                      <>
+                        {new Date(user.dateOfBirth).toLocaleDateString()}
+                        <br />
+                        <span className="text-gray-500">
+                          (Age: {calculateAge(user.dateOfBirth)})
+                        </span>
+                      </>
+                    ) : (
+                      "Not specified"
+                    )}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
 
-              <div className="grid grid-cols-2 gap-2">
+        {/* Middle & right columns - Contact & Health info */}
+        <div className="md:col-span-2">
+          {/* Contact information */}
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
+            <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
+              <Mail size={18} className="mr-2 text-blue-500" /> Contact
+              Information
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-gray-500 mb-1">
+                  Email
+                </label>
+                {editMode ? (
+                  <input
+                    type="email"
+                    value={tempUser.email}
+                    onChange={(e) => handleChange(e, null, "email")}
+                    className="w-full p-2 border border-gray-300 rounded"
+                    placeholder="Email"
+                  />
+                ) : (
+                  <div className="font-medium">{formatField(user.email)}</div>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm text-gray-500 mb-1">
+                  Phone
+                </label>
+                {editMode ? (
+                  <input
+                    type="tel"
+                    value={tempUser.phoneNumber}
+                    onChange={(e) => handleChange(e, null, "phoneNumber")}
+                    className="w-full p-2 border border-gray-300 rounded"
+                    placeholder="Phone Number"
+                  />
+                ) : (
+                  <div className="font-medium">
+                    {formatField(user.phoneNumber)}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <label className="block text-sm text-gray-500 mb-1">
+                Address
+              </label>
+              {editMode ? (
+                <div className="grid grid-cols-3 gap-2">
+                  <input
+                    type="text"
+                    value={tempUser.address.city}
+                    onChange={(e) => handleChange(e, "address", "city")}
+                    className="p-2 border border-gray-300 rounded"
+                    placeholder="City"
+                  />
+                  <input
+                    type="text"
+                    value={tempUser.address.state}
+                    onChange={(e) => handleChange(e, "address", "state")}
+                    className="p-2 border border-gray-300 rounded"
+                    placeholder="State/Province"
+                  />
+                  <input
+                    type="text"
+                    value={tempUser.address.country}
+                    onChange={(e) => handleChange(e, "address", "country")}
+                    className="p-2 border border-gray-300 rounded"
+                    placeholder="Country"
+                  />
+                </div>
+              ) : (
+                <div className="font-medium">
+                  {user.address.city ||
+                  user.address.state ||
+                  user.address.country
+                    ? [
+                        user.address.city,
+                        user.address.state,
+                        user.address.country,
+                      ]
+                        .filter(Boolean)
+                        .join(", ")
+                    : "Not specified"}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Emergency Contact */}
+          <div className="bg-red-50 p-4 rounded-lg border border-red-100 mb-6">
+            <h3 className="font-semibold text-red-800 mb-3 flex items-center">
+              <Phone size={18} className="mr-2 text-red-500" /> Emergency
+              Contact
+            </h3>
+            {editMode ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 <div>
-                  <p className="text-sm text-gray-500">Height</p>
-                  {editMode ? (
-                    <input
-                      type="text"
-                      value={tempUser.healthMetrics.height}
-                      onChange={(e) =>
-                        handleChange(e, "healthMetrics", "height")
-                      }
-                      className="w-full p-2 border border-gray-300 rounded"
-                      placeholder="Height"
-                    />
-                  ) : (
-                    <p className="font-medium">
-                      {user.healthMetrics?.height || "Not specified"}
-                    </p>
-                  )}
+                  <label className="block text-xs text-gray-500 mb-1">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    value={tempUser.emergencyContact.name}
+                    onChange={(e) =>
+                      handleChange(e, "emergencyContact", "name")
+                    }
+                    className="w-full p-2 border border-gray-300 rounded"
+                    placeholder="Contact Name"
+                  />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Weight</p>
-                  {editMode ? (
-                    <input
-                      type="text"
-                      value={tempUser.healthMetrics.weight}
-                      onChange={(e) =>
-                        handleChange(e, "healthMetrics", "weight")
-                      }
-                      className="w-full p-2 border border-gray-300 rounded"
-                      placeholder="Weight"
-                    />
-                  ) : (
-                    <p className="font-medium">
-                      {user.healthMetrics?.weight || "Not specified"}
-                    </p>
-                  )}
+                  <label className="block text-xs text-gray-500 mb-1">
+                    Phone
+                  </label>
+                  <input
+                    type="tel"
+                    value={tempUser.emergencyContact.phoneNumber}
+                    onChange={(e) =>
+                      handleChange(e, "emergencyContact", "phoneNumber")
+                    }
+                    className="w-full p-2 border border-gray-300 rounded"
+                    placeholder="Phone Number"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">
+                    Relationship
+                  </label>
+                  <input
+                    type="text"
+                    value={tempUser.emergencyContact.relationship}
+                    onChange={(e) =>
+                      handleChange(e, "emergencyContact", "relationship")
+                    }
+                    className="w-full p-2 border border-gray-300 rounded"
+                    placeholder="Relationship"
+                  />
                 </div>
               </div>
+            ) : (
+              <div className="font-medium">
+                {user.emergencyContact && user.emergencyContact.name ? (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <div className="text-sm text-gray-500">Name</div>
+                      {user.emergencyContact.name}
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-500">Phone</div>
+                      {formatField(user.emergencyContact.phoneNumber)}
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-500">Relationship</div>
+                      {formatField(user.emergencyContact.relationship)}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No emergency contact added</p>
+                )}
+              </div>
+            )}
+          </div>
 
+          {/* Health Information */}
+          <div className="bg-green-50 p-4 rounded-lg border border-green-100">
+            <h3 className="font-semibold text-green-800 mb-3 flex items-center">
+              <Heart size={18} className="mr-2 text-green-500" /> Health
+              Information
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <p className="text-sm text-gray-500">Blood Type</p>
+                <label className="block text-sm text-gray-500 mb-1">
+                  Height (cm)
+                </label>
+                {editMode ? (
+                  <input
+                    type="number"
+                    value={tempUser.healthMetrics.height}
+                    onChange={(e) => handleChange(e, "healthMetrics", "height")}
+                    className="w-full p-2 border border-gray-300 rounded"
+                    placeholder="Height in cm"
+                  />
+                ) : (
+                  <div className="font-medium">
+                    {formatField(user.healthMetrics?.height)}
+                    {user.healthMetrics?.height && " cm"}
+                  </div>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm text-gray-500 mb-1">
+                  Weight (kg)
+                </label>
+                {editMode ? (
+                  <input
+                    type="number"
+                    value={tempUser.healthMetrics.weight}
+                    onChange={(e) => handleChange(e, "healthMetrics", "weight")}
+                    className="w-full p-2 border border-gray-300 rounded"
+                    placeholder="Weight in kg"
+                  />
+                ) : (
+                  <div className="font-medium">
+                    {formatField(user.healthMetrics?.weight)}
+                    {user.healthMetrics?.weight && " kg"}
+                  </div>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm text-gray-500 mb-1">BMI</label>
+                <div className="font-medium">
+                  {bmi !== "--" ? bmi : "Not available"}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-500 mb-1">
+                  Blood Type
+                </label>
                 {editMode ? (
                   <select
                     value={tempUser.healthMetrics.bloodType}
@@ -503,227 +505,12 @@ const Profile = () => {
                     <option value="O-">O-</option>
                   </select>
                 ) : (
-                  <p className="font-medium">
-                    {user.healthMetrics?.bloodType || "Not specified"}
-                  </p>
+                  <div className="font-medium">
+                    {formatField(user.healthMetrics?.bloodType)}
+                  </div>
                 )}
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Additional Health Information */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Fitness Goals */}
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-3">
-            Fitness Goals
-          </h3>
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            {editMode ? (
-              <div className="space-y-2">
-                {tempUser.fitnessGoals.map((goal, index) => (
-                  <div key={index} className="flex items-center">
-                    <input
-                      type="text"
-                      value={goal}
-                      onChange={(e) =>
-                        handleArrayChange(index, e.target.value, "fitnessGoals")
-                      }
-                      className="flex-grow p-2 border border-gray-300 rounded"
-                    />
-                    <button
-                      onClick={() => removeArrayItem(index, "fitnessGoals")}
-                      className="ml-2 p-1 text-red-500 hover:bg-red-100 rounded"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  onClick={() => addArrayItem("fitnessGoals")}
-                  className="w-full mt-2 p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
-                >
-                  + Add Goal
-                </button>
-              </div>
-            ) : (
-              <>
-                {user.fitnessGoals && user.fitnessGoals.length > 0 ? (
-                  <ul className="list-disc pl-5">
-                    {user.fitnessGoals.map((goal, index) => (
-                      <li key={index}>{goal}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-gray-500">No fitness goals added</p>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Dietary Restrictions */}
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-3">
-            Dietary Restrictions
-          </h3>
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            {editMode ? (
-              <div className="space-y-2">
-                {tempUser.dietaryRestrictions.map((restriction, index) => (
-                  <div key={index} className="flex items-center">
-                    <input
-                      type="text"
-                      value={restriction}
-                      onChange={(e) =>
-                        handleArrayChange(
-                          index,
-                          e.target.value,
-                          "dietaryRestrictions"
-                        )
-                      }
-                      className="flex-grow p-2 border border-gray-300 rounded"
-                    />
-                    <button
-                      onClick={() =>
-                        removeArrayItem(index, "dietaryRestrictions")
-                      }
-                      className="ml-2 p-1 text-red-500 hover:bg-red-100 rounded"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  onClick={() => addArrayItem("dietaryRestrictions")}
-                  className="w-full mt-2 p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
-                >
-                  + Add Restriction
-                </button>
-              </div>
-            ) : (
-              <>
-                {user.dietaryRestrictions &&
-                user.dietaryRestrictions.length > 0 ? (
-                  <ul className="list-disc pl-5">
-                    {user.dietaryRestrictions.map((restriction, index) => (
-                      <li key={index}>{restriction}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-gray-500">No dietary restrictions added</p>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Medical Information */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Medical Conditions */}
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-3">
-            Medical Conditions
-          </h3>
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            {editMode ? (
-              <div className="space-y-2">
-                {tempUser.medicalConditions.map((condition, index) => (
-                  <div key={index} className="flex items-center">
-                    <input
-                      type="text"
-                      value={condition}
-                      onChange={(e) =>
-                        handleArrayChange(
-                          index,
-                          e.target.value,
-                          "medicalConditions"
-                        )
-                      }
-                      className="flex-grow p-2 border border-gray-300 rounded"
-                    />
-                    <button
-                      onClick={() =>
-                        removeArrayItem(index, "medicalConditions")
-                      }
-                      className="ml-2 p-1 text-red-500 hover:bg-red-100 rounded"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  onClick={() => addArrayItem("medicalConditions")}
-                  className="w-full mt-2 p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
-                >
-                  + Add Condition
-                </button>
-              </div>
-            ) : (
-              <>
-                {user.medicalConditions && user.medicalConditions.length > 0 ? (
-                  <ul className="list-disc pl-5">
-                    {user.medicalConditions.map((condition, index) => (
-                      <li key={index}>{condition}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-gray-500">No medical conditions added</p>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Medications */}
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-3">
-            Medications
-          </h3>
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            {editMode ? (
-              <div className="space-y-2">
-                {tempUser.medications.map((medication, index) => (
-                  <div key={index} className="flex items-center">
-                    <input
-                      type="text"
-                      value={medication}
-                      onChange={(e) =>
-                        handleArrayChange(index, e.target.value, "medications")
-                      }
-                      className="flex-grow p-2 border border-gray-300 rounded"
-                    />
-                    <button
-                      onClick={() => removeArrayItem(index, "medications")}
-                      className="ml-2 p-1 text-red-500 hover:bg-red-100 rounded"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  onClick={() => addArrayItem("medications")}
-                  className="w-full mt-2 p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
-                >
-                  + Add Medication
-                </button>
-              </div>
-            ) : (
-              <>
-                {user.medications && user.medications.length > 0 ? (
-                  <ul className="list-disc pl-5">
-                    {user.medications.map((medication, index) => (
-                      <li key={index}>{medication}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-gray-500">No medications added</p>
-                )}
-              </>
-            )}
           </div>
         </div>
       </div>

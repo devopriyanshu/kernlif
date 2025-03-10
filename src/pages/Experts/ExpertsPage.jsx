@@ -136,9 +136,9 @@ const WellnessExperts = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-gray-50 min-h-screen">
+    <div className="w-full mx-auto py-6 bg-gray-50 min-h-screen">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg p-8 mb-10 text-white">
+      <div className="flex flex-col bg-gradient-to-r text-center items-center align-center from-blue-600 to-indigo-700 shadow-lg p-8 mb-10 text-white">
         <h1 className="text-4xl font-bold mb-4 leading-tight">
           Your Journey to Wellness Begins with Expert Guidance
         </h1>
@@ -147,7 +147,7 @@ const WellnessExperts = () => {
           mental, physical, and nutritional well-being. Get personalized support
           on your path to a healthier, more balanced life.
         </p>
-        <div className="flex flex-wrap gap-4">
+        <div className="flex text-center flex-wrap gap-4">
           <button className="bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition shadow-md">
             Book a Consultation
           </button>
@@ -158,12 +158,12 @@ const WellnessExperts = () => {
       </div>
 
       {/* Stats Section */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-6 mb-10">
         <div className="bg-white p-4 rounded-lg shadow text-center">
           <div className="text-3xl font-bold text-blue-600">30+</div>
           <div className="text-gray-600">Certified Experts</div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow text-center">
+        <div className="bg-white  p-4 rounded-lg shadow text-center">
           <div className="text-3xl font-bold text-blue-600">4.8</div>
           <div className="text-gray-600">Average Rating</div>
         </div>
@@ -178,8 +178,8 @@ const WellnessExperts = () => {
       </div>
 
       {/* Search, Filter & Sort */}
-      <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+      <div className="bg-white rounded-xl shadow-md p-6 mx-6 mb-8">
+        <h2 className="text-2xl font-semibold  text-gray-800 mb-4">
           Find Your Perfect Wellness Match
         </h2>
 
@@ -264,7 +264,7 @@ const WellnessExperts = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
         </div>
       ) : filteredExperts.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-md p-8 text-center">
+        <div className="bg-white rounded-xl shadow-md p-8 mx-6 text-center">
           <h3 className="text-xl font-semibold text-gray-800 mb-2">
             No experts match your search criteria
           </h3>
@@ -284,7 +284,7 @@ const WellnessExperts = () => {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mx-6 gap-6">
           {filteredExperts.map((expert) => (
             <Link
               to={`/expert`}
@@ -353,7 +353,7 @@ const WellnessExperts = () => {
       )}
 
       {/* Call to Action */}
-      <div className="mt-12 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-lg p-8 text-white text-center">
+      <div className="m-12 bg-gradient-to-r from-indigo-600 to-purple-600  shadow-lg p-8 text-white text-center">
         <h2 className="text-2xl font-bold mb-4">
           Not Sure Which Expert Is Right For You?
         </h2>

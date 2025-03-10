@@ -208,15 +208,15 @@ const WellnessCenters = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-6 bg-gray-50 min-h-screen">
+    <div className=" mx-auto py-6 bg-gray-50 min-h-screen">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-6 md:p-10 mb-8 text-white relative overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 md:p-10 mb-8 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-20"></div>
         <div className="relative z-10">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
             Find Your Perfect Wellness Center
           </h1>
-          <p className="text-lg md:text-xl opacity-90 mb-6 max-w-2xl">
+          <p className="text-lg  opacity-90 mb-6 max-w-2xl">
             Discover top-rated gyms, yoga studios, meditation centers, and
             wellness hubs near {userLocation?.city || "you"}. Your journey to
             wellness starts here.
@@ -477,7 +477,7 @@ const WellnessCenters = () => {
       )}
 
       {/* Feature Highlights Section */}
-      <div className="mt-16 bg-white rounded-xl p-6 shadow-md">
+      <div className="mt-16  p-6 ">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">
           Why Use Our Wellness Finder?
         </h2>

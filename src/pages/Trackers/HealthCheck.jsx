@@ -168,25 +168,27 @@ const WellnessAssessment = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="shadow-xl border-0 rounded-lg">
+    <div className=" py-6">
+      <div className="border-0 rounded-lg">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-500 to-teal-400 text-white rounded-t-lg p-6">
-          <h1 className="text-3xl font-bold">Complete Wellness Assessment</h1>
-          <p className="text-white text-lg opacity-90 mt-2">
-            Discover your wellness profile and personalized recommendations
-          </p>
-          <div className="h-2 mt-4 bg-white/20 rounded-full">
-            <div
-              className="h-full bg-white rounded-full"
-              style={{ width: `${progress}%` }}
-            ></div>
+        <div className=" bg-gradient-to-r from-blue-500 to-teal-400 ">
+          <div className="max-w-7xl mx-auto text-white rounded-t-lg p-6">
+            <h1 className="text-3xl font-bold">Complete Wellness Assessment</h1>
+            <p className="text-white text-lg opacity-90 mt-2">
+              Discover your wellness profile and personalized recommendations
+            </p>
+            <div className="h-2 mt-4 bg-white/20 rounded-full">
+              <div
+                className="h-full bg-white rounded-full"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="w-full">
-          <div className="grid grid-cols-5 w-full rounded-none border-b">
+        <div className="max-w-7xl mx-auto ">
+          <div className="grid grid-cols-5  w-full rounded-none border-b place-items-center">
             {[
               { value: "lifestyle", icon: HomeIcon, label: "Lifestyle" },
               { value: "nutrition", icon: Utensils, label: "Nutrition" },
@@ -198,7 +200,7 @@ const WellnessAssessment = () => {
                 key={tab.value}
                 onClick={() => handleTabChange(tab.value)}
                 disabled={currentTab === "results" && tab.value !== "results"}
-                className={`flex items-center justify-center p-4 ${
+                className={`flex flex-col items-center justify-center p-4 ${
                   currentTab === tab.value
                     ? "border-b-2 border-blue-500 text-blue-500"
                     : "text-gray-500"
