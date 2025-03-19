@@ -210,13 +210,13 @@ const WellnessCenters = () => {
   return (
     <div className=" mx-auto py-6 bg-gray-50 min-h-screen">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 md:p-10 mb-8 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-black opacity-20"></div>
-        <div className="relative z-10">
+      <div className="bg-gradient-to-r text-center from-blue-600 to-indigo-700 p-6 md:p-10 mb-8 text-white relative  overflow-hidden">
+        <div className="absolute  inset-0 bg-black opacity-20"></div>
+        <div className="relative  z-10">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
             Find Your Perfect Wellness Center
           </h1>
-          <p className="text-lg  opacity-90 mb-6 max-w-2xl">
+          <p className="text-lg text-center mx-auto  opacity-90 mb-6 max-w-2xl">
             Discover top-rated gyms, yoga studios, meditation centers, and
             wellness hubs near {userLocation?.city || "you"}. Your journey to
             wellness starts here.

@@ -13,6 +13,8 @@ import WellnessCenters from "./pages/Centers/WellNessCenterPage";
 import Profile from "./pages/Profile";
 import LoginSignup from "./pages/LoginSignup";
 import WellnessDashboard from "./pages/DashBoard";
+import ExpertRegistrationPage from "./register/ExpertRegistrationPage";
+import WellnessCenterRegistration from "./register/CenterRegistrationPage";
 
 const App = () => {
   return (
@@ -31,6 +33,11 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<LoginSignup />} />
           <Route path="/dashboard" element={<WellnessDashboard />} />
+          <Route path="/expert_register" element={<ExpertRegistrationPage />} />
+          <Route
+            path="/center_register"
+            element={<WellnessCenterRegistration />}
+          />
         </Routes>
       </div>
       <Footer />
