@@ -53,11 +53,11 @@ const WellnessCenterRegistration = () => {
     },
   ]);
   const [pricingData, setPricingData] = useState({
-    monthly: "0",
-    annual: "0",
-    dayPass: "0",
-    classPackages: "0",
-    personalTraining: "0",
+    monthly: "",
+    annual: "",
+    dayPass: "",
+    classPackages: "",
+    personalTraining: "",
   });
   const [offers, setOffers] = useState("");
   const [openingHours, setOpeningHours] = useState({
@@ -224,7 +224,7 @@ const WellnessCenterRegistration = () => {
             type="text"
             name="name"
             value={basicData.name}
-            onChange={handleChange}
+            onChange={(e) => handleChange(e, setBasicData)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
             placeholder="e.g., ZenFit Wellness Hub"
             required
@@ -238,7 +238,7 @@ const WellnessCenterRegistration = () => {
           <select
             name="category"
             value={basicData.category}
-            onChange={handleChange}
+            onChange={(e) => handleChange(e, setBasicData)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
             required
           >
@@ -264,7 +264,7 @@ const WellnessCenterRegistration = () => {
           <textarea
             name="description"
             value={basicData.description}
-            onChange={handleChange}
+            onChange={(e) => handleChange(e, setBasicData)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500 h-32"
             placeholder="Tell potential customers about your center's philosophy, mission, and what makes you unique..."
             required
@@ -281,7 +281,7 @@ const WellnessCenterRegistration = () => {
               type="text"
               name="address"
               value={basicData.address}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setBasicData)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
               placeholder="Street address, City, State, ZIP"
               required
@@ -299,7 +299,7 @@ const WellnessCenterRegistration = () => {
               type="tel"
               name="phone"
               value={basicData.phone}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setBasicData)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
               placeholder="+1 (123) 456-7890"
               required
@@ -317,7 +317,7 @@ const WellnessCenterRegistration = () => {
               type="email"
               name="email"
               value={basicData.email}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setBasicData)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
               placeholder="info@yourwellnesscenter.com"
               required
@@ -335,7 +335,7 @@ const WellnessCenterRegistration = () => {
               type="url"
               name="website"
               value={basicData.website}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setBasicData)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
               placeholder="www.yourwellnesscenter.com"
             />
@@ -847,8 +847,9 @@ const WellnessCenterRegistration = () => {
             <FaDollarSign className="text-green-500 mr-1" />
             <input
               type="text"
+              name="monthly"
               value={pricingData.monthly}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setPricingData)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
               placeholder="e.g., 99.99"
               required
@@ -864,8 +865,9 @@ const WellnessCenterRegistration = () => {
             <FaDollarSign className="text-green-500 mr-1" />
             <input
               type="text"
+              name="annual"
               value={pricingData.annual}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setPricingData)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
               placeholder="e.g., 999.99"
               required
@@ -881,8 +883,9 @@ const WellnessCenterRegistration = () => {
             <FaDollarSign className="text-green-500 mr-1" />
             <input
               type="text"
+              name="dayPass"
               value={pricingData.dayPass}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setPricingData)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
               placeholder="e.g., 19.99"
               required
@@ -898,8 +901,9 @@ const WellnessCenterRegistration = () => {
             <FaDollarSign className="text-green-500 mr-1" />
             <input
               type="text"
+              name="classPackages"
               value={pricingData.classPackages}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setPricingData)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
               placeholder="e.g., 199.99"
               required
@@ -915,8 +919,9 @@ const WellnessCenterRegistration = () => {
             <FaDollarSign className="text-green-500 mr-1" />
             <input
               type="text"
+              name="personalTraining"
               value={pricingData.personalTraining}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setPricingData)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
               placeholder="e.g., 49.99"
               required
@@ -1126,230 +1131,235 @@ const WellnessCenterRegistration = () => {
   );
 
   // // Render review and submit section
-  // const renderReviewSection = () => (
-  //   <div className="space-y-6">
-  //     <h2 className="text-2xl font-bold text-blue-700">Review & Submit</h2>
-  //     <p className="text-gray-600">
-  //       Review your information before submitting.
-  //     </p>
+  const renderReviewSection = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-blue-700">Review & Submit</h2>
+      <p className="text-gray-600">
+        Review your information before submitting.
+      </p>
 
-  //     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-  //       <h3 className="text-xl font-semibold text-blue-700 mb-4">
-  //         Basic Information
-  //       </h3>
-  //       <div className="space-y-4">
-  //         <div>
-  //           <label className="block text-gray-700 font-medium mb-1">
-  //             Center Name
-  //           </label>
-  //           <p className="text-gray-600">{formData.basicInfo.name}</p>
-  //         </div>
-  //         <div>
-  //           <label className="block text-gray-700 font-medium mb-1">
-  //             Category
-  //           </label>
-  //           <p className="text-gray-600">{formData.basicInfo.category}</p>
-  //         </div>
-  //         <div>
-  //           <label className="block text-gray-700 font-medium mb-1">
-  //             Description
-  //           </label>
-  //           <p className="text-gray-600 whitespace-pre-line">
-  //             {formData.basicInfo.description}
-  //           </p>
-  //         </div>
-  //         <div>
-  //           <label className="block text-gray-700 font-medium mb-1">
-  //             Address
-  //           </label>
-  //           <p className="text-gray-600">{formData.basicInfo.address}</p>
-  //         </div>
-  //         <div>
-  //           <label className="block text-gray-700 font-medium mb-1">
-  //             Phone Number
-  //           </label>
-  //           <p className="text-gray-600">{formData.basicInfo.phone}</p>
-  //         </div>
-  //         <div>
-  //           <label className="block text-gray-700 font-medium mb-1">
-  //             Email Address
-  //           </label>
-  //           <p className="text-gray-600">{formData.basicInfo.email}</p>
-  //         </div>
-  //         <div>
-  //           <label className="block text-gray-700 font-medium mb-1">
-  //             Website
-  //           </label>
-  //           <p className="text-gray-600">{formData.basicInfo.website}</p>
-  //         </div>
-  //       </div>
-  //     </div>
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-xl font-semibold text-blue-700 mb-4">
+          Basic Information
+        </h3>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Center Name
+            </label>
+            <p className="text-gray-600">{basicData.name}</p>
+          </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Category
+            </label>
+            <p className="text-gray-600">{basicData.category}</p>
+          </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Description
+            </label>
+            <p className="text-gray-600 whitespace-pre-line">
+              {basicData.description}
+            </p>
+          </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Address
+            </label>
+            <p className="text-gray-600">{basicData.address}</p>
+          </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Phone Number
+            </label>
+            <p className="text-gray-600">{basicData.phone}</p>
+          </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Email Address
+            </label>
+            <p className="text-gray-600">{basicData.email}</p>
+          </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Website
+            </label>
+            <p className="text-gray-600">{basicData.website}</p>
+          </div>
+        </div>
+      </div>
 
-  //     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-  //       <h3 className="text-xl font-semibold text-blue-700 mb-4">Gallery</h3>
-  //       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-  //         {formData.images.map((image, index) => (
-  //           <div key={index} className="relative">
-  //             <img
-  //               src={image.preview}
-  //               alt={`Preview ${index + 1}`}
-  //               className="w-full h-32 object-cover rounded-lg"
-  //             />
-  //           </div>
-  //         ))}
-  //       </div>
-  //     </div>
+      {/* Gallery section */}
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-xl font-semibold text-blue-700 mb-4">Gallery</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {images.map((image, index) => (
+            <div key={index} className="relative">
+              <img
+                src={image.preview || URL.createObjectURL(image)}
+                alt={`Preview ${index + 1}`}
+                className="w-full h-32 object-cover rounded-lg"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
 
-  //     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-  //       <h3 className="text-xl font-semibold text-blue-700 mb-4">
-  //         Amenities & Equipment
-  //       </h3>
-  //       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-  //         <div>
-  //           <h4 className="text-lg font-medium text-blue-700 mb-2">
-  //             Amenities
-  //           </h4>
-  //           <ul className="list-disc list-inside text-gray-600">
-  //             {formData.amenities.map((amenity, index) => (
-  //               <li key={index}>{amenity}</li>
-  //             ))}
-  //           </ul>
-  //         </div>
-  //         <div>
-  //           <h4 className="text-lg font-medium text-blue-700 mb-2">
-  //             Equipment
-  //           </h4>
-  //           <ul className="list-disc list-inside text-gray-600">
-  //             {formData.equipment.map((equipment, index) => (
-  //               <li key={index}>{equipment}</li>
-  //             ))}
-  //           </ul>
-  //         </div>
-  //       </div>
-  //     </div>
+      {/* Amenities & Equipment */}
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-xl font-semibold text-blue-700 mb-4">
+          Amenities & Equipment
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h4 className="text-lg font-medium text-blue-700 mb-2">
+              Amenities
+            </h4>
+            <ul className="list-disc list-inside text-gray-600">
+              {amenities.map((amenity, index) => (
+                <li key={index}>{amenity.value}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-lg font-medium text-blue-700 mb-2">
+              Equipment
+            </h4>
+            <ul className="list-disc list-inside text-gray-600">
+              {equipment.map((equipment, index) => (
+                <li key={index}>{equipment.value}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
 
-  //     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-  //       <h3 className="text-xl font-semibold text-blue-700 mb-4">Services</h3>
-  //       <div className="space-y-4">
-  //         {formData.services.map((service, index) => (
-  //           <div key={index} className="bg-gray-50 p-4 rounded-lg">
-  //             <h4 className="text-lg font-medium text-blue-700 mb-2">
-  //               {service.name}
-  //             </h4>
-  //             <p className="text-gray-600">{service.description}</p>
-  //           </div>
-  //         ))}
-  //       </div>
-  //     </div>
+      {/* Services */}
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-xl font-semibold text-blue-700 mb-4">Services</h3>
+        <div className="space-y-4">
+          {services.map((service, index) => (
+            <div key={index} className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="text-lg font-medium text-blue-700 mb-2">
+                {service.name}
+              </h4>
+              <p className="text-gray-600">{service.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
 
-  //     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-  //       <h3 className="text-xl font-semibold text-blue-700 mb-4">Trainers</h3>
-  //       <div className="space-y-4">
-  //         {formData.trainers.map((trainer, index) => (
-  //           <div key={index} className="bg-gray-50 p-4 rounded-lg">
-  //             <h4 className="text-lg font-medium text-blue-700 mb-2">
-  //               {trainer.name}
-  //             </h4>
-  //             <p className="text-gray-600">{trainer.specialty}</p>
-  //             <p className="text-gray-600 whitespace-pre-line">{trainer.bio}</p>
-  //           </div>
-  //         ))}
-  //       </div>
-  //     </div>
+      {/* Trainers */}
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-xl font-semibold text-blue-700 mb-4">Trainers</h3>
+        <div className="space-y-4">
+          {trainers.map((trainer, index) => (
+            <div key={index} className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="text-lg font-medium text-blue-700 mb-2">
+                {trainer.name}
+              </h4>
+              <p className="text-gray-600">{trainer.specialty}</p>
+              <p className="text-gray-600 whitespace-pre-line">{trainer.bio}</p>
+            </div>
+          ))}
+        </div>
+      </div>
 
-  //     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-  //       <h3 className="text-xl font-semibold text-blue-700 mb-4">Pricing</h3>
-  //       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-  //         <div>
-  //           <label className="block text-gray-700 font-medium mb-1">
-  //             Monthly Membership
-  //           </label>
-  //           <p className="text-gray-600">${formData.pricing.monthly}</p>
-  //         </div>
-  //         <div>
-  //           <label className="block text-gray-700 font-medium mb-1">
-  //             Annual Membership
-  //           </label>
-  //           <p className="text-gray-600">${formData.pricing.annual}</p>
-  //         </div>
-  //         <div>
-  //           <label className="block text-gray-700 font-medium mb-1">
-  //             Day Pass
-  //           </label>
-  //           <p className="text-gray-600">${formData.pricing.dayPass}</p>
-  //         </div>
-  //         <div>
-  //           <label className="block text-gray-700 font-medium mb-1">
-  //             Class Packages
-  //           </label>
-  //           <p className="text-gray-600">${formData.pricing.classPackages}</p>
-  //         </div>
-  //         <div>
-  //           <label className="block text-gray-700 font-medium mb-1">
-  //             Personal Training
-  //           </label>
-  //           <p className="text-gray-600">
-  //             ${formData.pricing.personalTraining}
-  //           </p>
-  //         </div>
-  //       </div>
-  //     </div>
+      {/* Pricing */}
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-xl font-semibold text-blue-700 mb-4">Pricing</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Monthly Membership
+            </label>
+            <p className="text-gray-600">${pricingData.monthly}</p>
+          </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Annual Membership
+            </label>
+            <p className="text-gray-600">${pricingData.annual}</p>
+          </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Day Pass
+            </label>
+            <p className="text-gray-600">${pricingData.dayPass}</p>
+          </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Class Packages
+            </label>
+            <p className="text-gray-600">${pricingData.classPackages}</p>
+          </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Personal Training
+            </label>
+            <p className="text-gray-600">${pricingData.personalTraining}</p>
+          </div>
+        </div>
+      </div>
 
-  //     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-  //       <h3 className="text-xl font-semibold text-blue-700 mb-4">Schedule</h3>
-  //       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-  //         <div>
-  //           <h4 className="text-lg font-medium text-blue-700 mb-2">
-  //             Opening Hours
-  //           </h4>
-  //           <div className="space-y-2">
-  //             <p className="text-gray-600">
-  //               Weekdays: {formData.openingHours.weekdays}
-  //             </p>
-  //             <p className="text-gray-600">
-  //               Weekends: {formData.openingHours.weekends}
-  //             </p>
-  //             <p className="text-gray-600">
-  //               Special Hours: {formData.openingHours.special}
-  //             </p>
-  //           </div>
-  //         </div>
-  //         <div>
-  //           <h4 className="text-lg font-medium text-blue-700 mb-2">
-  //             Upcoming Classes
-  //           </h4>
-  //           <div className="space-y-2">
-  //             {formData.upcomingClasses.map((classItem, index) => (
-  //               <div key={index} className="bg-gray-50 p-3 rounded-lg">
-  //                 <p className="text-gray-600 font-medium">{classItem.name}</p>
-  //                 <p className="text-gray-600">{classItem.time}</p>
-  //                 <p className="text-gray-600">{classItem.trainer}</p>
-  //                 <p className="text-gray-600">{classItem.duration}</p>
-  //               </div>
-  //             ))}
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
+      {/* Schedule */}
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 className="text-xl font-semibold text-blue-700 mb-4">Schedule</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h4 className="text-lg font-medium text-blue-700 mb-2">
+              Opening Hours
+            </h4>
+            <div className="space-y-2">
+              <p className="text-gray-600">
+                Weekdays: {openingHours.weekdays || "Not specified"}
+              </p>
+              <p className="text-gray-600">
+                Weekends: {openingHours.weekends || "Not specified"}
+              </p>
+              <p className="text-gray-600">
+                Special Hours: {openingHours.special || "Not specified"}
+              </p>
+            </div>
+          </div>
+          <div>
+            <h4 className="text-lg font-medium text-blue-700 mb-2">
+              Upcoming Classes
+            </h4>
+            <div className="space-y-2">
+              {upcomingClasses.map((classItem, index) => (
+                <div key={index} className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-gray-600 font-medium">{classItem.name}</p>
+                  <p className="text-gray-600">{classItem.time}</p>
+                  <p className="text-gray-600">{classItem.trainer}</p>
+                  <p className="text-gray-600">{classItem.duration}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
 
-  //     <div className="flex justify-between">
-  //       <button
-  //         type="button"
-  //         onClick={goToPreviousSection}
-  //         className="flex items-center px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
-  //       >
-  //         <FaArrowLeft className="mr-2" /> Back
-  //       </button>
-  //       <button
-  //         type="button"
-  //         onClick={handleSubmit}
-  //         className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-  //       >
-  //         Submit Registration
-  //       </button>
-  //     </div>
-  //   </div>
-  // );
+      {/* Navigation Buttons */}
+      <div className="flex justify-between">
+        <button
+          type="button"
+          onClick={() => setShowPreview(false)}
+          className="flex items-center px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+        >
+          <FaArrowLeft className="mr-2" /> Back to Edit
+        </button>
+        <button
+          type="button"
+          onClick={handleSubmit}
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+        >
+          Submit Profile
+        </button>
+      </div>
+    </div>
+  );
 
   // Render navigation and progress bar
   const renderNavigation = () => (
@@ -1436,7 +1446,7 @@ const WellnessCenterRegistration = () => {
                 <FaArrowLeft className="mr-2" /> Previous
               </button>
             )}
-            {currentStep < 5 && (
+            {currentStep < 7 && (
               <button
                 type="button"
                 onClick={() => setCurrentStep(currentStep + 1)}
@@ -1445,7 +1455,7 @@ const WellnessCenterRegistration = () => {
                 Next Step
               </button>
             )}
-            {currentStep === 5 && (
+            {currentStep === 7 && (
               <button
                 type="button"
                 onClick={() => setShowPreview(true)}
@@ -1457,7 +1467,7 @@ const WellnessCenterRegistration = () => {
           </div>
         </form>
       ) : (
-        renderPreview()
+        renderReviewSection()
       )}
     </div>
   );
