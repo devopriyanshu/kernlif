@@ -12,7 +12,7 @@ const Header = () => {
   // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
+      if (window.scrollY > 50) {
         setScrolled(true);
       } else {
         setScrolled(false);
@@ -41,9 +41,7 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? "bg-white shadow-md py-2" : "bg-transparent py-4"
-      }`}
+      className={`fixed top-0 w-full z-50 transition-all duration-300 py-4 h-16 bg-white shadow-md `}
     >
       <div className=" mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
@@ -52,15 +50,7 @@ const Header = () => {
             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold text-lg">
               W
             </div>
-            <span
-              className={`text-xl font-bold ${
-                scrolled || location.pathname !== "/"
-                  ? "text-blue-700"
-                  : "text-white"
-              }`}
-            >
-              WellNest
-            </span>
+            <span className={`text-xl font-bold "text-blue-700`}>WellNest</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -74,7 +64,7 @@ const Header = () => {
                     ? "text-blue-600"
                     : scrolled || location.pathname !== "/"
                     ? "text-gray-700 hover:text-blue-600"
-                    : "text-white hover:text-blue-200"
+                    : "text-black hover:text-blue-200"
                 }`}
               >
                 {link.name}
@@ -91,11 +81,7 @@ const Header = () => {
                   setNotificationsOpen(!notificationsOpen);
                   setProfileOpen(false);
                 }}
-                className={`p-2 rounded-full hover:bg-gray-100 transition-colors relative ${
-                  scrolled || location.pathname !== "/"
-                    ? "text-gray-700"
-                    : "text-white"
-                }`}
+                className={`p-2 rounded-full hover:bg-gray-100 transition-colors relative text-gray-700`}
               >
                 <Bell size={20} />
                 <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">
@@ -152,11 +138,7 @@ const Header = () => {
                 />
                 <ChevronDown
                   size={16}
-                  className={`transition-colors ${
-                    scrolled || location.pathname !== "/"
-                      ? "text-gray-700"
-                      : "text-white"
-                  }`}
+                  className={`transition-colors text-gray-700`}
                 />
               </button>
 

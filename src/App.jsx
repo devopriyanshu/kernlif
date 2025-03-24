@@ -19,28 +19,37 @@ import WellnessCenterRegistration from "./register/CenterRegistrationPage";
 const App = () => {
   return (
     <BrowserRouter>
-      <Header />
-      <div className="pt-16">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/health-check" element={<MentalHealthTracking />} />
-          <Route path="/physical-tracker" element={<PhysicalTracking />} />
-          <Route path="/track-meal" element={<MealTracker />} />
-          <Route path="/centers" element={<WellnessCenters />} />
-          <Route path="/wellness-center" element={<WellnessCenterDetails />} />
-          <Route path="/experts" element={<WellnessExperts />} />
-          <Route path="/expert" element={<WellnessExpertDetails />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/login" element={<LoginSignup />} />
-          <Route path="/dashboard" element={<WellnessDashboard />} />
-          <Route path="/expert_register" element={<ExpertRegistrationPage />} />
-          <Route
-            path="/center_register"
-            element={<WellnessCenterRegistration />}
-          />
-        </Routes>
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-grow pt-16">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/health-check" element={<MentalHealthTracking />} />
+            <Route path="/physical-tracker" element={<PhysicalTracking />} />
+            <Route path="/track-meal" element={<MealTracker />} />
+            <Route path="/centers" element={<WellnessCenters />} />
+            <Route
+              path="/wellness-center"
+              element={<WellnessCenterDetails />}
+            />
+            <Route path="/experts" element={<WellnessExperts />} />
+            <Route path="/expert" element={<WellnessExpertDetails />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/login" element={<LoginSignup />} />
+            <Route path="/dashboard" element={<WellnessDashboard />} />
+            <Route
+              path="/expert_register"
+              element={<ExpertRegistrationPage />}
+            />
+            <Route
+              path="/center_register"
+              element={<WellnessCenterRegistration />}
+            />
+          </Routes>
+        </main>
+
+        <Footer />
       </div>
-      <Footer />
     </BrowserRouter>
   );
 };
