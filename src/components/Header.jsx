@@ -74,6 +74,12 @@ const Header = () => {
 
           {/* User Actions */}
           <div className="flex items-center space-x-4">
+            {/* Login */}
+            <div className="relative">
+              <button onClick={() => {}}>
+                <p className="text-red-600 text-lg font-medium">Login</p>
+              </button>
+            </div>
             {/* Notifications */}
             <div className="relative">
               <button

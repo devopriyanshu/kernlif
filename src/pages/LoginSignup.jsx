@@ -1,50 +1,58 @@
-import React, { useState } from "react";
-import {
-  FaGoogle,
-  FaGithub,
-  FaFacebook,
-  FaEnvelope,
-  FaLock,
-} from "react-icons/fa";
-import {
-  auth,
-  googleProvider,
-  githubProvider,
-  facebookProvider,
-} from "../config/firebase";
-import {
-  signInWithPopup,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import React, { useState, useEffect } from "react";
+import { FaGoogle, FaEnvelope, FaLock } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const LoginSignup = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate(); // Use React Router for navigation
 
+  // Handle Google OAuth Redirect
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+    const name = urlParams.get("name");
+    const email = urlParams.get("email");
+    const picture = urlParams.get("picture");
+
+    if (token) {
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify({ name, email, picture }));
+      alert(`Welcome, ${name}! 🎉`);
+      navigate("/dashboard");
+    }
+  }, [navigate]);
+
+  // Email Signup/Login
   const handleEmailAuth = async (e) => {
     e.preventDefault();
     try {
-      if (isSignup) {
-        await createUserWithEmailAndPassword(auth, email, password);
-        alert("Signup successful! 🎉");
-      } else {
-        await signInWithEmailAndPassword(auth, email, password);
-        alert("Login successful! 🚀");
-      }
+      const endpoint = isSignup
+        ? "http://localhost:4000/signup"
+        : "http://localhost:4000/login";
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+
+      localStorage.setItem("token", data.token);
+      alert(`${isSignup ? "Signup" : "Login"} successful! 🎉`);
+      navigate("/dashboard"); // Redirect after login/signup
     } catch (error) {
       alert(error.message);
     }
   };
 
-  const handleSocialLogin = async (provider) => {
-    try {
-      await signInWithPopup(auth, provider);
-      alert("Login successful! 🎉");
-    } catch (error) {
-      alert(error.message);
-    }
+  // Google Login Redirect
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:4000/auth/google";
   };
 
   return (
@@ -88,32 +96,18 @@ const LoginSignup = () => {
           </button>
         </form>
 
-        {/* Divider */}
         <div className="text-center my-4 text-gray-500">or continue with</div>
 
-        {/* Social Login Buttons */}
+        {/* Google Login */}
         <div className="flex justify-center space-x-3">
           <button
-            onClick={() => handleSocialLogin(googleProvider)}
+            onClick={handleGoogleLogin}
             className="bg-red-500 text-white p-3 rounded-full"
           >
             <FaGoogle />
           </button>
-          <button
-            onClick={() => handleSocialLogin(githubProvider)}
-            className="bg-gray-800 text-white p-3 rounded-full"
-          >
-            <FaGithub />
-          </button>
-          <button
-            onClick={() => handleSocialLogin(facebookProvider)}
-            className="bg-blue-600 text-white p-3 rounded-full"
-          >
-            <FaFacebook />
-          </button>
         </div>
 
-        {/* Toggle Signup/Login */}
         <div className="mt-4 text-center">
           <p className="text-gray-600">
             {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
