@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Calendar,
   Clock,
@@ -11,8 +11,21 @@ import {
   ChevronRight,
   Plus,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const WellnessDashboard = () => {
+  const [token, setToken] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (!storedToken) {
+      alert("Unauthorized! Please log in.");
+      navigate("/");
+    } else {
+      setToken(storedToken);
+    }
+  }, [navigate]);
   const [activeTab, setActiveTab] = useState("overview");
 
   // Sample data

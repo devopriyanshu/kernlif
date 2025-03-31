@@ -12,14 +12,16 @@ const LoginSignup = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
-    const name = urlParams.get("name");
-    const email = urlParams.get("email");
-    const picture = urlParams.get("picture");
+    const error = urlParams.get("error");
+
+    if (error) {
+      alert("Authentication failed. Please try again.");
+      return;
+    }
 
     if (token) {
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify({ name, email, picture }));
-      alert(`Welcome, ${name}! 🎉`);
+      alert("Login successful! 🎉");
       navigate("/dashboard");
     }
   }, [navigate]);
