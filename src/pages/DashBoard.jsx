@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Calendar,
   Clock,
@@ -12,10 +12,14 @@ import {
   Plus,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/Authcontext";
 
 const WellnessDashboard = () => {
   const [token, setToken] = useState(null);
   const navigate = useNavigate();
+  const user = useContext(AuthContext);
+
+  console.log(user);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
