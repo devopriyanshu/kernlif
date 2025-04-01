@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Bell, User, ChevronDown } from "lucide-react";
+import { useAtom } from "jotai";
+import { userAtom } from "../atoms/userAtom";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -8,6 +10,7 @@ const Header = () => {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const location = useLocation();
+  const [user] = useAtom(userAtom);
 
   // Handle scroll effect
   useEffect(() => {
@@ -75,13 +78,15 @@ const Header = () => {
           {/* User Actions */}
           <div className="flex items-center space-x-4">
             {/* Login */}
-            <div className="relative">
-              <Link to={"/login"}>
-                <button onClick={() => {}}>
-                  <p className="text-red-600 text-lg font-medium">Login</p>
-                </button>
-              </Link>
-            </div>
+            {!user && (
+              <div className="relative">
+                <Link to={"/login"}>
+                  <button onClick={() => {}}>
+                    <p className="text-red-600 text-lg font-medium">Login</p>
+                  </button>
+                </Link>
+              </div>
+            )}
             {/* Notifications */}
             <div className="relative">
               <button
