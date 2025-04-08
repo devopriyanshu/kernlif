@@ -17,16 +17,20 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/Authcontext";
+import { useAtom } from "jotai";
+import { userAtom } from "../atoms/userAtom";
 
 const WellnessDashboard = () => {
   const [token, setToken] = useState(null);
   const navigate = useNavigate();
-  const user = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showAddMealForm, setShowAddMealForm] = useState(false);
   const [showAddSleepForm, setShowAddSleepForm] = useState(false);
   const [showAddAppointmentForm, setShowAddAppointmentForm] = useState(false);
+
+  const [user] = useAtom(userAtom);
+  console.log("user at dashboard", user);
 
   // Form states
   const [newMeal, setNewMeal] = useState({

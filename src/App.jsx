@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom"; // ❌ removed BrowserRouter here
 import Home from "./pages/Home";
 import LoginSignup from "./pages/LoginSignup";
 import WellnessDashboard from "./pages/DashBoard";
@@ -15,46 +15,46 @@ import WellnessCenterRegistration from "./register/CenterRegistrationPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./utils/ProtectedRoutes";
+import WellnessExpertDashboard from "./register/Dashboards/ExpertDashboard";
 
 const App = () => {
   return (
-    <Router>
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-grow pt-16">
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<LoginSignup />} />
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-grow pt-16">
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LoginSignup />} />
+          <Route path="/dashboard" element={<WellnessDashboard />} />
+          <Route path="/expert_register" element={<ExpertRegistrationPage />} />
+          <Route
+            path="/expert_dashboard"
+            element={<WellnessExpertDashboard />}
+          />
+          <Route
+            path="/center_register"
+            element={<WellnessCenterRegistration />}
+          />
 
-            {/* Protected Routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<WellnessDashboard />} />
-              <Route path="/health-check" element={<MentalHealthTracking />} />
-              <Route path="/physical-tracker" element={<PhysicalTracking />} />
-              <Route path="/track-meal" element={<MealTracker />} />
-              <Route path="/centers" element={<WellnessCenters />} />
-              <Route
-                path="/wellness-center"
-                element={<WellnessCenterDetails />}
-              />
-              <Route path="/experts" element={<WellnessExperts />} />
-              <Route path="/expert" element={<WellnessExpertDetails />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route
-                path="/expert_register"
-                element={<ExpertRegistrationPage />}
-              />
-              <Route
-                path="/center_register"
-                element={<WellnessCenterRegistration />}
-              />
-            </Route>
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/health-check" element={<MentalHealthTracking />} />
+            <Route path="/physical-tracker" element={<PhysicalTracking />} />
+            <Route path="/track-meal" element={<MealTracker />} />
+            <Route path="/centers" element={<WellnessCenters />} />
+            <Route
+              path="/wellness-center"
+              element={<WellnessCenterDetails />}
+            />
+            <Route path="/experts" element={<WellnessExperts />} />
+            <Route path="/expert" element={<WellnessExpertDetails />} />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+        </Routes>
+      </main>
+      <Footer />
+    </div>
   );
 };
 
