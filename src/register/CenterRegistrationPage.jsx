@@ -60,18 +60,14 @@ const WellnessCenterRegistration = () => {
     personalTraining: "",
   });
   const [offers, setOffers] = useState("");
-  const [openingHours, setOpeningHours] = useState({
-    weekdays: "",
-    weekends: "",
-    special: "",
-  });
-  const [upcomingClasses, setUpcomingClasses] = useState([
-    {
-      name: "",
-      time: "",
-      trainer: "",
-      duration: "",
-    },
+  const [schedule, setSchedule] = useState([
+    { day: "Monday", isOpen: false, openingTime: "", closingTime: "" },
+    { day: "Tuesday", isOpen: false, openingTime: "", closingTime: "" },
+    { day: "Wednesday", isOpen: false, openingTime: "", closingTime: "" },
+    { day: "Thursday", isOpen: false, openingTime: "", closingTime: "" },
+    { day: "Friday", isOpen: false, openingTime: "", closingTime: "" },
+    { day: "Saturday", isOpen: false, openingTime: "", closingTime: "" },
+    { day: "Sunday", isOpen: false, openingTime: "", closingTime: "" },
   ]);
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -945,188 +941,102 @@ const WellnessCenterRegistration = () => {
     </div>
   );
 
+  // Toggle day open/closed status
+  const toggleDay = (index, isOpen) => {
+    setSchedule((prev) => {
+      const newSchedule = [...prev];
+      newSchedule[index] = {
+        ...newSchedule[index],
+        isOpen,
+        // Reset times when closing the day
+        openingTime: isOpen ? newSchedule[index].openingTime : "",
+        closingTime: isOpen ? newSchedule[index].closingTime : "",
+      };
+      return newSchedule;
+    });
+  };
+
+  // Update time for a specific day and field
+  const updateTime = (index, field, value) => {
+    setSchedule((prev) => {
+      const newSchedule = [...prev];
+      newSchedule[index] = {
+        ...newSchedule[index],
+        [field]: value,
+      };
+      return newSchedule;
+    });
+  };
+
   // Render schedule section
   const renderScheduleSection = () => (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-blue-700">Schedule</h2>
-      <p className="text-gray-600">
-        Set your opening hours and upcoming classes.
+    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+      <h3 className="text-xl font-semibold text-blue-700 mb-4">
+        Weekly Schedule
+      </h3>
+      <p className="text-sm text-gray-600 mb-4">
+        Select the days your center is open and set the operating hours for each
+        day.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Opening Hours Section */}
-        <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-medium text-blue-700 mb-3">
-            Opening Hours
-          </h3>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">
-                Weekdays*
-              </label>
-              <input
-                type="text"
-                name="weekdays"
-                value={openingHours.weekdays}
-                onChange={(e) => handleChange(e, setOpeningHours)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
-                placeholder="e.g., 6:00 AM - 10:00 PM"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">
-                Weekends*
-              </label>
-              <input
-                type="text"
-                name="weekends"
-                value={openingHours.weekends}
-                onChange={(e) => handleChange(e, setOpeningHours)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
-                placeholder="e.g., 8:00 AM - 8:00 PM"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">
-                Special Hours
-              </label>
-              <input
-                type="text"
-                name="special"
-                value={openingHours.special}
-                onChange={(e) => handleChange(e, setOpeningHours)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
-                placeholder="e.g., Closed on public holidays"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Upcoming Classes Section */}
-        <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-medium text-blue-700 mb-3">
-            Upcoming Classes
-          </h3>
-          <div className="space-y-4">
-            {upcomingClasses.map((classItem, index) => (
-              <div key={index} className="space-y-2">
-                <div>
-                  <label className="block text-gray-700 font-medium mb-1">
-                    Class Name*
-                  </label>
-                  <input
-                    type="text"
-                    value={classItem.name}
-                    onChange={(e) =>
-                      handleObjectArrayChange(
-                        index,
-                        "name",
-                        e.target.value,
-                        setUpcomingClasses
-                      )
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
-                    placeholder="e.g., Morning Yoga"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-700 font-medium mb-1">
-                    Time*
-                  </label>
-                  <input
-                    type="text"
-                    value={classItem.time}
-                    onChange={(e) =>
-                      handleObjectArrayChange(
-                        index,
-                        "time",
-                        e.target.value,
-                        setUpcomingClasses
-                      )
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
-                    placeholder="e.g., 7:00 AM - 8:00 AM"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-700 font-medium mb-1">
-                    Trainer*
-                  </label>
-                  <input
-                    type="text"
-                    value={classItem.trainer}
-                    onChange={(e) =>
-                      handleObjectArrayChange(
-                        index,
-                        "trainer",
-                        e.target.value,
-                        setUpcomingClasses
-                      )
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
-                    placeholder="e.g., John Doe"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-700 font-medium mb-1">
-                    Duration*
-                  </label>
-                  <input
-                    type="text"
-                    value={classItem.duration}
-                    onChange={(e) =>
-                      handleObjectArrayChange(
-                        index,
-                        "duration",
-                        e.target.value,
-                        setUpcomingClasses
-                      )
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
-                    placeholder="e.g., 60 minutes"
-                    required
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    removeObjectArrayItem(index, setUpcomingClasses)
-                  }
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                >
-                  Remove Class
-                </button>
-              </div>
-            ))}
-
-            <button
-              type="button"
-              onClick={() =>
-                addObjectArrayItem(setUpcomingClasses, {
-                  name: "",
-                  time: "",
-                  trainer: "",
-                  duration: "",
-                })
-              }
-              className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+      {schedule.map((daySchedule, index) => (
+        <div
+          key={daySchedule.day}
+          className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b pb-4 last:border-b-0"
+        >
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={daySchedule.isOpen}
+              onChange={(e) => toggleDay(index, e.target.checked)}
+              id={`day-${daySchedule.day}`}
+              className="h-4 w-4 text-blue-600 rounded"
+            />
+            <label
+              htmlFor={`day-${daySchedule.day}`}
+              className="font-medium w-24 cursor-pointer"
             >
-              <FaPlus className="mr-2" /> Add Class
-            </button>
+              {daySchedule.day}
+            </label>
           </div>
+
+          {daySchedule.isOpen ? (
+            <div className="flex gap-4 flex-wrap md:flex-nowrap">
+              <div className="flex flex-col">
+                <label className="text-sm text-gray-600 mb-1">
+                  Opening Time
+                </label>
+                <input
+                  type="time"
+                  value={daySchedule.openingTime}
+                  onChange={(e) =>
+                    updateTime(index, "openingTime", e.target.value)
+                  }
+                  className="border rounded px-3 py-2 w-full"
+                  required
+                />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-sm text-gray-600 mb-1">
+                  Closing Time
+                </label>
+                <input
+                  type="time"
+                  value={daySchedule.closingTime}
+                  onChange={(e) =>
+                    updateTime(index, "closingTime", e.target.value)
+                  }
+                  className="border rounded px-3 py-2 w-full"
+                  required
+                  min={daySchedule.openingTime}
+                />
+              </div>
+            </div>
+          ) : (
+            <span className="text-gray-400 text-sm">Closed</span>
+          )}
         </div>
-      </div>
+      ))}
     </div>
   );
 
@@ -1305,35 +1215,31 @@ const WellnessCenterRegistration = () => {
 
       {/* Schedule */}
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h3 className="text-xl font-semibold text-blue-700 mb-4">Schedule</h3>
+        <h3 className="text-xl font-semibold text-blue-700 mb-4">
+          Schedule Preview
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <h4 className="text-lg font-medium text-blue-700 mb-2">
-              Opening Hours
+              Operating Hours
             </h4>
-            <div className="space-y-2">
-              <p className="text-gray-600">
-                Weekdays: {openingHours.weekdays || "Not specified"}
-              </p>
-              <p className="text-gray-600">
-                Weekends: {openingHours.weekends || "Not specified"}
-              </p>
-              <p className="text-gray-600">
-                Special Hours: {openingHours.special || "Not specified"}
-              </p>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-lg font-medium text-blue-700 mb-2">
-              Upcoming Classes
-            </h4>
-            <div className="space-y-2">
-              {upcomingClasses.map((classItem, index) => (
-                <div key={index} className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-gray-600 font-medium">{classItem.name}</p>
-                  <p className="text-gray-600">{classItem.time}</p>
-                  <p className="text-gray-600">{classItem.trainer}</p>
-                  <p className="text-gray-600">{classItem.duration}</p>
+            <div className="space-y-3">
+              {schedule.map((day) => (
+                <div
+                  key={day.day}
+                  className="flex justify-between items-center"
+                >
+                  <span className="text-gray-600 font-medium w-24">
+                    {day.day}
+                  </span>
+                  {day.isOpen ? (
+                    <span className="text-gray-600">
+                      {day.openingTime || "Not set"} -{" "}
+                      {day.closingTime || "Not set"}
+                    </span>
+                  ) : (
+                    <span className="text-gray-400">Closed</span>
+                  )}
                 </div>
               ))}
             </div>
