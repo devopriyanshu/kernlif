@@ -19,6 +19,14 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/Authcontext";
 import { useAtom } from "jotai";
 import { userAtom } from "../atoms/userAtom";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 const WellnessDashboard = () => {
   const [token, setToken] = useState(null);
@@ -28,6 +36,7 @@ const WellnessDashboard = () => {
   const [showAddMealForm, setShowAddMealForm] = useState(false);
   const [showAddSleepForm, setShowAddSleepForm] = useState(false);
   const [showAddAppointmentForm, setShowAddAppointmentForm] = useState(false);
+  const [showAddActivityForm, setShowAddActivityForm] = useState(false);
 
   const [user] = useAtom(userAtom);
   console.log("user at dashboard", user);
@@ -55,6 +64,13 @@ const WellnessDashboard = () => {
     type: "",
     date: "",
     time: "",
+  });
+  const [newActivity, setNewActivity] = useState({
+    activity: "",
+    date: "",
+    duration: "",
+    calories: "",
+    notes: "",
   });
 
   console.log(user);
@@ -95,6 +111,16 @@ const WellnessDashboard = () => {
     fat: 62,
     sleepHours: 7.5,
     sleepQuality: 85,
+    physicalActivityLogs: [
+      {
+        id: 1,
+        date: "2025-04-12",
+        activity: "Running",
+        duration: 45, // in minutes
+        calories: 350,
+        notes: "Felt great!",
+      },
+    ],
     upcomingMeals: [
       {
         id: 1,
@@ -364,18 +390,21 @@ const WellnessDashboard = () => {
       notes: "",
     });
   };
-
-  const handleAddAppointment = (e) => {
+  const handleActivityChange = (e) => {
+    const { name, value } = e.target;
+    setNewActivity((prev) => ({ ...prev, [name]: value }));
+  };
+  const handleAddActivity = (e) => {
     e.preventDefault();
-    // Here you would normally send this to an API
-    console.log("Adding new appointment:", newAppointment);
-    alert("Appointment added successfully!");
-    setShowAddAppointmentForm(false);
-    setNewAppointment({
-      expert: "",
-      type: "",
+    // Add your form submission logic here
+    console.log("New Activity:", newActivity);
+    setShowAddActivityForm(false);
+    setNewActivity({
+      activity: "",
       date: "",
-      time: "",
+      duration: "",
+      calories: "",
+      notes: "",
     });
   };
 
@@ -430,6 +459,16 @@ const WellnessDashboard = () => {
               Overview
             </button>
             <button
+              onClick={() => setActiveTab("activity")}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "activity"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              Activity
+            </button>
+            <button
               onClick={() => setActiveTab("nutrition")}
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === "nutrition"
@@ -449,16 +488,7 @@ const WellnessDashboard = () => {
             >
               Sleep
             </button>
-            <button
-              onClick={() => setActiveTab("courses")}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "courses"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
-            >
-              Courses
-            </button>
+
             <button
               onClick={() => setActiveTab("appointments")}
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
@@ -685,46 +715,103 @@ const WellnessDashboard = () => {
             </div>
 
             {/* Enrolled Courses */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    Courses
-                  </h2>
-                  <p className="text-sm text-gray-500">
-                    Your enrolled programs
-                  </p>
-                </div>
-                <Book className="h-6 w-6 text-blue-500" />
-              </div>
+          </div>
+        )}
 
-              <div className="space-y-4">
-                {userData.courses.slice(0, 2).map((course) => (
-                  <div
-                    key={course.id}
-                    className="border border-gray-100 rounded-lg p-3"
-                  >
-                    <div className="flex justify-between items-center mb-2">
-                      <p className="font-medium text-gray-900">{course.name}</p>
-                      <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded">
-                        {course.progress}%
-                      </span>
-                    </div>
-                    <ProgressBar value={course.progress} max={100} />
-                    <p className="mt-2 text-sm text-gray-500">
-                      Next: {course.nextLesson}
-                    </p>
-                  </div>
-                ))}
+        {activeTab === "activity" && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Physical Activity Tracker
+                </h2>
+                <p className="text-sm text-gray-500">
+                  Track your workouts and burned calories
+                </p>
               </div>
-
               <button
-                className="mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center"
-                onClick={() => setActiveTab("courses")}
+                onClick={() => setShowAddActivityForm(true)}
+                className="flex items-center bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1.5 rounded text-sm"
               >
-                View all courses
-                <ChevronRight className="h-4 w-4 ml-1" />
+                <Plus className="h-4 w-4 mr-1" /> Add Activity
               </button>
+            </div>
+
+            {/* Chart for Calories Burned Over Time */}
+            <div className="mb-8">
+              <h3 className="text-lg font-medium mb-4">
+                Calories Burned Over Time
+              </h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <LineChart data={userData.physicalActivityLogs.slice(-7)}>
+                  <XAxis dataKey="date" stroke="#888888" fontSize={12} />
+                  <YAxis
+                    domain={[0, "dataMax + 100"]}
+                    label={{
+                      value: "Calories",
+                      angle: -90,
+                      position: "insideLeft",
+                      style: { textAnchor: "middle" },
+                    }}
+                  />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="calories"
+                    stroke="#F59E0B"
+                    strokeWidth={2}
+                    dot={{ r: 3 }}
+                    name="Calories Burned"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Activity Log Table */}
+            <h3 className="text-lg font-medium mb-4">Daily Activity Log</h3>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Activity
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Duration (min)
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Calories
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Notes
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {userData.physicalActivityLogs.map((log) => (
+                    <tr key={log.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {log.date}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {log.activity}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {log.duration}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {log.calories}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {log.notes || "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
@@ -901,19 +988,6 @@ const WellnessDashboard = () => {
               </div>
               <div className="flex items-center space-x-4">
                 <button
-                  onClick={() => changeDate(-1)}
-                  className="p-1 rounded-full hover:bg-gray-100"
-                >
-                  <ArrowLeft className="h-5 w-5 text-gray-500" />
-                </button>
-                <span className="font-medium">{formatDate(selectedDate)}</span>
-                <button
-                  onClick={() => changeDate(1)}
-                  className="p-1 rounded-full hover:bg-gray-100"
-                >
-                  <ArrowRight className="h-5 w-5 text-gray-500" />
-                </button>
-                <button
                   onClick={() => setShowAddSleepForm(true)}
                   className="flex items-center bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1.5 rounded text-sm"
                 >
@@ -923,36 +997,73 @@ const WellnessDashboard = () => {
             </div>
 
             {/* Sleep summary for selected date */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-sm text-gray-500">Hours Slept</p>
-                <p className="text-2xl font-bold">
-                  {getCurrentSleepLog().hours}
-                </p>
-                <p className="text-xs text-gray-500">Recommended: 7-9 hours</p>
-              </div>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-sm text-gray-500">Sleep Quality</p>
-                <p className="text-2xl font-bold">
-                  {getCurrentSleepLog().quality}%
-                </p>
-                <ProgressBar
-                  value={getCurrentSleepLog().quality}
-                  max={100}
-                  colorClass="bg-indigo-500"
-                />
-              </div>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-sm text-gray-500">Notes</p>
-                <p className="text-sm mt-1">
-                  {getCurrentSleepLog().notes || "No notes"}
-                </p>
-              </div>
+
+            {/* Sleep Trend Chart */}
+            <div className="mb-8">
+              <h3 className="text-lg font-medium mb-4">Sleep Trends</h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <LineChart data={userData.sleepLogs}>
+                  <XAxis dataKey="date" stroke="#888888" fontSize={12} />
+
+                  {/* Left Y Axis for Hours */}
+                  <YAxis
+                    yAxisId="left"
+                    domain={[0, 12]}
+                    stroke="#4F46E5"
+                    tick={{ fontSize: 12 }}
+                    label={{
+                      value: "Hours",
+                      angle: -90,
+                      position: "insideLeft",
+                      style: { textAnchor: "middle" },
+                    }}
+                  />
+
+                  {/* Right Y Axis for Quality */}
+                  <YAxis
+                    yAxisId="right"
+                    orientation="right"
+                    domain={[0, 100]}
+                    stroke="#10B981"
+                    tick={{ fontSize: 12 }}
+                    label={{
+                      value: "Quality (%)",
+                      angle: -90,
+                      position: "insideRight",
+                      style: { textAnchor: "middle" },
+                    }}
+                  />
+
+                  <Tooltip />
+
+                  {/* Line for Hours */}
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="hours"
+                    stroke="#4F46E5"
+                    strokeWidth={2}
+                    dot={{ r: 3 }}
+                    name="Hours Slept"
+                  />
+
+                  {/* Line for Quality */}
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="quality"
+                    stroke="#10B981"
+                    strokeWidth={2}
+                    dot={{ r: 3 }}
+                    name="Sleep Quality (%)"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
 
-            {/* Sleep history */}
+            {/* Sleep History Table */}
             <div>
-              <h3 className="text-lg font-medium mb-4">Sleep History</h3>
+              <h3 className="text-lg font-medium mb-4">Daily Sleep Logs</h3>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
@@ -984,69 +1095,13 @@ const WellnessDashboard = () => {
                           {log.quality}%
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {log.notes}
+                          {log.notes || "—"}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === "courses" && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Wellness Courses
-                </h2>
-                <p className="text-sm text-gray-500">
-                  Expand your knowledge and skills
-                </p>
-              </div>
-              <button className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded text-sm">
-                <Plus className="h-4 w-4 mr-1" /> Browse Courses
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {userData.courses.map((course) => (
-                <div
-                  key={course.id}
-                  className="border rounded-lg overflow-hidden hover:shadow-md transition-shadow"
-                >
-                  <div className="bg-blue-50 p-4">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {course.name}
-                    </h3>
-                    <p className="text-sm text-gray-500 mt-1">
-                      {course.description}
-                    </p>
-                  </div>
-                  <div className="p-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm text-gray-500">Progress</span>
-                      <span className="text-sm font-medium">
-                        {course.completedLessons}/{course.totalLessons} lessons
-                      </span>
-                    </div>
-                    <ProgressBar value={course.progress} max={100} />
-                    <div className="mt-4">
-                      <p className="text-sm font-medium text-gray-900">
-                        Next Lesson:
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {course.nextLesson}
-                      </p>
-                    </div>
-                    <button className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded text-sm">
-                      Continue Learning
-                    </button>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         )}
@@ -1062,12 +1117,6 @@ const WellnessDashboard = () => {
                   Schedule and manage your wellness sessions
                 </p>
               </div>
-              <button
-                onClick={() => setShowAddAppointmentForm(true)}
-                className="flex items-center bg-purple-500 hover:bg-purple-600 text-white px-3 py-1.5 rounded text-sm"
-              >
-                <Plus className="h-4 w-4 mr-1" /> New Appointment
-              </button>
             </div>
 
             <div className="space-y-4 mb-8">
@@ -1161,6 +1210,114 @@ const WellnessDashboard = () => {
         )}
 
         {/* Add Meal Form Modal */}
+        {showAddActivityForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center border-b p-4">
+                <h3 className="text-lg font-semibold">Add New Activity</h3>
+                <button
+                  onClick={() => setShowAddActivityForm(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <form onSubmit={handleAddActivity} className="p-4 space-y-4">
+                {/* Activity Name */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Activity Name
+                  </label>
+                  <input
+                    type="text"
+                    name="activity"
+                    value={newActivity.activity}
+                    onChange={handleActivityChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                {/* Date */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Date
+                  </label>
+                  <input
+                    type="date"
+                    name="date"
+                    value={newActivity.date}
+                    onChange={handleActivityChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                {/* Duration */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Duration (minutes)
+                  </label>
+                  <input
+                    type="number"
+                    name="duration"
+                    value={newActivity.duration}
+                    onChange={handleActivityChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                {/* Calories */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Calories Burned
+                  </label>
+                  <input
+                    type="number"
+                    name="calories"
+                    value={newActivity.calories}
+                    onChange={handleActivityChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                {/* Notes */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Notes (optional)
+                  </label>
+                  <textarea
+                    name="notes"
+                    value={newActivity.notes}
+                    onChange={handleActivityChange}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                {/* Buttons */}
+                <div className="flex justify-end space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddActivityForm(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Save Activity
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {showAddMealForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
@@ -1375,98 +1532,6 @@ const WellnessDashboard = () => {
         )}
 
         {/* Add Appointment Form Modal */}
-        {showAddAppointmentForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center border-b p-4">
-                <h3 className="text-lg font-semibold">Schedule Appointment</h3>
-                <button
-                  onClick={() => setShowAddAppointmentForm(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-              <form onSubmit={handleAddAppointment} className="p-4 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Expert Name
-                  </label>
-                  <input
-                    type="text"
-                    name="expert"
-                    value={newAppointment.expert}
-                    onChange={handleAppointmentChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Type
-                  </label>
-                  <select
-                    name="type"
-                    value={newAppointment.type}
-                    onChange={handleAppointmentChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                    required
-                  >
-                    <option value="">Select type</option>
-                    <option value="Nutritionist">Nutritionist</option>
-                    <option value="Sleep Specialist">Sleep Specialist</option>
-                    <option value="Wellness Coach">Wellness Coach</option>
-                    <option value="Therapist">Therapist</option>
-                    <option value="Personal Trainer">Personal Trainer</option>
-                  </select>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Date
-                    </label>
-                    <input
-                      type="date"
-                      name="date"
-                      value={newAppointment.date}
-                      onChange={handleAppointmentChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Time
-                    </label>
-                    <input
-                      type="time"
-                      name="time"
-                      value={newAppointment.time}
-                      onChange={handleAppointmentChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="flex justify-end space-x-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddAppointmentForm(false)}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-500 hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-                  >
-                    Schedule
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
       </main>
     </div>
   );
