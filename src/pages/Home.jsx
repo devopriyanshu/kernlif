@@ -9,6 +9,7 @@ import {
   Map,
   Calendar,
 } from "lucide-react";
+import { assessmentImage } from "../utils/constant";
 
 const Home = () => {
   const consultants = [
@@ -17,7 +18,7 @@ const Home = () => {
       category: "Psychologist",
       experience: "10+ Years Experience",
       specialties: ["Anxiety", "Depression", "Stress Management"],
-      image: "/api/placeholder/400/400",
+      image: "/doctor1.jpg",
     },
     {
       name: "Dr. Alex Carter",
@@ -106,7 +107,7 @@ const Home = () => {
       transition={{ duration: 0.5 }}
     >
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+      <section className="relative  bg-no-repeat bg-center bg-[url('/bg4.jpg')] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div className="md:w-1/2 mb-10 md:mb-0">
@@ -132,15 +133,6 @@ const Home = () => {
                   Learn More
                 </Link>
               </div>
-            </div>
-            <div className="md:w-1/2">
-              <motion.img
-                src="/api/placeholder/600/400"
-                alt="Wellness Illustration"
-                className="rounded-lg shadow-xl"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.3 }}
-              />
             </div>
           </div>
         </div>
@@ -201,7 +193,7 @@ const Home = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-indigo-50 to-blue-50">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-            <div className="md:w-1/2 mb-10 md:mb-0">
+            <div className="md:w-1/2 mr-3 mb-10 md:mb-0">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
                 Understand Your Wellbeing Score
               </h2>
@@ -276,10 +268,9 @@ const Home = () => {
             </div>
             <div className="md:w-1/2">
               <motion.img
-                src="/api/placeholder/600/400"
+                src={assessmentImage}
                 alt="Health Assessment"
                 className="rounded-lg shadow-xl"
-                whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.3 }}
               />
             </div>
@@ -310,7 +301,7 @@ const Home = () => {
               <img
                 src={consultant.image}
                 alt={consultant.name}
-                className="w-full h-48 object-cover"
+                className="w-full h-48 object-contain"
               />
               <div className="p-6">
                 <h3 className="text-xl font-semibold text-gray-900 mb-1">
