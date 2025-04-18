@@ -45,6 +45,34 @@ const Home = () => {
       specialties: ["Hatha Yoga", "Meditation", "Mindfulness"],
       image: "/api/placeholder/400/400",
     },
+    {
+      name: "Michael Lee",
+      category: "Yoga Instructor",
+      experience: "5+ Years Experience",
+      specialties: ["Hatha Yoga", "Meditation", "Mindfulness"],
+      image: "/api/placeholder/400/400",
+    },
+    {
+      name: "Michael Lee",
+      category: "Yoga Instructor",
+      experience: "5+ Years Experience",
+      specialties: ["Hatha Yoga", "Meditation", "Mindfulness"],
+      image: "/api/placeholder/400/400",
+    },
+    {
+      name: "Michael Lee",
+      category: "Yoga Instructor",
+      experience: "5+ Years Experience",
+      specialties: ["Hatha Yoga", "Meditation", "Mindfulness"],
+      image: "/api/placeholder/400/400",
+    },
+    {
+      name: "Michael Lee",
+      category: "Yoga Instructor",
+      experience: "5+ Years Experience",
+      specialties: ["Hatha Yoga", "Meditation", "Mindfulness"],
+      image: "/api/placeholder/400/400",
+    },
   ];
 
   const wellnessCenters = [
@@ -90,6 +118,18 @@ const Home = () => {
       description:
         "Monitor your mood patterns, stress levels, and emotional well-being with interactive tools and visualizations.",
       icon: <Brain className="text-indigo-500" size={32} />,
+    },
+    {
+      title: "Expert Guidance",
+      description:
+        "Connect with certified mental health professionals, nutritionists, fitness trainers, and wellness coaches for personalized support.",
+      icon: <Activity className="text-emerald-500" size={32} />,
+    },
+    {
+      title: "Expert Guidance",
+      description:
+        "Connect with certified mental health professionals, nutritionists, fitness trainers, and wellness coaches for personalized support.",
+      icon: <Activity className="text-emerald-500" size={32} />,
     },
     {
       title: "Expert Guidance",
@@ -279,143 +319,162 @@ const Home = () => {
       </section>
 
       {/* Expert Consultants Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Meet Our Wellness Experts
+      <section className="py-16 px-4 sm:px-6 bg-gray-400 lg:px-8 mx-auto">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">
+            Our Wellness Experts
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Our network of certified professionals is ready to guide you on your
-            wellness journey.
+            Connect with certified professionals to guide your wellness journey
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {consultants.map((consultant, index) => (
-            <motion.div
-              key={index}
-              className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
-            >
-              <img
-                src={consultant.image}
-                alt={consultant.name}
-                className="w-full h-48 object-contain"
-              />
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                  {consultant.name}
-                </h3>
-                <p className="text-blue-600 font-medium">
-                  {consultant.category}
-                </p>
-                <p className="text-sm text-gray-500 mb-3">
-                  {consultant.experience}
-                </p>
-                <div className="mb-4">
-                  <p className="text-xs text-gray-500 mb-1">Specialties:</p>
-                  <div className="flex flex-wrap gap-1">
-                    {consultant.specialties.map((specialty, i) => (
-                      <span
-                        key={i}
-                        className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full"
-                      >
-                        {specialty}
-                      </span>
-                    ))}
-                  </div>
+        <div className="relative">
+          <div className="flex overflow-x-auto px-4 pb-6 gap-6 scrollbar-hide">
+            {consultants.map((consultant, index) => (
+              <motion.div
+                key={index}
+                className="flex-shrink-0 w-72 bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
+                whileHover={{ y: -5 }}
+              >
+                <div className="h-48 bg-gray-100 rounded-t-xl overflow-hidden">
+                  <img
+                    src={consultant.image}
+                    alt={consultant.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <Link
-                  to="/expert-details"
-                  className="block text-center bg-white border border-blue-600 text-blue-600 hover:bg-blue-50 font-medium py-2 px-4 rounded-full transition duration-300"
-                >
-                  View Profile
-                </Link>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        <div className="text-center mt-10">
-          <Link
-            to="/all-experts"
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-          >
-            View All Wellness Experts
-            <ChevronRight className="ml-1" size={18} />
-          </Link>
+                <div className="p-5">
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">
+                    {consultant.name}
+                  </h3>
+                  <p className="text-blue-600 font-medium mb-2">
+                    {consultant.category}
+                  </p>
+                  <p className="text-sm text-gray-500 mb-3">
+                    {consultant.experience}
+                  </p>
+                  <div className="mb-4">
+                    <div className="flex flex-wrap gap-2">
+                      {consultant.specialties.map((specialty, i) => (
+                        <span
+                          key={i}
+                          className="bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full"
+                        >
+                          {specialty}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <button className="w-full bg-white border border-blue-600 text-blue-600 hover:bg-blue-50 font-medium py-2 px-4 rounded-lg transition duration-300">
+                    View Profile
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+            {/* View All Experts Card */}
+            <div className="flex-shrink-0 w-72  flex flex-col items-center justify-center p-8 text-white">
+              <h3 className="text-2xl font-bold mb-4 text-center">
+                View All Experts
+              </h3>
+              <p className="text-blue-100 text-center mb-6">
+                Explore our complete network of wellness professionals
+              </p>
+              <Link
+                to="/all-experts"
+                className="bg-white text-blue-600 hover:bg-blue-50 font-bold py-2 px-6 rounded-lg transition duration-300 inline-flex items-center"
+              >
+                Browse All
+                <ChevronRight className="ml-2" size={18} />
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Wellness Centers Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Discover Wellness Centers Near You
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">
+              Wellness Centers Near You
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Find the perfect fitness centers, yoga studios, meditation spaces,
-              and relaxation spots in your area.
+              Discover top-rated facilities for your health and wellbeing
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {wellnessCenters.map((center, index) => (
-              <motion.div
-                key={index}
-                className="group relative rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.3 }}
-              >
-                <img
-                  src={center.image}
-                  alt={center.name}
-                  className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-                  <div className="absolute bottom-0 p-6 text-white">
-                    <div className="flex items-center mb-1">
-                      <span className="text-yellow-400 mr-1">★</span>
-                      <span>{center.rating}</span>
-                    </div>
-                    <h3 className="text-xl font-bold mb-1">{center.name}</h3>
-                    <p className="text-sm text-gray-200 mb-1">{center.type}</p>
-                    <p className="text-xs text-gray-300 mb-4">
-                      {center.location}
-                    </p>
-                    <Link
-                      to="/center-details"
-                      className="bg-white/90 hover:bg-white text-blue-700 text-sm font-medium py-2 px-4 rounded-full transition duration-300 inline-block"
-                    >
-                      View Center
-                    </Link>
+          <div className="relative">
+            <div className="flex overflow-x-auto pb-6 gap-6 scrollbar-hide">
+              {wellnessCenters.map((center, index) => (
+                <motion.div
+                  key={index}
+                  className="flex-shrink-0 w-80 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 relative"
+                  whileHover={{ y: -5 }}
+                >
+                  <div className="h-56 bg-gray-200">
+                    <img
+                      src={center.image}
+                      alt={center.name}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="mt-12 flex flex-wrap justify-center gap-4">
-            <Link
-              to="/find-gym"
-              className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-full transition duration-300"
-            >
-              Find a Gym
-            </Link>
-            <Link
-              to="/find-yoga"
-              className="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-6 rounded-full transition duration-300"
-            >
-              Find Yoga Classes
-            </Link>
-            <Link
-              to="/find-meditation"
-              className="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 px-6 rounded-full transition duration-300"
-            >
-              Meditation Centers
-            </Link>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
+                    <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                      <div className="flex items-center mb-1">
+                        <span className="text-yellow-400 mr-1">★</span>
+                        <span className="font-medium">{center.rating}</span>
+                      </div>
+                      <h3 className="text-xl font-bold mb-1">{center.name}</h3>
+                      <p className="text-sm text-gray-200 mb-2">
+                        {center.type}
+                      </p>
+                      <p className="text-xs text-gray-300 flex items-center">
+                        <svg
+                          className="w-4 h-4 mr-1"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                        {center.location}
+                      </p>
+                      <button className="mt-3 bg-white/90 hover:bg-white text-blue-700 text-sm font-medium py-2 px-4 rounded-lg transition duration-300">
+                        View Center
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+              {/* View All Centers Card */}
+              <div className="flex-shrink-0 w-80 bg-gradient-to-br from-green-600 to-teal-700 rounded-xl shadow-md flex flex-col items-center justify-center p-8 text-white">
+                <h3 className="text-2xl font-bold mb-4 text-center">
+                  View All Centers
+                </h3>
+                <p className="text-green-100 text-center mb-6">
+                  Explore hundreds of wellness destinations in your area
+                </p>
+                <Link
+                  to="/all-centers"
+                  className="bg-white text-green-600 hover:bg-green-50 font-bold py-2 px-6 rounded-lg transition duration-300 inline-flex items-center"
+                >
+                  Browse All
+                  <ChevronRight className="ml-2" size={18} />
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -532,6 +591,16 @@ const Home = () => {
           </Link>
         </div>
       </section>
+      <style jsx global>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </motion.div>
   );
 };
