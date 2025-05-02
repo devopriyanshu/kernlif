@@ -11,6 +11,26 @@ const Header = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const location = useLocation();
   const [user] = useAtom(userAtom);
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY && currentScrollY > 80) {
+        setShowNavbar(false); // Scrolling down
+      } else {
+        setShowNavbar(true); // Scrolling up
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
   // Handle scroll effect
   useEffect(() => {
@@ -44,30 +64,41 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed top-0 w-full z-50 transition-all duration-300 py-4 h-16 bg-white shadow-md `}
+      className={`fixed top-0 w-full z-50 transition-all duration-300 py-4 h-16 bg-transparent  `}
     >
       <div className=" mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center ">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold text-lg">
+          <Link
+            to="/"
+            className="flex items-center  space-x-2 rounded-full border-yellow-600 border-4 bg-white pr-4 relative"
+          >
+            <div className="flex items-center justify-center w-10 h-10 rounded-full border-yellow-600 border-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold text-lg transform scale-100 absolute left-0">
               W
             </div>
-            <span className={`text-xl font-bold "text-blue-700`}>WellNest</span>
+            <span className={`text-xl font-bold text-blue-500 pl-10`}>
+              WellNest
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav
+            className={`hidden md:flex space-x-8 shadow-md border-spacing-3 rounded-full border-gray-200 p-4 px-20 transition-transform duration-300 fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-white/30 backdrop-blur-md ${
+              showNavbar
+                ? "translate-y-0 opacity-100"
+                : "-translate-y-full opacity-0"
+            }`}
+          >
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.path}
-                className={`font-medium transition-colors duration-200 ${
+                className={`font-medium text-base transition-colors duration-200 ${
                   location.pathname === link.path
-                    ? "text-blue-600"
+                    ? "text-blue-500"
                     : scrolled || location.pathname !== "/"
                     ? "text-gray-700 hover:text-blue-600"
-                    : "text-black hover:text-blue-200"
+                    : "text-gray-700 hover:text-blue-200"
                 }`}
               >
                 {link.name}
@@ -94,7 +125,7 @@ const Header = () => {
                   setNotificationsOpen(!notificationsOpen);
                   setProfileOpen(false);
                 }}
-                className={`p-2 rounded-full hover:bg-gray-100 transition-colors relative text-gray-700`}
+                className={`p-2 rounded-full hover:bg-gray-100 hover:text-gray-500 transition-colors relative text-blue-400`}
               >
                 <Bell size={20} />
                 <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">
@@ -147,11 +178,11 @@ const Header = () => {
                 <img
                   src="/api/placeholder/40/40"
                   alt="User profile"
-                  className="w-8 h-8 rounded-full border-2 border-blue-300"
+                  className="w-8 h-8 rounded-full border-2 border-blue-400"
                 />
                 <ChevronDown
                   size={16}
-                  className={`transition-colors text-gray-700`}
+                  className={`transition-colors text-blue-400`}
                 />
               </button>
 

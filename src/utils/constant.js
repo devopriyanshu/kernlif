@@ -1,2 +1,2 @@
-import assessmentImage from "../assets/assessment.jpg";
+import assessmentImage from "../assets/assessment.png";
 export { assessmentImage };

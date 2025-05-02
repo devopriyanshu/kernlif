@@ -125,18 +125,6 @@ const Home = () => {
         "Connect with certified mental health professionals, nutritionists, fitness trainers, and wellness coaches for personalized support.",
       icon: <Activity className="text-emerald-500" size={32} />,
     },
-    {
-      title: "Expert Guidance",
-      description:
-        "Connect with certified mental health professionals, nutritionists, fitness trainers, and wellness coaches for personalized support.",
-      icon: <Activity className="text-emerald-500" size={32} />,
-    },
-    {
-      title: "Expert Guidance",
-      description:
-        "Connect with certified mental health professionals, nutritionists, fitness trainers, and wellness coaches for personalized support.",
-      icon: <Activity className="text-emerald-500" size={32} />,
-    },
   ];
 
   return (
@@ -147,18 +135,18 @@ const Home = () => {
       transition={{ duration: 0.5 }}
     >
       {/* Hero Section */}
-      <section className="relative  bg-no-repeat bg-center bg-[url('/bg4.jpg')] text-white">
+      <section className="relative  bg-no-repeat bg-[center_top_25%] bg-cover bg-[url('/bg5.jpg')] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-            <div className="md:w-1/2 mb-10 md:mb-0">
-              <h1 className="text-5xl font-bold leading-tight mb-4">
+          <div className="flex flex-row items-center justify-between">
+            <div className="md:w-1/2 mb-10 md:mb-0 pt-24">
+              <h1 className="text-5xl text-gray-600 font-bold leading-tight mb-4">
                 Your Path to Complete Wellness
               </h1>
-              <p className="text-xl mb-8 text-blue-100">
+              <p className="text-xl mb-8 text-gray-500">
                 WellNest helps you balance your mental and physical health
                 through personalized guidance, tracking, and expert support.
               </p>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap  gap-4">
                 <Link
                   to="/health-check"
                   className="bg-white text-blue-700 hover:bg-blue-50 font-semibold py-3 px-6 rounded-full transition duration-300 inline-flex items-center"
@@ -168,17 +156,24 @@ const Home = () => {
                 </Link>
                 <Link
                   to="/about"
-                  className="bg-transparent hover:bg-blue-700 border border-white text-white font-semibold py-3 px-6 rounded-full transition duration-300"
+                  className="bg-transparent hover:bg-blue-700 border border-gray-600 text-gray-600 font-semibold py-3 px-6 rounded-full transition duration-300"
                 >
                   Learn More
                 </Link>
               </div>
             </div>
+            {/* <div>
+              <img
+                src="/mental2.png"
+                alt="Mental and Physical Wellness"
+                className="w-full max-w-md mx-auto"
+              />
+            </div> */}
           </div>
         </div>
 
         {/* Stats Bar */}
-        <div className="bg-white/10 backdrop-blur-lg py-6 mt-8">
+        <div className="bg-white/30 backdrop-blur-2xl py-6 mt-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {wellnessStats.map((stat, index) => (
@@ -188,9 +183,13 @@ const Home = () => {
                   whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="flex justify-center mb-2">{stat.icon}</div>
-                  <div className="text-2xl font-bold">{stat.value}</div>
-                  <div className="text-sm text-blue-100">{stat.label}</div>
+                  <div className="flex text-black justify-center mb-2">
+                    {stat.icon}
+                  </div>
+                  <div className="text-2xl text-black font-bold">
+                    {stat.value}
+                  </div>
+                  <div className="text-sm text-gray-600">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
@@ -230,7 +229,7 @@ const Home = () => {
       </section>
 
       {/* Health Check Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-indigo-50 to-blue-50">
+      <section className="py-20 px-4 sm:px-6  lg:px-8 bg-gradient-to-r from-indigo-50 to-blue-50">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div className="md:w-1/2 mr-3 mb-10 md:mb-0">
@@ -310,7 +309,7 @@ const Home = () => {
               <motion.img
                 src={assessmentImage}
                 alt="Health Assessment"
-                className="rounded-lg shadow-xl"
+                className="rounded-lg "
                 transition={{ duration: 0.3 }}
               />
             </div>
@@ -319,7 +318,7 @@ const Home = () => {
       </section>
 
       {/* Expert Consultants Section */}
-      <section className="py-16 px-4 sm:px-6 bg-gray-400 lg:px-8 mx-auto">
+      <section className="py-16  sm:px-6 bg-gray-400 lg:px-10 ">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-gray-900 mb-3">
             Our Wellness Experts
@@ -330,7 +329,7 @@ const Home = () => {
         </div>
 
         <div className="relative">
-          <div className="flex overflow-x-auto px-4 pb-6 gap-6 scrollbar-hide">
+          <div className="flex overflow-x-auto px-20 pb-6 gap-6 scrollbar-hide">
             {consultants.map((consultant, index) => (
               <motion.div
                 key={index}

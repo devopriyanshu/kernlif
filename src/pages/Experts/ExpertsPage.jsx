@@ -136,9 +136,9 @@ const WellnessExperts = () => {
   };
 
   return (
-    <div className="w-full mx-auto py-6 bg-gray-50 min-h-screen">
+    <div className="w-full mx-auto  bg-gray-50 min-h-screen">
       {/* Hero Section */}
-      <div className="flex flex-col bg-gradient-to-r text-center items-center align-center from-blue-600 to-indigo-700 shadow-lg p-8 mb-10 text-white">
+      <div className="flex flex-col bg-gradient-to-r text-center items-center align-center from-blue-600 to-indigo-700 shadow-lg p-8 pt-28 mb-10 text-white">
         <h1 className="text-4xl font-bold mb-4 leading-tight">
           Your Journey to Wellness Begins with Expert Guidance
         </h1>
