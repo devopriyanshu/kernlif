@@ -208,12 +208,12 @@ const WellnessCenters = () => {
   };
 
   return (
-    <div className=" mx-auto py-6 bg-gray-50 min-h-screen">
+    <div className=" mx-auto  bg-gray-50 min-h-screen">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r text-center from-blue-600 to-indigo-700 p-6 md:p-10 mb-8 text-white relative  overflow-hidden">
+      <div className=" text-center bg-gradient-to-r from-blue-500 to-teal-400 p-6 md:p-10 mb-8 text-white relative  overflow-hidden">
         <div className="absolute  inset-0 bg-black opacity-20"></div>
         <div className="relative  z-10">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold mt-20 mb-4">
             Find Your Perfect Wellness Center
           </h1>
           <p className="text-lg text-center mx-auto  opacity-90 mb-6 max-w-2xl">

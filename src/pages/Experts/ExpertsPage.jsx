@@ -138,7 +138,7 @@ const WellnessExperts = () => {
   return (
     <div className="w-full mx-auto  bg-gray-50 min-h-screen">
       {/* Hero Section */}
-      <div className="flex flex-col bg-gradient-to-r text-center items-center align-center from-blue-600 to-indigo-700 shadow-lg p-8 pt-28 mb-10 text-white">
+      <div className="flex flex-col bg-gradient-to-r text-center items-center align-center  from-blue-500 to-teal-400 shadow-lg p-8 pt-28 mb-10 text-white">
         <h1 className="text-4xl font-bold mb-4 leading-tight">
           Your Journey to Wellness Begins with Expert Guidance
         </h1>
@@ -147,14 +147,14 @@ const WellnessExperts = () => {
           mental, physical, and nutritional well-being. Get personalized support
           on your path to a healthier, more balanced life.
         </p>
-        <div className="flex text-center flex-wrap gap-4">
+        {/* <div className="flex text-center flex-wrap gap-4">
           <button className="bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition shadow-md">
             Book a Consultation
           </button>
           <button className="bg-transparent border-2 border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:bg-opacity-10 transition">
             Learn How It Works
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Stats Section */}

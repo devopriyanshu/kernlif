@@ -168,12 +168,12 @@ const WellnessAssessment = () => {
   };
 
   return (
-    <div className=" py-6">
+    <div className="">
       <div className="border-0 rounded-lg">
         {/* Header */}
         <div className=" bg-gradient-to-r from-blue-500 to-teal-400 ">
-          <div className="max-w-7xl mx-auto text-white rounded-t-lg p-6">
-            <h1 className="text-3xl font-bold">Complete Wellness Assessment</h1>
+          <div className="max-w-7xl mx-auto text-white rounded-t-lg p-6 pt-28">
+            <h1 className="text-4xl font-bold">Complete Wellness Assessment</h1>
             <p className="text-white text-lg opacity-90 mt-2">
               Discover your wellness profile and personalized recommendations
             </p>

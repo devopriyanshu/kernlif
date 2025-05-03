@@ -56,7 +56,7 @@ const Header = () => {
   // Navigation links
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "Health Check", path: "/health-check" },
+    { name: "HealthCheck", path: "/health-check" },
     { name: "Experts", path: "/experts" },
     { name: "Centers", path: "/centers" },
     { name: "Products", path: "/products" },
@@ -83,7 +83,7 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav
-            className={`hidden md:flex space-x-8 shadow-md border-spacing-3 rounded-full border-gray-200 p-4 px-20 transition-transform duration-300 fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-white/30 backdrop-blur-md ${
+            className={`hidden md:flex space-x-8 shadow-md border-spacing-3 rounded-full  border border-[#c0c0c0] p-4 px-20 transition-transform duration-300 fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-white/30 backdrop-blur-md ${
               showNavbar
                 ? "translate-y-0 opacity-100"
                 : "-translate-y-full opacity-0"
@@ -93,7 +93,7 @@ const Header = () => {
               <Link
                 key={link.name}
                 to={link.path}
-                className={`font-medium text-base transition-colors duration-200 ${
+                className={`font-medium md:text-xs lg:text-base transition-colors duration-200 ${
                   location.pathname === link.path
                     ? "text-blue-500"
                     : scrolled || location.pathname !== "/"

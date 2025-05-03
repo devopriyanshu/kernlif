@@ -81,7 +81,7 @@ const Home = () => {
       type: "Yoga & Meditation",
       location: "Downtown, New York",
       rating: 4.8,
-      image: "/api/placeholder/600/400",
+      image: "/bg4.jpg",
     },
     {
       name: "Muscle Factory Gym",
@@ -135,28 +135,31 @@ const Home = () => {
       transition={{ duration: 0.5 }}
     >
       {/* Hero Section */}
-      <section className="relative  bg-no-repeat bg-[center_top_25%] bg-cover bg-[url('/bg5.jpg')] text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <section className="relative  bg-no-repeat bg-[center_top_15%] bg-cover bg-[url('/bg6.png')] text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-28">
           <div className="flex flex-row items-center justify-between">
             <div className="md:w-1/2 mb-10 md:mb-0 pt-24">
-              <h1 className="text-5xl text-gray-600 font-bold leading-tight mb-4">
+              <h1
+                className="text-5xl text-white  font-bold leading-tight mb-4 text-shadow-lg"
+                style={{ textShadow: "0 0 8px rgba(255, 255, 255, 0.7)" }}
+              >
                 Your Path to Complete Wellness
               </h1>
-              <p className="text-xl mb-8 text-gray-500">
+              <p className="text-xl mb-8 text-white">
                 WellNest helps you balance your mental and physical health
                 through personalized guidance, tracking, and expert support.
               </p>
               <div className="flex flex-wrap  gap-4">
                 <Link
                   to="/health-check"
-                  className="bg-white text-blue-700 hover:bg-blue-50 font-semibold py-3 px-6 rounded-full transition duration-300 inline-flex items-center"
+                  className="bg-white text-blue-700 hover:bg-blue-50 shadow-lg font-semibold py-3 px-6 rounded-full transition duration-300 inline-flex items-center"
                 >
                   Start Your Wellness Journey
                   <ChevronRight className="ml-2" size={18} />
                 </Link>
                 <Link
                   to="/about"
-                  className="bg-transparent hover:bg-blue-700 border border-gray-600 text-gray-600 font-semibold py-3 px-6 rounded-full transition duration-300"
+                  className="bg-transparent hover:bg-blue-700 border-2 border-gray-600 text-gray-600 font-semibold py-3 px-6 rounded-full transition duration-300"
                 >
                   Learn More
                 </Link>
@@ -173,13 +176,13 @@ const Home = () => {
         </div>
 
         {/* Stats Bar */}
-        <div className="bg-white/30 backdrop-blur-2xl py-6 mt-12">
+        <div className=" py-6 mt-28 pb-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {wellnessStats.map((stat, index) => (
                 <motion.div
                   key={index}
-                  className="text-center"
+                  className="text-center bg-white/30 backdrop-blur-xl py-4 rounded-full"
                   whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.3 }}
                 >
@@ -198,39 +201,41 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            How WellNest Helps You Thrive
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Our integrated approach combines mental health tracking, physical
-            wellness monitoring, and expert guidance to help you achieve balance
-            and wellbeing.
-          </p>
-        </div>
+      <div className="w-full bg-gradient-to-r from-indigo-50 to-blue-50">
+        <section className=" pt-20 px-4 sm:px-6 lg:px-56  mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              How WellNest Helps You Thrive
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Our integrated approach combines mental health tracking, physical
+              wellness monitoring, and expert guidance to help you achieve
+              balance and wellbeing.
+            </p>
+          </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              className="bg-gray-50 rounded-xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300"
-              whileHover={{ y: -10 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="mb-5">{feature.icon}</div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600">{feature.description}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+          <div className="grid md:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300"
+                whileHover={{ y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="mb-5">{feature.icon}</div>
+                <h3 className="text-xl font-semibold mb-3 text-gray-900">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600">{feature.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      </div>
 
       {/* Health Check Section */}
-      <section className="py-20 px-4 sm:px-6  lg:px-8 bg-gradient-to-r from-indigo-50 to-blue-50">
-        <div className="max-w-7xl mx-auto">
+      <section className="py-20 px-4 sm:px-6  lg:px-52 bg-gradient-to-r from-indigo-50 to-blue-50">
+        <div className=" mx-auto">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div className="md:w-1/2 mr-3 mb-10 md:mb-0">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
@@ -256,7 +261,7 @@ const Home = () => {
                       />
                     </svg>
                   </div>
-                  <span className="text-gray-700">
+                  <span className="text-lg text-gray-700">
                     5-minute assessment based on clinical research
                   </span>
                 </li>
@@ -274,7 +279,7 @@ const Home = () => {
                       />
                     </svg>
                   </div>
-                  <span className="text-gray-700">
+                  <span className="text-lg text-gray-700">
                     Personalized recommendations based on your results
                   </span>
                 </li>
@@ -292,7 +297,7 @@ const Home = () => {
                       />
                     </svg>
                   </div>
-                  <span className="text-gray-700">
+                  <span className="text-lg text-gray-700">
                     Track your progress with regular reassessments
                   </span>
                 </li>
@@ -317,8 +322,133 @@ const Home = () => {
         </div>
       </section>
 
+      <section className="py-16 bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div className=" mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="flex justify-center items-center lg:px-28 flex-col md:flex-row ">
+            <div className="md:w-1/2">
+              <motion.img
+                src="/experts.svg"
+                alt="Health Assessment"
+                className="rounded-lg "
+                transition={{ duration: 0.3 }}
+              />
+            </div>
+            <div className="text-center mb-12 ">
+              <h2 className="text-3xl md:text-4xl pt-6 font-bold text-gray-900 mb-4">
+                Find Your Perfect Wellness Expert
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Easily connect with certified wellness experts and schedule
+                personalized sessions designed to align with your unique mental
+                and physical health goals.
+              </p>
+            </div>
+          </div>
+
+          {/* Specialist Categories */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-12 px-20 mb-12">
+            {[
+              {
+                name: "Nutritionists",
+                icon: "🥗",
+                color: "bg-gray-50",
+                iconBg: "bg-emerald-200",
+              },
+              {
+                name: "Dieticians",
+                icon: "🍎",
+                color: "bg-gray-50",
+                iconBg: "bg-blue-200",
+              },
+              {
+                name: "Fitness Instructors",
+                icon: "💪",
+                color: "bg-gray-50",
+                iconBg: "bg-amber-200",
+              },
+              {
+                name: "Mental Wellness Coaches",
+                icon: "🧠",
+                color: "bg-gray-50",
+                iconBg: "bg-purple-200",
+              },
+              {
+                name: "Yoga Therapists",
+                icon: "🧘",
+                color: "bg-gray-50",
+                iconBg: "bg-teal-200",
+              },
+              {
+                name: "Holistic Healers",
+                icon: "🌿",
+                color: "bg-gray-50",
+                iconBg: "bg-green-200",
+              },
+              {
+                name: "Sleep Coaches",
+                icon: "😴",
+                color: "bg-gray-50",
+                iconBg: "bg-indigo-200",
+              },
+              {
+                name: "Ayurveda Experts",
+                icon: "☯️",
+                color: "bg-gray-50",
+                iconBg: "bg-orange-200",
+              },
+            ].map((specialist, index) => (
+              <div
+                key={index}
+                className={`p-6 rounded-xl ${specialist.color} text-center shadow-md transition-all hover:shadow-md hover:-translate-y-1 cursor-pointer`}
+              >
+                <div
+                  className={`w-16 h-16 ${specialist.iconBg} rounded-full flex items-center justify-center mx-auto mb-4`}
+                >
+                  <span className="text-3xl">{specialist.icon}</span>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  {specialist.name}
+                </h3>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA + Search */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 max-w-4xl mx-auto ">
+            <div className="md:flex items-center justify-between gap-8">
+              <div className="mb-6 md:mb-0">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Ready to Begin Your Wellness Journey?
+                </h3>
+                <p className="text-gray-600">
+                  Book a consultation in just a few clicks
+                </p>
+              </div>
+              <button className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg">
+                Browse All Experts
+              </button>
+            </div>
+
+            {/* Search Bar */}
+          </div>
+
+          {/* Testimonial (Optional) */}
+          {/* <div className="mt-16 text-center max-w-3xl mx-auto">
+            <blockquote className="text-gray-700 italic mb-4">
+              "Finding the right nutritionist transformed my health journey. The
+              booking process was seamless and my specialist was incredibly
+              knowledgeable."
+            </blockquote>
+            <p className="font-medium text-indigo-600">
+              — Sarah K., Wellness Member Since 2022
+            </p>
+          </div> */}
+        </div>
+      </section>
+
       {/* Expert Consultants Section */}
-      <section className="py-16  sm:px-6 bg-gray-400 lg:px-10 ">
+      <section className="py-16  sm:px-6 bg-gray-200 lg:px-10 ">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-gray-900 mb-3">
             Our Wellness Experts
@@ -392,7 +522,7 @@ const Home = () => {
       </section>
 
       {/* Wellness Centers Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-200">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10">
             <h2 className="text-3xl font-bold text-gray-900 mb-3">
