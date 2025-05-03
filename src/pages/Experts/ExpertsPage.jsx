@@ -136,7 +136,7 @@ const WellnessExperts = () => {
   };
 
   return (
-    <div className="w-full mx-auto  bg-gray-50 min-h-screen">
+    <div className="w-full mx-auto  bg-gray-100 min-h-screen">
       {/* Hero Section */}
       <div className="flex flex-col bg-gradient-to-r text-center items-center align-center  from-blue-500 to-teal-400 shadow-lg p-8 pt-28 mb-10 text-white">
         <h1 className="text-4xl font-bold mb-4 leading-tight">
@@ -353,11 +353,11 @@ const WellnessExperts = () => {
       )}
 
       {/* Call to Action */}
-      <div className="m-12 bg-gradient-to-r from-indigo-600 to-purple-600  shadow-lg p-8 text-white text-center">
-        <h2 className="text-2xl font-bold mb-4">
+      <div className=" py-20 p-8  text-center">
+        <h2 className="text-2xl font-bold ">
           Not Sure Which Expert Is Right For You?
         </h2>
-        <p className="text-lg mb-6 max-w-2xl mx-auto">
+        <p className="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
           Take our quick assessment to get personalized recommendations based on
           your wellness goals and preferences.
         </p>

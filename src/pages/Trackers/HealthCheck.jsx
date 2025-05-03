@@ -168,7 +168,7 @@ const WellnessAssessment = () => {
   };
 
   return (
-    <div className="">
+    <div className=" bg-gray-100">
       <div className="border-0 rounded-lg">
         {/* Header */}
         <div className=" bg-gradient-to-r from-blue-500 to-teal-400 ">

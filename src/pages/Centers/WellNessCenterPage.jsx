@@ -12,6 +12,16 @@ import {
   ChevronDown,
   Zap,
 } from "lucide-react";
+import {
+  FaSearch,
+  FaFilter,
+  FaSort,
+  FaStar,
+  FaRegStar,
+  FaClock,
+  FaMapMarkerAlt,
+  FaCalendarAlt,
+} from "react-icons/fa";
 
 // Sample Wellness Center Data
 const centersData = [
@@ -152,6 +162,9 @@ const WellnessCenters = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filteredCenters, setFilteredCenters] = useState(centersData);
   const [userLocation, setUserLocation] = useState(null);
+  const [filter, setFilter] = useState("All");
+  const [locationFilter, setLocationFilter] = useState("All");
+  const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
 
   // Simulate getting user's location
   useEffect(() => {
@@ -208,7 +221,7 @@ const WellnessCenters = () => {
   };
 
   return (
-    <div className=" mx-auto  bg-gray-50 min-h-screen">
+    <div className=" mx-auto  bg-gray-100 min-h-screen">
       {/* Hero Section */}
       <div className=" text-center bg-gradient-to-r from-blue-500 to-teal-400 p-6 md:p-10 mb-8 text-white relative  overflow-hidden">
         <div className="absolute  inset-0 bg-black opacity-20"></div>
@@ -223,134 +236,97 @@ const WellnessCenters = () => {
           </p>
 
           {/* Main Search Bar */}
-          <div className="flex flex-col md:flex-row gap-3">
-            <div className="bg-white rounded-lg flex items-center px-4 py-2 flex-grow shadow-lg">
-              <Search size={20} className="text-gray-400 mr-2" />
-              <input
-                type="text"
-                placeholder="Search by name, amenities, or description..."
-                className="w-full focus:outline-none text-gray-800"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-
-            <button
-              className="md:px-6 py-2 bg-white text-indigo-700 rounded-lg font-semibold flex items-center justify-center shadow-lg hover:bg-indigo-50 transition"
-              onClick={() => setIsFilterOpen(!isFilterOpen)}
-            >
-              <Filter size={18} className="mr-2" />
-              Filters
-            </button>
-          </div>
         </div>
       </div>
 
-      {/* Expanded Filter Panel */}
-      {isFilterOpen && (
-        <div className="bg-white rounded-xl p-6 mb-6 shadow-md">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Category Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Category
-              </label>
-              <select
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-              >
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
+      <div className="bg-white rounded-xl shadow-md p-6 mx-6 mb-8">
+        <h2 className="text-2xl font-semibold  text-gray-800 mb-4">
+          Find Your Perfect Wellness Match
+        </h2>
 
-            {/* Location Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Location
-              </label>
-              <select
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-              >
-                {locations.map((location) => (
-                  <option key={location} value={location}>
-                    {location}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Sort Options */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Sort By
-              </label>
-              <select
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <option value="rating">Highest Rated</option>
-                <option value="distance">Nearest First</option>
-                <option value="name">Alphabetical</option>
-              </select>
-            </div>
+        <div className="flex flex-col md:flex-row items-stretch gap-4 mb-4">
+          {/* Search Bar */}
+          <div className="flex items-center bg-gray-50 border border-gray-300 rounded-lg p-3 flex-grow">
+            <FaSearch className="text-blue-500 mr-2" />
+            <input
+              type="text"
+              placeholder="Search by name, specialty, or expertise..."
+              className="w-full bg-transparent focus:outline-none"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
 
-          {/* Quick Filters */}
-          <div className="mt-4 flex flex-wrap gap-2">
-            <button className="px-4 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium hover:bg-indigo-200 transition">
-              Open Now
-            </button>
-            <button className="px-4 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium hover:bg-indigo-200 transition">
-              Top Rated
-            </button>
-            <button className="px-4 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium hover:bg-indigo-200 transition">
-              Under 2 miles
-            </button>
-            <button className="px-4 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium hover:bg-indigo-200 transition">
-              Free Trial
-            </button>
+          {/* Category Filter */}
+          <div className="flex items-center bg-gray-50 border border-gray-300 rounded-lg p-3">
+            <FaFilter className="text-blue-500 mr-2" />
+            <select
+              className="bg-transparent focus:outline-none"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            >
+              <option value="All">All Categories</option>
+              <option value="Psychologist">Psychologists</option>
+              <option value="Dietitian">Dietitians</option>
+              <option value="Yoga Instructor">Yoga Instructors</option>
+              <option value="Gym Trainer">Gym Trainers</option>
+            </select>
+          </div>
+
+          {/* Sort By */}
+          <div className="flex items-center bg-gray-50 border border-gray-300 rounded-lg p-3">
+            <FaSort className="text-blue-500 mr-2" />
+            <select
+              className="bg-transparent focus:outline-none"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="rating">Sort by Rating</option>
+              <option value="experience">Sort by Experience</option>
+              <option value="reviews">Sort by Number of Reviews</option>
+            </select>
           </div>
         </div>
-      )}
 
-      {/* Results Count & Sort Controls */}
-      <div className="flex justify-between items-center mb-6">
-        <p className="text-gray-600">
-          Showing{" "}
-          <span className="font-semibold">{filteredCenters.length}</span>{" "}
-          wellness centers
-        </p>
+        <div className="flex flex-wrap gap-4 items-center">
+          {/* Location Filter */}
+          <div className="flex items-center bg-gray-50 border border-gray-300 rounded-lg p-3">
+            <FaMapMarkerAlt className="text-blue-500 mr-2" />
+            <select
+              className="bg-transparent focus:outline-none"
+              value={locationFilter}
+              onChange={(e) => setLocationFilter(e.target.value)}
+            >
+              <option value="All">All Locations</option>
+              <option value="Online">Online Available</option>
+              <option value="In-person">In-person Available</option>
+            </select>
+          </div>
 
-        <div className="flex items-center text-sm">
-          <span className="mr-2 text-gray-600 hidden md:inline">Sort:</span>
-          <select
-            className="border-0 bg-transparent focus:ring-0 text-gray-800 font-medium cursor-pointer"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-          >
-            <option value="rating">Highest Rated</option>
-            <option value="distance">Nearest First</option>
-            <option value="name">Alphabetical</option>
-          </select>
+          {/* Featured Checkbox */}
+          <div className="flex items-center ml-2">
+            <input
+              type="checkbox"
+              id="featured"
+              checked={showFeaturedOnly}
+              onChange={(e) => setShowFeaturedOnly(e.target.checked)}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <label htmlFor="featured" className="ml-2 text-gray-700">
+              Featured Experts Only
+            </label>
+          </div>
         </div>
       </div>
 
       {/* Centers Grid/List */}
       {filteredCenters.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6">
           {filteredCenters.map((center) => (
             <Link
               to={`/wellness-center`}
               key={center.id}
-              className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition duration-300"
+              className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 flex-col h-full"
             >
               {/* Image Container */}
               <div className="relative h-48 overflow-hidden">
@@ -381,7 +357,7 @@ const WellnessCenters = () => {
               </div>
 
               {/* Content */}
-              <div className="p-5">
+              <div className="p-5 flex flex-col flex-grow">
                 <div className="flex justify-between items-start">
                   <h2 className="text-xl font-bold text-gray-800 group-hover:text-indigo-600 transition">
                     {center.name}
@@ -439,7 +415,7 @@ const WellnessCenters = () => {
                   <span className="text-gray-500 text-sm">
                     Price: <span className="font-medium">{center.prices}</span>
                   </span>
-                  <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center">
+                  <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center ">
                     View Details
                     <ChevronDown
                       size={16}
@@ -477,7 +453,7 @@ const WellnessCenters = () => {
       )}
 
       {/* Feature Highlights Section */}
-      <div className="mt-16  p-6 ">
+      <div className="mt-16 pb-14 p-6 ">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">
           Why Use Our Wellness Finder?
         </h2>

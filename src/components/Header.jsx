@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Bell, User, ChevronDown } from "lucide-react";
 import { useAtom } from "jotai";
@@ -13,6 +13,28 @@ const Header = () => {
   const [user] = useAtom(userAtom);
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const notificationsRef = useRef(null);
+  const profileRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        notificationsRef.current &&
+        !notificationsRef.current.contains(event.target)
+      ) {
+        setNotificationsOpen(false);
+      }
+
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -119,15 +141,15 @@ const Header = () => {
               </div>
             )}
             {/* Notifications */}
-            <div className="relative">
+            <div className="relative" ref={notificationsRef}>
               <button
                 onClick={() => {
                   setNotificationsOpen(!notificationsOpen);
                   setProfileOpen(false);
                 }}
-                className={`p-2 rounded-full hover:bg-gray-100 hover:text-gray-500 transition-colors relative text-blue-400`}
+                className={`p-2 rounded-full hover:bg-gray-100  transition-colors relative text-black`}
               >
-                <Bell size={20} />
+                <Bell size={25} className="fill-indigo-50" />
                 <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">
                   3
                 </span>
@@ -167,7 +189,7 @@ const Header = () => {
             </div>
 
             {/* User Profile */}
-            <div className="relative">
+            <div className="relative" ref={profileRef}>
               <button
                 onClick={() => {
                   setProfileOpen(!profileOpen);
@@ -178,11 +200,11 @@ const Header = () => {
                 <img
                   src="/api/placeholder/40/40"
                   alt="User profile"
-                  className="w-8 h-8 rounded-full border-2 border-blue-400"
+                  className="w-8 h-8 rounded-full border-2 border-black"
                 />
                 <ChevronDown
                   size={16}
-                  className={`transition-colors text-blue-400`}
+                  className={`transition-colors text-gray-700`}
                 />
               </button>
 

@@ -8,6 +8,9 @@ import {
   Brain,
   Map,
   Calendar,
+  Dumbbell,
+  Gauge,
+  Building2,
 } from "lucide-react";
 import { assessmentImage } from "../utils/constant";
 
@@ -108,22 +111,22 @@ const Home = () => {
 
   const features = [
     {
-      title: "Personalized Wellness Journey",
+      title: "Find the Best Fitness Experts",
       description:
-        "Get customized recommendations based on your health profile, goals, and preferences to create a holistic wellness plan that works for you.",
-      icon: <Heart className="text-rose-500" size={32} />,
+        "Discover top-rated, certified fitness professionals tailored to your needs, from personal trainers to specialized coaches.",
+      icon: <Dumbbell className="text-rose-500" size={32} />,
     },
     {
-      title: "Track Your Mental Health",
+      title: "Track Your Wellness Journey",
       description:
-        "Monitor your mood patterns, stress levels, and emotional well-being with interactive tools and visualizations.",
-      icon: <Brain className="text-indigo-500" size={32} />,
+        "Use your personalized dashboard to monitor meals, physical activities, and sleep patterns all in one place.",
+      icon: <Gauge className="text-indigo-500" size={32} />,
     },
     {
-      title: "Expert Guidance",
+      title: "Verified Wellness Centers",
       description:
-        "Connect with certified mental health professionals, nutritionists, fitness trainers, and wellness coaches for personalized support.",
-      icon: <Activity className="text-emerald-500" size={32} />,
+        "Explore and connect with trusted wellness centers offering services and facilities to support your health and fitness goals.",
+      icon: <Building2 className="text-emerald-500" size={32} />,
     },
   ];
 
@@ -159,7 +162,7 @@ const Home = () => {
                 </Link>
                 <Link
                   to="/about"
-                  className="bg-transparent hover:bg-blue-700 border-2 border-gray-600 text-gray-600 font-semibold py-3 px-6 rounded-full transition duration-300"
+                  className="bg-transparent hover:bg-blue-700 border-2 border-white text-white font-semibold py-3 px-6 rounded-full transition duration-300"
                 >
                   Learn More
                 </Link>
@@ -192,7 +195,7 @@ const Home = () => {
                   <div className="text-2xl text-black font-bold">
                     {stat.value}
                   </div>
-                  <div className="text-sm text-gray-600">{stat.label}</div>
+                  <div className="text-base text-black">{stat.label}</div>
                 </motion.div>
               ))}
             </div>

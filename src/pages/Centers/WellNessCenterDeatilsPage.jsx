@@ -490,7 +490,7 @@ const WellnessCenterDetails = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-6 bg-gray-50">
+    <div className=" mx-auto p-4 mt-20 md:p-6 bg-gray-50">
       {/* Header Section */}
       <div className="bg-white p-6 rounded-lg shadow-md">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center">
@@ -520,79 +520,81 @@ const WellnessCenterDetails = () => {
       </div>
 
       {/* Image Carousel */}
-      <div className="mt-6 bg-white p-4 rounded-lg shadow-md">
-        <div className="relative h-64 md:h-96 overflow-hidden rounded-lg">
-          <img
-            src={wellnessCenter.images[activeImageIndex]}
-            alt="Wellness Center"
-            className="w-full h-full object-cover"
-          />
-          <button
-            onClick={handlePrevImage}
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white w-8 h-8 rounded-full flex items-center justify-center"
-          >
-            <FaChevronLeft />
-          </button>
-          <button
-            onClick={handleNextImage}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white w-8 h-8 rounded-full flex items-center justify-center"
-          >
-            <FaChevronRight />
-          </button>
-          <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
-            {wellnessCenter.images.map((_, index) => (
-              <button
-                key={index}
-                className={`w-2 h-2 rounded-full ${
-                  index === activeImageIndex
-                    ? "bg-white"
-                    : "bg-white bg-opacity-50"
-                }`}
-                onClick={() => setActiveImageIndex(index)}
-              ></button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Contact & Location */}
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 bg-white rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold text-blue-700 mb-3">
-            Contact Details
-          </h2>
-          <div className="space-y-3">
-            <p className="flex items-center text-gray-700">
-              <FaMapMarkerAlt className="mr-3 text-blue-500" />
-              {wellnessCenter.address}
-            </p>
-            <p className="flex items-center text-gray-700">
-              <FaPhoneAlt className="mr-3 text-green-500" />
-              {wellnessCenter.phone}
-            </p>
-            <p className="flex items-center text-gray-700">
-              <FaEnvelope className="mr-3 text-red-500" />
-              {wellnessCenter.email}
-            </p>
-            <p className="flex items-center text-gray-700">
-              <FaGlobe className="mr-3 text-purple-500" />
-              <a
-                href={`https://${wellnessCenter.website}`}
-                className="text-blue-500 hover:underline"
-              >
-                {wellnessCenter.website}
-              </a>
-            </p>
+      <div className="flex flex-row mx-auto justify-center w-full">
+        <div className="mt-6 bg-white p-4 rounded-lg shadow-md">
+          <div className="relative h-64 md:h-96 overflow-hidden rounded-lg">
+            <img
+              src={wellnessCenter.images[activeImageIndex]}
+              alt="Wellness Center"
+              className="w-full h-full object-cover"
+            />
+            <button
+              onClick={handlePrevImage}
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white w-8 h-8 rounded-full flex items-center justify-center"
+            >
+              <FaChevronLeft />
+            </button>
+            <button
+              onClick={handleNextImage}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white w-8 h-8 rounded-full flex items-center justify-center"
+            >
+              <FaChevronRight />
+            </button>
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
+              {wellnessCenter.images.map((_, index) => (
+                <button
+                  key={index}
+                  className={`w-2 h-2 rounded-full ${
+                    index === activeImageIndex
+                      ? "bg-white"
+                      : "bg-white bg-opacity-50"
+                  }`}
+                  onClick={() => setActiveImageIndex(index)}
+                ></button>
+              ))}
+            </div>
           </div>
         </div>
 
-        <iframe
-          src={wellnessCenter.googleMapsEmbed}
-          className="w-full h-64 rounded-lg shadow-md"
-          allowFullScreen
-          loading="lazy"
-          title="Google Map"
-        ></iframe>
+        {/* Contact & Location */}
+        <div className="mt-6 flex-col">
+          <div className="p-4 bg-white rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold text-blue-700 mb-3">
+              Contact Details
+            </h2>
+            <div className="space-y-3">
+              <p className="flex items-center text-gray-700">
+                <FaMapMarkerAlt className="mr-3 text-blue-500" />
+                {wellnessCenter.address}
+              </p>
+              <p className="flex items-center text-gray-700">
+                <FaPhoneAlt className="mr-3 text-green-500" />
+                {wellnessCenter.phone}
+              </p>
+              <p className="flex items-center text-gray-700">
+                <FaEnvelope className="mr-3 text-red-500" />
+                {wellnessCenter.email}
+              </p>
+              <p className="flex items-center text-gray-700">
+                <FaGlobe className="mr-3 text-purple-500" />
+                <a
+                  href={`https://${wellnessCenter.website}`}
+                  className="text-blue-500 hover:underline"
+                >
+                  {wellnessCenter.website}
+                </a>
+              </p>
+            </div>
+          </div>
+
+          <iframe
+            src={wellnessCenter.googleMapsEmbed}
+            className="w-full h-64 rounded-lg shadow-md"
+            allowFullScreen
+            loading="lazy"
+            title="Google Map"
+          ></iframe>
+        </div>
       </div>
 
       {/* Tabs Navigation */}
