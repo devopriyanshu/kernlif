@@ -297,28 +297,28 @@ const WellnessExperts = () => {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 mx-6 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 px-6 mx-6 gap-6">
           {filteredExperts.map((expert) => (
             <Link
               to={`/expert`}
               key={expert.id}
-              className="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 relative w-[350px]"
+              className="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 relative w-[350px] flex flex-col"
             >
               {expert.featured && (
                 <div className="absolute top-4 right-4 bg-yellow-400 text-xs font-bold px-2 py-1 rounded-full text-gray-800 z-10">
                   FEATURED
                 </div>
               )}
-              <div className="relative">
+              <div className="flex justify-center mt-6 ">
                 <img
                   src={expert.profilePic}
                   alt={expert.name}
-                  className="w-full h-56 object-cover"
+                  className="w-32 h-32 rounded-full object-cover border-2 border-blue-600 shadow-md"
                 />
-                <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black to-transparent h-24"></div>
               </div>
-              <div className="p-6">
-                <h2 className="text-xl font-bold text-gray-800 mb-1">
+
+              <div className="p-6 flex flex-col justify-between h-full">
+                <h2 className="text-xl text-center font-bold text-gray-800 mb-1">
                   {expert.name}
                 </h2>
                 <p className="text-blue-600 font-medium">{expert.specialty}</p>
@@ -341,7 +341,7 @@ const WellnessExperts = () => {
                   ))}
                 </div>
 
-                <div className="border-t border-gray-100 pt-4 flex flex-col gap-2 text-sm">
+                <div className="border-t border-gray-100 pt-4 mb-4 flex flex-col gap-2 text-sm">
                   <div className="flex items-center text-gray-600">
                     <FaClock className="mr-2 text-blue-500" />
                     <span>{expert.experience} Experience</span>
@@ -356,7 +356,7 @@ const WellnessExperts = () => {
                   </div>
                 </div>
 
-                <button className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
+                <button className="mt-auto w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
                   View Profile
                 </button>
               </div>

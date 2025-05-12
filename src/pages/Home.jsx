@@ -20,6 +20,9 @@ import {
   TrendingUp,
   LayoutDashboard,
   ChevronDown,
+  CheckCircle,
+  DumbbellIcon,
+  CreditCard,
 } from "lucide-react";
 import { assessmentImage } from "../utils/constant";
 
@@ -526,7 +529,7 @@ const Home = () => {
           </div>
 
           {/* CTA + Search */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 max-w-4xl mx-auto ">
+          <div className=" bg-white rounded-2xl  p-8 max-w-4xl mx-auto ">
             <div className="md:flex items-center justify-between gap-8">
               <div className="mb-6 md:mb-0">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
@@ -559,16 +562,7 @@ const Home = () => {
       </section>
 
       {/* Expert Consultants Section */}
-      <section className="py-16  sm:px-6 bg-gray-200 lg:px-10 ">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">
-            Our Wellness Experts
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Connect with certified professionals to guide your wellness journey
-          </p>
-        </div>
-
+      <section className="pb-16  sm:px-6 bg-gradient-to-br from-blue-50 to-indigo-50 lg:px-10 ">
         <div className="relative">
           <div className="flex overflow-x-auto px-20 pb-6 gap-6 scrollbar-hide">
             {consultants.map((consultant, index) => (
@@ -613,16 +607,16 @@ const Home = () => {
               </motion.div>
             ))}
             {/* View All Experts Card */}
-            <div className="flex-shrink-0 w-72  flex flex-col items-center justify-center p-8 text-white">
+            <div className="flex-shrink-0 w-72  flex flex-col items-center justify-center p-8 text-black">
               <h3 className="text-2xl font-bold mb-4 text-center">
                 View All Experts
               </h3>
-              <p className="text-blue-100 text-center mb-6">
+              <p className="text-gray-600 text-center mb-6">
                 Explore our complete network of wellness professionals
               </p>
               <Link
                 to="/all-experts"
-                className="bg-white text-blue-600 hover:bg-blue-50 font-bold py-2 px-6 rounded-lg transition duration-300 inline-flex items-center"
+                className="bg-white text-blue-600 hover:bg-blue-300 font-bold py-2 px-6 rounded-lg transition duration-300 inline-flex items-center"
               >
                 Browse All
                 <ChevronRight className="ml-2" size={18} />
@@ -633,15 +627,82 @@ const Home = () => {
       </section>
 
       {/* Wellness Centers Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
+      <section className="bg-gray-50 py-16 px-6 md:px-12 lg:px-24">
+        <div className=" mx-auto text-center">
+          <h2 className="text-4xl font-bold text-gray-800 mb-4">
+            Find & Manage Wellness Centers with Ease
+          </h2>
+          <p className="text-gray-600 text-lg mb-12">
+            Explore nearby gyms, yoga studios, and wellness centers and manage
+            your subscriptions from one dashboard.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Feature 1 */}
+            <div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition text-center">
+              <div className="flex justify-center mb-4">
+                <MapPin className="text-indigo-600" size={32} />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                Nearby Health Centers
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Discover top-rated gyms and wellness hubs close to your location
+                using smart filters and maps.
+              </p>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition text-center">
+              <div className="flex justify-center mb-4">
+                <CreditCard className="text-indigo-600" size={32} />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                Manage Subscriptions
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Easily view, renew, or cancel your memberships and class
+                packages directly from your dashboard.
+              </p>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition text-center">
+              <div className="flex justify-center mb-4">
+                <Dumbbell className="text-indigo-600" size={32} />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                Center Details & Reviews
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Read expert and user reviews, view photos, amenities, pricing,
+                and classes before joining.
+              </p>
+            </div>
+
+            {/* Feature 4 */}
+            <div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition text-center">
+              <div className="flex justify-center mb-4">
+                <CheckCircle className="text-indigo-600" size={32} />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                Book Classes & Sessions
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Schedule classes or 1-on-1 sessions with trainers, therapists,
+                or yoga instructors in one click.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="pb-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className=" mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-3">
               Featured Wellness Centers
             </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Discover premium facilities for your health journey
-            </p>
           </div>
 
           <div className="relative">
