@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -11,6 +11,15 @@ import {
   Dumbbell,
   Gauge,
   Building2,
+  Star,
+  MapPin,
+  ArrowRight,
+  Compass,
+  Utensils,
+  Moon,
+  TrendingUp,
+  LayoutDashboard,
+  ChevronDown,
 } from "lucide-react";
 import { assessmentImage } from "../utils/constant";
 
@@ -129,6 +138,105 @@ const Home = () => {
       icon: <Building2 className="text-emerald-500" size={32} />,
     },
   ];
+
+  const [activeFeature, setActiveFeature] = useState(0);
+
+  const dashboardfeatures = [
+    {
+      icon: Activity,
+      color: "bg-blue-600",
+      title: "Activity Tracking",
+      description:
+        "Monitor steps, workouts, and active minutes with detailed analytics and progress trends",
+      tags: ["Steps", "Workouts", "Calories Burned"],
+      tagColor: "bg-blue-50 text-blue-700",
+    },
+    {
+      icon: Utensils,
+      color: "bg-green-600",
+      title: "Nutrition Tracking",
+      description:
+        "Log meals, track macros, and monitor calorie intake with our comprehensive food database",
+      tags: ["Calories", "Macros", "Water"],
+      tagColor: "bg-green-50 text-green-700",
+    },
+    {
+      icon: Moon,
+      color: "bg-indigo-600",
+      title: "Sleep Analysis",
+      description:
+        "Track sleep duration, quality, and patterns with personalized recommendations",
+      tags: ["Duration", "Quality", "Trends"],
+      tagColor: "bg-indigo-50 text-indigo-700",
+    },
+    {
+      icon: Calendar,
+      color: "bg-purple-600",
+      title: "Appointments",
+      description:
+        "Manage all wellness appointments in one place with reminders and scheduling",
+      tags: ["Doctors", "Trainers", "Therapists"],
+      tagColor: "bg-purple-50 text-purple-700",
+    },
+    {
+      icon: TrendingUp,
+      color: "bg-amber-600",
+      title: "Trend Analysis",
+      description:
+        "Visualize your progress with customizable charts and historical data comparisons",
+      tags: ["Progress", "Correlations", "Insights"],
+      tagColor: "bg-amber-50 text-amber-700",
+    },
+    {
+      icon: LayoutDashboard,
+      color: "bg-gradient-to-r from-blue-500 to-purple-600",
+      title: "Unified Dashboard",
+      description:
+        "See all your health metrics in one beautifully designed, customizable interface",
+      tags: ["Customizable", "Integrated", "Real-time"],
+      tagColor: "bg-blue-50 text-blue-700",
+    },
+  ];
+  const ActiveIcon = dashboardfeatures[activeFeature].icon;
+
+  const faqs = [
+    {
+      question: "What is this wellness platform about?",
+      answer:
+        "Our platform helps you manage your mental and physical well-being by connecting you to verified health experts, wellness centers, and providing a comprehensive dashboard to track your health metrics.",
+    },
+    {
+      question: "How can I connect with a health expert?",
+      answer:
+        "You can browse and filter through a list of certified doctors, therapists, and trainers. Book appointments directly through their profiles based on availability.",
+    },
+    {
+      question: "Can I find wellness centers near me?",
+      answer:
+        "Yes, use our 'Find Centers' feature to locate wellness centers by location, services, amenities, and user ratings.",
+    },
+    {
+      question: "What features does the wellness dashboard offer?",
+      answer:
+        "The dashboard allows you to track activities, nutrition, sleep, appointments, and trends — all in one sleek, personalized interface.",
+    },
+    {
+      question: "Is my personal health data secure?",
+      answer:
+        "Absolutely. We use industry-standard encryption and do not share your data with any third parties without your consent.",
+    },
+    {
+      question: "Do I need a subscription to use the platform?",
+      answer:
+        "Core features are free. For advanced analytics, unlimited expert access, and premium content, you can upgrade to a subscription plan anytime.",
+    },
+  ];
+
+  const [openIndex, setOpenIndex] = useState(null);
+
+  const toggle = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
 
   return (
     <motion.div
@@ -525,204 +633,211 @@ const Home = () => {
       </section>
 
       {/* Wellness Centers Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-200">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">
-              Wellness Centers Near You
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <div className=" mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+              Featured Wellness Centers
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Discover top-rated facilities for your health and wellbeing
+              Discover premium facilities for your health journey
             </p>
           </div>
 
           <div className="relative">
-            <div className="flex overflow-x-auto pb-6 gap-6 scrollbar-hide">
+            {/* Scrollable container */}
+            <div className="flex overflow-x-auto pb-8 -mx-4 px-4 gap-8 scrollbar-hide snap-x snap-mandatory">
               {wellnessCenters.map((center, index) => (
                 <motion.div
                   key={index}
-                  className="flex-shrink-0 w-80 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 relative"
-                  whileHover={{ y: -5 }}
+                  className="flex-shrink-0 w-[600px] rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 relative snap-center"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
                 >
-                  <div className="h-56 bg-gray-200">
+                  {/* Image with gradient overlay */}
+                  <div className="h-[400px] bg-gray-200 relative">
                     <img
                       src={center.image}
                       alt={center.name}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
-                    <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                      <div className="flex items-center mb-1">
-                        <span className="text-yellow-400 mr-1">★</span>
-                        <span className="font-medium">{center.rating}</span>
-                      </div>
-                      <h3 className="text-xl font-bold mb-1">{center.name}</h3>
-                      <p className="text-sm text-gray-200 mb-2">
-                        {center.type}
-                      </p>
-                      <p className="text-xs text-gray-300 flex items-center">
-                        <svg
-                          className="w-4 h-4 mr-1"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                        </svg>
-                        {center.location}
-                      </p>
-                      <button className="mt-3 bg-white/90 hover:bg-white text-blue-700 text-sm font-medium py-2 px-4 rounded-lg transition duration-300">
-                        View Center
-                      </button>
+                    <div className="absolute top-4 left-4">
+                      <span className="bg-white/90 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full">
+                        {center.category}
+                      </span>
                     </div>
+                  </div>
+
+                  {/* Content overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none"></div>
+
+                  {/* Card content */}
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                    <div className="flex items-center mb-2">
+                      <div className="flex items-center mr-3">
+                        <Star
+                          className="fill-yellow-400 text-yellow-400"
+                          size={18}
+                        />
+                        <span className="font-bold ml-1">{center.rating}</span>
+                      </div>
+                      <span className="text-sm text-gray-200">
+                        ({center.reviewCount} reviews)
+                      </span>
+                    </div>
+
+                    <h3 className="text-2xl font-bold mb-2">{center.name}</h3>
+
+                    <div className="flex items-center mb-4">
+                      <MapPin className="text-gray-300 mr-2" size={16} />
+                      <span className="text-gray-300">{center.location}</span>
+                      <span className="mx-2 text-gray-400">•</span>
+                      <span className="text-gray-300">
+                        {center.distance} miles
+                      </span>
+                    </div>
+
+                    <p className="text-gray-200 mb-5 line-clamp-2">
+                      {center.description}
+                    </p>
+
+                    <button className="pointer-events-auto bg-white/90 hover:bg-white text-indigo-700 font-semibold py-2.5 px-5 rounded-lg transition duration-300 flex items-center">
+                      View Center
+                      <ArrowRight className="ml-2" size={16} />
+                    </button>
                   </div>
                 </motion.div>
               ))}
-              {/* View All Centers Card */}
-              <div className="flex-shrink-0 w-80 bg-gradient-to-br from-green-600 to-teal-700 rounded-xl shadow-md flex flex-col items-center justify-center p-8 text-white">
-                <h3 className="text-2xl font-bold mb-4 text-center">
-                  View All Centers
-                </h3>
-                <p className="text-green-100 text-center mb-6">
-                  Explore hundreds of wellness destinations in your area
-                </p>
-                <Link
-                  to="/all-centers"
-                  className="bg-white text-green-600 hover:bg-green-50 font-bold py-2 px-6 rounded-lg transition duration-300 inline-flex items-center"
-                >
-                  Browse All
-                  <ChevronRight className="ml-2" size={18} />
-                </Link>
+
+              {/* View All Card */}
+              <div className="flex-shrink-0 w-96 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 snap-center">
+                <div className="h-full bg-gradient-to-br from-indigo-600 to-purple-600 p-8 flex flex-col items-center justify-center text-center text-white">
+                  <div className="bg-white/10 p-5 rounded-full mb-6">
+                    <Compass className="text-white" size={32} />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3">
+                    Explore All Centers
+                  </h3>
+                  <p className="text-indigo-100 mb-6 max-w-xs">
+                    Discover hundreds of premium wellness destinations near you
+                  </p>
+                  <Link
+                    to="/all-centers"
+                    className="bg-white text-indigo-600 hover:bg-gray-100 font-semibold py-3 px-8 rounded-lg transition duration-300 inline-flex items-center"
+                  >
+                    Browse All
+                    <ChevronRight className="ml-2" size={18} />
+                  </Link>
+                </div>
               </div>
+            </div>
+
+            {/* Scroll hint for mobile */}
+            <div className="lg:hidden text-center mt-4 text-gray-500 text-sm">
+              <span className="inline-block animate-bounce">← Scroll →</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            What Our Users Say
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Join thousands of people who have transformed their well-being with
-            WellNest.
-          </p>
+      <section className="py-20 px-6 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-4">
+              Your Complete Wellness Dashboard
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Track, analyze, and optimize all aspects of your health in one
+              unified platform.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-14 gap-x-12">
+            {[
+              {
+                title: "Activity Tracking",
+                description: "Steps, workouts, and calories — all in one view.",
+                icon: <Activity className="text-blue-600" size={28} />,
+              },
+              {
+                title: "Nutrition",
+                description: "Track your meals, macros, and water intake.",
+                icon: <Utensils className="text-green-600" size={28} />,
+              },
+              {
+                title: "Sleep Analysis",
+                description: "Understand your sleep patterns and quality.",
+                icon: <Moon className="text-indigo-600" size={28} />,
+              },
+              {
+                title: "Appointments",
+                description:
+                  "Manage sessions with doctors, trainers, and more.",
+                icon: <Calendar className="text-purple-600" size={28} />,
+              },
+              {
+                title: "Trend Analysis",
+                description: "Visualize progress and correlations over time.",
+                icon: <TrendingUp className="text-amber-600" size={28} />,
+              },
+              {
+                title: "Unified Dashboard",
+                description:
+                  "All your wellness metrics — integrated and real-time.",
+                icon: <LayoutDashboard className="text-blue-500" size={28} />,
+              },
+            ].map((feature, idx) => (
+              <div key={idx} className="flex items-start gap-4">
+                <div className="mt-1">{feature.icon}</div>
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-1">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm">{feature.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+      </section>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="bg-white p-8 rounded-xl shadow-md">
-            <div className="flex items-center mb-6">
-              <div className="text-yellow-400 flex">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i}>★</span>
-                ))}
+      <section className="py-20 px-6 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-10">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200"
+              >
+                <button
+                  onClick={() => toggle(index)}
+                  className="w-full flex justify-between items-center px-6 py-4 text-left text-gray-800 font-medium focus:outline-none"
+                >
+                  <span>{faq.question}</span>
+                  <ChevronDown
+                    className={`transition-transform duration-200 ${
+                      openIndex === index ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                {openIndex === index && (
+                  <div className="px-6 pb-4 text-gray-600 text-sm">
+                    {faq.answer}
+                  </div>
+                )}
               </div>
-            </div>
-            <p className="text-gray-700 mb-6">
-              "WellNest has completely changed how I approach my mental health.
-              The daily check-ins and guided sessions have helped me manage my
-              anxiety in ways I never thought possible."
-            </p>
-            <div className="flex items-center">
-              <img
-                src="/api/placeholder/50/50"
-                alt="User"
-                className="w-10 h-10 rounded-full mr-3"
-              />
-              <div>
-                <p className="font-medium text-gray-900">Jessica K.</p>
-                <p className="text-sm text-gray-500">Member for 8 months</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-8 rounded-xl shadow-md">
-            <div className="flex items-center mb-6">
-              <div className="text-yellow-400 flex">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i}>★</span>
-                ))}
-              </div>
-            </div>
-            <p className="text-gray-700 mb-6">
-              "The expert consultations have been incredible. Being able to talk
-              to a nutritionist and fitness coach through the app has made
-              achieving my health goals so much easier."
-            </p>
-            <div className="flex items-center">
-              <img
-                src="/api/placeholder/50/50"
-                alt="User"
-                className="w-10 h-10 rounded-full mr-3"
-              />
-              <div>
-                <p className="font-medium text-gray-900">Mark T.</p>
-                <p className="text-sm text-gray-500">Member for 1 year</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-8 rounded-xl shadow-md">
-            <div className="flex items-center mb-6">
-              <div className="text-yellow-400 flex">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i}>★</span>
-                ))}
-              </div>
-            </div>
-            <p className="text-gray-700 mb-6">
-              "I've tried many wellness apps, but WellNest is the first one that
-              addresses both mental and physical health together. The integrated
-              approach really works."
-            </p>
-            <div className="flex items-center">
-              <img
-                src="/api/placeholder/50/50"
-                alt="User"
-                className="w-10 h-10 rounded-full mr-3"
-              />
-              <div>
-                <p className="font-medium text-gray-900">Sarah L.</p>
-                <p className="text-sm text-gray-500">Member for 6 months</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Call to Action */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">
-            Begin Your Wellness Journey Today
-          </h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
-            Start with a simple health check and discover personalized
-            recommendations for your mind and body.
-          </p>
-          <Link
-            to="/health-check"
-            className="bg-white text-blue-700 hover:bg-blue-50 font-semibold py-3 px-8 rounded-full transition duration-300 inline-flex items-center text-lg"
-          >
-            Get Started Now
-            <ChevronRight className="ml-2" size={20} />
-          </Link>
-        </div>
-      </section>
+
       <style jsx global>{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;

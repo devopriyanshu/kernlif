@@ -211,7 +211,7 @@ const WellnessCenterDetails = () => {
     switch (activeTab) {
       case "about":
         return (
-          <div className="space-y-4">
+          <div className=" space-y-4 min-w-3/4  max-w-7xl">
             <p className="text-gray-700 leading-relaxed">
               {wellnessCenter.description}
             </p>
@@ -248,7 +248,7 @@ const WellnessCenterDetails = () => {
 
       case "services":
         return (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 w-3/4 md:grid-cols-2 gap-4 max-w-7xl">
             {wellnessCenter.services.map((service, index) => (
               <div
                 key={index}
@@ -272,7 +272,7 @@ const WellnessCenterDetails = () => {
 
       case "trainers":
         return (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 min-w-3/4 md:grid-cols-3 gap-6 max-w-7xl">
             {wellnessCenter.trainers.map((trainer, index) => (
               <div
                 key={index}
@@ -301,7 +301,7 @@ const WellnessCenterDetails = () => {
 
       case "pricing":
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 min-w-3/4 max-w-7xl">
             <div className="bg-blue-50 p-5 rounded-lg shadow-md border border-blue-100">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-bold text-blue-700">
@@ -380,7 +380,7 @@ const WellnessCenterDetails = () => {
 
       case "schedule":
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 w-3/4 max-w-7xl">
             <div>
               <h3 className="text-xl font-semibold text-blue-700 mb-3">
                 Operating Hours
@@ -438,7 +438,7 @@ const WellnessCenterDetails = () => {
 
       case "reviews":
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 min-w-3/4 max-w-7xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <span className="text-3xl font-bold text-blue-700 mr-2">
@@ -490,7 +490,7 @@ const WellnessCenterDetails = () => {
   };
 
   return (
-    <div className=" mx-auto p-4 mt-20 md:p-6 bg-gray-50">
+    <div className=" mx-auto p-4 lg:pt-24 md:p-6 md:pt-12 bg-gray-100">
       {/* Header Section */}
       <div className="bg-white p-6 rounded-lg shadow-md">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center">
@@ -520,86 +520,92 @@ const WellnessCenterDetails = () => {
       </div>
 
       {/* Image Carousel */}
-      <div className="flex flex-row mx-auto justify-center w-full">
-        <div className="mt-6 bg-white p-4 rounded-lg shadow-md">
-          <div className="relative h-64 md:h-96 overflow-hidden rounded-lg">
-            <img
-              src={wellnessCenter.images[activeImageIndex]}
-              alt="Wellness Center"
-              className="w-full h-full object-cover"
-            />
-            <button
-              onClick={handlePrevImage}
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white w-8 h-8 rounded-full flex items-center justify-center"
-            >
-              <FaChevronLeft />
-            </button>
-            <button
-              onClick={handleNextImage}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white w-8 h-8 rounded-full flex items-center justify-center"
-            >
-              <FaChevronRight />
-            </button>
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
-              {wellnessCenter.images.map((_, index) => (
-                <button
-                  key={index}
-                  className={`w-2 h-2 rounded-full ${
-                    index === activeImageIndex
-                      ? "bg-white"
-                      : "bg-white bg-opacity-50"
-                  }`}
-                  onClick={() => setActiveImageIndex(index)}
-                ></button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Contact & Location */}
-        <div className="mt-6 flex-col">
-          <div className="p-4 bg-white rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-blue-700 mb-3">
-              Contact Details
-            </h2>
-            <div className="space-y-3">
-              <p className="flex items-center text-gray-700">
-                <FaMapMarkerAlt className="mr-3 text-blue-500" />
-                {wellnessCenter.address}
-              </p>
-              <p className="flex items-center text-gray-700">
-                <FaPhoneAlt className="mr-3 text-green-500" />
-                {wellnessCenter.phone}
-              </p>
-              <p className="flex items-center text-gray-700">
-                <FaEnvelope className="mr-3 text-red-500" />
-                {wellnessCenter.email}
-              </p>
-              <p className="flex items-center text-gray-700">
-                <FaGlobe className="mr-3 text-purple-500" />
-                <a
-                  href={`https://${wellnessCenter.website}`}
-                  className="text-blue-500 hover:underline"
-                >
-                  {wellnessCenter.website}
-                </a>
-              </p>
+      <div className="w-full my-12 px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+          <div className="bg-white p-4 rounded-lg shadow-md">
+            <div className="relative h-64 md:h-[500px] overflow-hidden rounded-lg">
+              <img
+                src={wellnessCenter.images[activeImageIndex]}
+                alt="Wellness Center"
+                className="w-full h-full object-cover"
+              />
+              <button
+                onClick={handlePrevImage}
+                className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white w-8 h-8 rounded-full flex items-center justify-center"
+              >
+                <FaChevronLeft />
+              </button>
+              <button
+                onClick={handleNextImage}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white w-8 h-8 rounded-full flex items-center justify-center"
+              >
+                <FaChevronRight />
+              </button>
+              <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
+                {wellnessCenter.images.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`w-2 h-2 rounded-full ${
+                      index === activeImageIndex
+                        ? "bg-white"
+                        : "bg-white bg-opacity-50"
+                    }`}
+                    onClick={() => setActiveImageIndex(index)}
+                  ></button>
+                ))}
+              </div>
             </div>
           </div>
 
-          <iframe
-            src={wellnessCenter.googleMapsEmbed}
-            className="w-full h-64 rounded-lg shadow-md"
-            allowFullScreen
-            loading="lazy"
-            title="Google Map"
-          ></iframe>
+          {/* Contact & Map Container */}
+          <div className="grid grid-cols-1 gap-6 h-full">
+            {/* Contact Details Card */}
+            <div className="bg-white p-4 rounded-lg shadow-md">
+              <h2 className="text-xl font-semibold text-blue-700 mb-3">
+                Contact Details
+              </h2>
+              <div className="space-y-3">
+                <p className="flex items-center text-gray-700">
+                  <FaMapMarkerAlt className="mr-3 text-blue-500" />
+                  {wellnessCenter.address}
+                </p>
+                <p className="flex items-center text-gray-700">
+                  <FaPhoneAlt className="mr-3 text-green-500" />
+                  {wellnessCenter.phone}
+                </p>
+                <p className="flex items-center text-gray-700">
+                  <FaEnvelope className="mr-3 text-red-500" />
+                  {wellnessCenter.email}
+                </p>
+                <p className="flex items-center text-gray-700">
+                  <FaGlobe className="mr-3 text-purple-500" />
+                  <a
+                    href={`https://${wellnessCenter.website}`}
+                    className="text-blue-500 hover:underline"
+                  >
+                    {wellnessCenter.website}
+                  </a>
+                </p>
+              </div>
+            </div>
+
+            {/* Google Map */}
+            <div className="bg-white p-0 rounded-lg shadow-md h-full">
+              <iframe
+                src={wellnessCenter.googleMapsEmbed}
+                className="w-full h-64 md:h-[calc(500px-6rem)] rounded-lg"
+                allowFullScreen
+                loading="lazy"
+                title="Google Map"
+              ></iframe>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Tabs Navigation */}
-      <div className="mt-8 bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="flex overflow-x-auto scrollbar-hide border-b">
+      <div className=" bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="flex justify-around overflow-x-auto scrollbar-hide border-b">
           {[
             "about",
             "services",
@@ -623,7 +629,7 @@ const WellnessCenterDetails = () => {
         </div>
 
         {/* Tab Content */}
-        <div className="p-6">{renderTabContent()}</div>
+        <div className="flex p-6 justify-center">{renderTabContent()}</div>
       </div>
 
       {/* CTA Section */}

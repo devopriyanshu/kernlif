@@ -67,6 +67,19 @@ const expertsData = [
     specialFocus: ["Hatha Yoga", "Meditation", "Breathing Techniques"],
     profilePic: "/images/yoga.jpg",
   },
+  {
+    id: 5,
+    name: "Vikram Singh",
+    specialty: "Yoga Instructor",
+    experience: "12 years",
+    rating: 4.9,
+    reviews: 156,
+    availability: "Mon-Sun",
+    location: "Online only",
+    languages: ["English", "Hindi", "Sanskrit"],
+    specialFocus: ["Hatha Yoga", "Meditation", "Breathing Techniques"],
+    profilePic: "/images/yoga.jpg",
+  },
 ];
 
 const WellnessExperts = () => {
@@ -284,12 +297,12 @@ const WellnessExperts = () => {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mx-6 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 mx-6 gap-6">
           {filteredExperts.map((expert) => (
             <Link
               to={`/expert`}
               key={expert.id}
-              className="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 relative"
+              className="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 relative w-[350px]"
             >
               {expert.featured && (
                 <div className="absolute top-4 right-4 bg-yellow-400 text-xs font-bold px-2 py-1 rounded-full text-gray-800 z-10">
