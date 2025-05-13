@@ -101,10 +101,10 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/health-check"
+                  to="/dashboard"
                   className="text-blue-200 hover:text-white transition-colors"
                 >
-                  Health Check
+                  Dashboard
                 </Link>
               </li>
               <li>
@@ -123,17 +123,17 @@ const Footer = () => {
                   Wellness Centers
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   to="/products"
                   className="text-blue-200 hover:text-white transition-colors"
                 >
                   Wellness Products
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
-                  to="/about"
+                  to="/"
                   className="text-blue-200 hover:text-white transition-colors"
                 >
                   About Us
@@ -148,7 +148,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li>
                 <Link
-                  to="/faq"
+                  to="/"
                   className="text-blue-200 hover:text-white transition-colors"
                 >
                   FAQ
@@ -156,7 +156,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/help"
+                  to="/"
                   className="text-blue-200 hover:text-white transition-colors"
                 >
                   Help Center
@@ -164,7 +164,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/contact"
+                  to="/"
                   className="text-blue-200 hover:text-white transition-colors"
                 >
                   Contact Us
@@ -172,7 +172,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/privacy"
+                  to="/"
                   className="text-blue-200 hover:text-white transition-colors"
                 >
                   Privacy Policy
@@ -180,7 +180,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/terms"
+                  to="/"
                   className="text-blue-200 hover:text-white transition-colors"
                 >
                   Terms of Service
@@ -226,19 +226,19 @@ const Footer = () => {
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link
-              to="/privacy"
+              to="/"
               className="text-blue-300 hover:text-white text-sm transition-colors"
             >
               Privacy
             </Link>
             <Link
-              to="/terms"
+              to="/"
               className="text-blue-300 hover:text-white text-sm transition-colors"
             >
               Terms
             </Link>
             <Link
-              to="/cookies"
+              to="/"
               className="text-blue-300 hover:text-white text-sm transition-colors"
             >
               Cookies

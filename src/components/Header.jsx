@@ -78,10 +78,10 @@ const Header = () => {
   // Navigation links
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "HealthCheck", path: "/health-check" },
+    { name: "Dashboard", path: "/dashboard" },
     { name: "Experts", path: "/experts" },
     { name: "Centers", path: "/centers" },
-    { name: "Products", path: "/products" },
+    // { name: "Products", path: "/products" },
   ];
 
   return (
@@ -181,7 +181,7 @@ const Header = () => {
                       to="/notifications"
                       className="text-sm text-blue-600 hover:text-blue-800"
                     >
-                      View all notifications
+                      Show More
                     </Link>
                   </div>
                 </div>
@@ -223,12 +223,7 @@ const Header = () => {
                   >
                     Dashboard
                   </Link>
-                  <Link
-                    to="/settings"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Settings
-                  </Link>
+
                   <div className="border-t border-gray-100 my-1"></div>
                   <button className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
                     Sign Out

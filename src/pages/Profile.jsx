@@ -135,7 +135,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="w-full mx-auto my-8 p-6 bg-white shadow-lg rounded-lg">
+    <div className="w-full mx-auto my-8 p-6 pt-20 bg-white  rounded-lg">
       {/* Header with actions */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">

@@ -16,6 +16,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./utils/ProtectedRoutes";
 import WellnessExpertDashboard from "./register/Dashboards/ExpertDashboard";
+import ProductsPage from "./pages/Products/ProuductsPage";
 
 const App = () => {
   return (
@@ -32,6 +33,7 @@ const App = () => {
             path="/expert_dashboard"
             element={<WellnessExpertDashboard />}
           />
+          <Route path="/products" element={<ProductsPage />} />
           <Route
             path="/center_register"
             element={<WellnessCenterRegistration />}
