@@ -272,7 +272,7 @@ const Home = () => {
                   <ChevronRight className="ml-2" size={18} />
                 </Link>
                 <Link
-                  to="/about"
+                  to="/"
                   className="bg-transparent hover:bg-blue-700 border-2 border-white text-white font-semibold py-3 px-6 rounded-full transition duration-300"
                 >
                   Learn More
@@ -568,44 +568,29 @@ const Home = () => {
             {consultants.map((consultant, index) => (
               <motion.div
                 key={index}
-                className="flex-shrink-0 w-72 bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
+                className="flex-shrink-0 w-72  rounded-xl   transition-shadow duration-300 flex flex-col items-center py-6"
                 whileHover={{ y: -5 }}
               >
-                <div className="h-48 bg-gray-100 rounded-t-xl overflow-hidden">
-                  <img
-                    src={consultant.image}
-                    alt={consultant.name}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-50 h-50 rounded-full overflow-hidden mb-4 border-4 border-blue-100">
+                  {consultant.image ? (
+                    <img
+                      src={consultant.image}
+                      alt={consultant.name}
+                      className="w-72 h-72 rounded-full object-cover"
+                    />
+                  ) : (
+                    <Skeleton circle={true} height={96} width={96} />
+                  )}
                 </div>
-                <div className="p-5">
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">
-                    {consultant.name}
-                  </h3>
-                  <p className="text-blue-600 font-medium mb-2">
-                    {consultant.category}
-                  </p>
-                  <p className="text-sm text-gray-500 mb-3">
-                    {consultant.experience}
-                  </p>
-                  <div className="mb-4">
-                    <div className="flex flex-wrap gap-2">
-                      {consultant.specialties.map((specialty, i) => (
-                        <span
-                          key={i}
-                          className="bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full"
-                        >
-                          {specialty}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <button className="w-full bg-white border border-blue-600 text-blue-600 hover:bg-blue-50 font-medium py-2 px-4 rounded-lg transition duration-300">
-                    View Profile
-                  </button>
-                </div>
+                <h3 className="text-xl font-bold text-gray-900 text-center mb-1">
+                  {consultant.name}
+                </h3>
+                <p className="text-blue-600 font-medium text-center">
+                  {consultant.category}
+                </p>
               </motion.div>
             ))}
+
             {/* View All Experts Card */}
             <div className="flex-shrink-0 w-72  flex flex-col items-center justify-center p-8 text-black">
               <h3 className="text-2xl font-bold mb-4 text-center">
