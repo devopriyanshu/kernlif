@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Bell, User, ChevronDown } from "lucide-react";
 import { useAtom } from "jotai";
 import { userAtom } from "../atoms/userAtom";
+import Avatar from "../utils/Avatar";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -178,7 +179,7 @@ const Header = () => {
                   </div>
                   <div className="px-4 py-2 text-center">
                     <Link
-                      to="/notifications"
+                      to="/"
                       className="text-sm text-blue-600 hover:text-blue-800"
                     >
                       Show More
@@ -197,11 +198,8 @@ const Header = () => {
                 }}
                 className="flex items-center space-x-2"
               >
-                <img
-                  src="/api/placeholder/40/40"
-                  alt="User profile"
-                  className="w-8 h-8 rounded-full border-2 border-black"
-                />
+                <Avatar name="Priyanshu Patel" width={36} height={36} />
+
                 <ChevronDown
                   size={16}
                   className={`transition-colors text-gray-700`}
