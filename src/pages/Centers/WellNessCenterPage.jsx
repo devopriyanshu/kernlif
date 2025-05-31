@@ -482,8 +482,8 @@ const WellnessCenters = () => {
             </div>
             <h3 className="text-lg font-semibold mb-2">Verified Reviews</h3>
             <p className="text-gray-600">
-              All centers are rated by real users to help you make informed &
-              better decisions.
+              All centers are rated by real users to help you make better
+              decisions.
             </p>
           </div>
 
