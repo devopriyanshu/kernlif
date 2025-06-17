@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { FaGoogle, FaEnvelope, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const LoginSignup = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate(); // Use React Router for navigation
+
+  const location = useLocation();
+  const role = new URLSearchParams(location.search).get("role") || "user";
 
   // Handle Google OAuth Redirect
   useEffect(() => {
@@ -26,7 +30,6 @@ const LoginSignup = () => {
     }
   }, [navigate]);
 
-  // Email Signup/Login
   const handleEmailAuth = async (e) => {
     e.preventDefault();
     try {
@@ -38,7 +41,7 @@ const LoginSignup = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, role }),
       });
 
       const data = await response.json();
@@ -115,7 +118,9 @@ const LoginSignup = () => {
             {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
             <button
               className="text-blue-600 font-semibold"
-              onClick={() => setIsSignup(!isSignup)}
+              onClick={() => {
+                setIsSignup(!isSignup);
+              }}
             >
               {isSignup ? "Login" : "Sign up"}
             </button>

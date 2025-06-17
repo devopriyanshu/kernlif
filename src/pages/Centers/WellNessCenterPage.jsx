@@ -212,13 +212,13 @@ const WellnessCenters = () => {
   }, [searchTerm, selectedCategory, selectedLocation, sortBy]);
 
   // Toggle favorite
-  const toggleFavorite = (e, id) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id]
-    );
-  };
+  // const toggleFavorite = (e, id) => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  //   setFavorites((prev) =>
+  //     prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id]
+  //   );
+  // };
 
   return (
     <div className=" mx-auto  bg-gray-100 min-h-screen">
@@ -250,7 +250,7 @@ const WellnessCenters = () => {
             <FaSearch className="text-blue-500 mr-2" />
             <input
               type="text"
-              placeholder="Search by name, specialty, or expertise..."
+              placeholder="Search by name, category or location"
               className="w-full bg-transparent focus:outline-none"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -266,10 +266,17 @@ const WellnessCenters = () => {
               onChange={(e) => setFilter(e.target.value)}
             >
               <option value="All">All Categories</option>
-              <option value="Psychologist">Psychologists</option>
-              <option value="Dietitian">Dietitians</option>
-              <option value="Yoga Instructor">Yoga Instructors</option>
-              <option value="Gym Trainer">Gym Trainers</option>
+              <option value="Gym & Yoga Center">Gym & Yoga Center</option>
+              <option value="Yoga Studio">Yoga Studio</option>
+              <option value="Fitness Center">Fitness Center</option>
+              <option value="Meditation Center">Meditation Center</option>
+              <option value="Wellness Spa">Wellness Spa</option>
+              <option value="Health Club">Health Club</option>
+              <option value="CrossFit Box">CrossFit Box</option>
+              <option value="Pilates Studio">Pilates Studio</option>
+              <option value="Holistic Wellness Center">
+                Holistic Wellness Center
+              </option>
             </select>
           </div>
 
@@ -282,8 +289,7 @@ const WellnessCenters = () => {
               onChange={(e) => setSortBy(e.target.value)}
             >
               <option value="rating">Sort by Rating</option>
-              <option value="experience">Sort by Experience</option>
-              <option value="reviews">Sort by Number of Reviews</option>
+              <option value="experience">Sort by Distance</option>
             </select>
           </div>
         </div>
@@ -313,7 +319,7 @@ const WellnessCenters = () => {
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
             <label htmlFor="featured" className="ml-2 text-gray-700">
-              Featured Experts Only
+              Open Now
             </label>
           </div>
         </div>
@@ -335,7 +341,7 @@ const WellnessCenters = () => {
                   alt={center.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                 />
-                <button
+                {/* <button
                   onClick={(e) => toggleFavorite(e, center.id)}
                   className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md"
                 >
@@ -347,7 +353,7 @@ const WellnessCenters = () => {
                         : "text-gray-400"
                     }
                   />
-                </button>
+                </button> */}
                 <div className="absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full h-16 opacity-70"></div>
                 <div className="absolute bottom-3 left-3 flex items-center">
                   <span className="bg-indigo-600 text-white text-xs px-2 py-1 rounded-full">
@@ -412,9 +418,9 @@ const WellnessCenters = () => {
 
                 {/* Call to Action */}
                 <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
-                  <span className="text-gray-500 text-sm">
+                  {/* <span className="text-gray-500 text-sm">
                     Price: <span className="font-medium">{center.prices}</span>
-                  </span>
+                  </span> */}
                   <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center ">
                     View Details
                     <ChevronDown
