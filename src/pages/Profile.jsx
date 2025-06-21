@@ -19,6 +19,7 @@ const Profile = () => {
 
   // Get user from local storage
   const storedUser = JSON.parse(localStorage.getItem("user")) || null;
+  console.log(storedUser);
 
   const [user, setUser] = useState(
     storedUser || {

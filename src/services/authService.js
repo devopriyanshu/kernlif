@@ -1,10 +1,12 @@
 import axios from "axios";
-
-const API_URL = "http://localhost:4000/auth"; // Adjust if using a different backend URL
+import { BASE_URL } from "./api";
 
 export const signup = async (email, password) => {
   try {
-    const response = await axios.post(`${API_URL}/signup`, { email, password });
+    const response = await axios.post(`${BASE_URL}/signup`, {
+      email,
+      password,
+    });
     localStorage.setItem("token", response.data.token);
     return response.data;
     // console.log(response);
@@ -15,7 +17,7 @@ export const signup = async (email, password) => {
 
 export const login = async (email, password) => {
   try {
-    const response = await axios.post(`${API_URL}/login`, { email, password });
+    const response = await axios.post(`${BASE_URL}/login`, { email, password });
     return response.data;
   } catch (error) {
     throw error.response.data.error;
@@ -24,7 +26,7 @@ export const login = async (email, password) => {
 
 export const googleSignIn = async (idToken) => {
   try {
-    const response = await axios.post(`${API_URL}/google-auth`, { idToken });
+    const response = await axios.post(`${BASE_URL}/google-auth`, { idToken });
     return response.data;
   } catch (error) {
     throw error.response.data.error;
