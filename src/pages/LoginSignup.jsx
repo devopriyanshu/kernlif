@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { FaGoogle, FaEnvelope, FaLock } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { login, signup } from "../services/authService";
 
 const LoginSignup = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // Use React Router for navigation
-
+  const navigate = useNavigate();
   const location = useLocation();
   const role = new URLSearchParams(location.search).get("role") || "user";
 
-  // Handle Google OAuth Redirect
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
@@ -33,29 +31,22 @@ const LoginSignup = () => {
   const handleEmailAuth = async (e) => {
     e.preventDefault();
     try {
-      const endpoint = isSignup
-        ? "http://localhost:4000/signup"
-        : "http://localhost:4000/login";
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password, role }),
-      });
+      let response;
+      if (isSignup) {
+        response = await signup(email, password);
+      } else {
+        response = await login(email, password);
+      }
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error);
-
-      localStorage.setItem("token", data.token);
+      // store token and proceed
+      localStorage.setItem("token", response.token);
       alert(`${isSignup ? "Signup" : "Login"} successful! 🎉`);
-      navigate("/dashboard"); // Redirect after login/signup
+      navigate("/dashboard");
     } catch (error) {
-      alert(error.message);
+      alert(error.message || "Authentication failed");
     }
   };
 
-  // Google Login Redirect
   const handleGoogleLogin = () => {
     window.location.href = "http://localhost:4000/auth/google";
   };
@@ -67,7 +58,6 @@ const LoginSignup = () => {
           {isSignup ? "Create an Account" : "Welcome Back"}
         </h2>
 
-        {/* Email & Password Form */}
         <form className="mt-6 space-y-4" onSubmit={handleEmailAuth}>
           <div className="flex items-center border border-gray-300 p-2 rounded-md">
             <FaEnvelope className="text-gray-500 mx-2" />
@@ -103,7 +93,6 @@ const LoginSignup = () => {
 
         <div className="text-center my-4 text-gray-500">or continue with</div>
 
-        {/* Google Login */}
         <div className="flex justify-center space-x-3">
           <button
             onClick={handleGoogleLogin}
@@ -118,9 +107,7 @@ const LoginSignup = () => {
             {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
             <button
               className="text-blue-600 font-semibold"
-              onClick={() => {
-                setIsSignup(!isSignup);
-              }}
+              onClick={() => setIsSignup(!isSignup)}
             >
               {isSignup ? "Login" : "Sign up"}
             </button>

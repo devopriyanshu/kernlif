@@ -28,6 +28,7 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginSignup />} />
           <Route path="/dashboard" element={<WellnessDashboard />} />
+          <Route path="/experts" element={<WellnessExperts />} />
           <Route path="/expert_register" element={<ExpertRegistrationPage />} />
           <Route
             path="/expert_dashboard"
@@ -49,7 +50,7 @@ const App = () => {
               path="/wellness-center"
               element={<WellnessCenterDetails />}
             />
-            <Route path="/experts" element={<WellnessExperts />} />
+
             <Route path="/expert" element={<WellnessExpertDetails />} />
             <Route path="/profile" element={<Profile />} />
           </Route>

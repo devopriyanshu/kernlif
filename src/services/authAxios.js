@@ -58,15 +58,15 @@ secureAxios.interceptors.request.use(
         headers: config.headers,
         data: config.data,
       });
-      return config;
+      return config; // ✅ this is correct
     } catch (error) {
       console.error("error retrieving token", error);
-      return Promise.reject(error);
+      return Promise.reject(error); // ✅ must return here
     }
   },
   (error) => {
-    Promise.reject(error);
     console.error("Request Error:", error);
+    return Promise.reject(error); // ❌ you were missing `return` here
   }
 );
 

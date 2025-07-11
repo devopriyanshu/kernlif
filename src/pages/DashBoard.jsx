@@ -16,7 +16,6 @@ import {
   X,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/Authcontext";
 import { useAtom } from "jotai";
 import { userAtom } from "../atoms/userAtom";
 import {

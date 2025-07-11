@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Bell, User, ChevronDown } from "lucide-react";
-import { useAtom } from "jotai";
-import { userAtom } from "../atoms/userAtom";
+import { useAuth } from "../context/Authcontext";
+
 import Avatar from "../utils/Avatar";
 
 const Header = () => {
@@ -11,7 +11,8 @@ const Header = () => {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const location = useLocation();
-  const [user] = useAtom(userAtom);
+  const { user, logout } = useAuth();
+
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const notificationsRef = useRef(null);
@@ -223,7 +224,10 @@ const Header = () => {
                   </Link>
 
                   <div className="border-t border-gray-100 my-1"></div>
-                  <button className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                  <button
+                    onClick={logout}
+                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                  >
                     Sign Out
                   </button>
                 </div>
@@ -282,7 +286,10 @@ const Header = () => {
                 <User size={18} className="mr-3" />
                 My Profile
               </Link>
-              <button className="flex items-center py-3 text-red-600 hover:text-red-700 w-full">
+              <button
+                onClick={logout}
+                className="flex items-center py-3 text-red-600 hover:text-red-700 w-full"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5 mr-3"

@@ -1,10 +1,10 @@
-import { useContext } from "react";
+import { useAuth } from "../context/Authcontext";
 import { Navigate, Outlet } from "react-router-dom";
-import { AuthContext } from "../context/Authcontext";
 
 const ProtectedRoute = () => {
-  // const token = localStorage.getItem("token");
-  const { user } = useContext(AuthContext);
+  const { user, loading } = useAuth();
+
+  if (loading) return null; // or <Spinner />
 
   return user ? <Outlet /> : <Navigate to="/login" />;
 };

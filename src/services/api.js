@@ -1,8 +1,10 @@
 export const APIENDPOINT = {
   EXPERTS: "experts/",
   CENTERS: "centers/",
+  GET_USER_ME: "users/me",
   USERS: "users/",
-  AUTH: "auth/",
+  LOGIN: "auth/login",
+  SIGNUP: "auth/signup",
   LOGS: "logs/",
   APPOINTMENTS: "appointments/",
 };
