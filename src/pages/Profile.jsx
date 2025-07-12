@@ -11,52 +11,67 @@ import {
   X,
   Heart,
   User,
+  Loader2,
 } from "lucide-react";
+import {
+  useGetUserProfile,
+  useUpdateUserProfile,
+} from "../hooks/useProfileHooks";
 
 const Profile = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
-  // Get user from local storage
-  const storedUser = JSON.parse(localStorage.getItem("user")) || null;
-  console.log(storedUser);
-
-  const [user, setUser] = useState(
-    storedUser || {
-      fullName: "",
-      email: "",
-      profilePicture: "",
-      dateOfBirth: "",
-      gender: "",
-      phoneNumber: "",
-      emergencyContact: {
-        name: "",
-        relationship: "",
-        phoneNumber: "",
-      },
-      address: {
-        city: "",
-        state: "",
-        country: "",
-      },
-      healthMetrics: {
-        height: "",
-        weight: "",
-        bloodType: "",
-      },
-    }
-  );
+  // Use React Query hooks
+  const { user, isLoading, isError, error, refetch } = useGetUserProfile();
+  const {
+    updateProfile,
+    isLoading: isUpdating,
+    isError: isUpdateError,
+    error: updateError,
+    isSuccess: isUpdateSuccess,
+  } = useUpdateUserProfile();
 
   const [editMode, setEditMode] = useState(false);
-  const [tempUser, setTempUser] = useState({ ...user });
+  const [tempUser, setTempUser] = useState({});
   const [bmi, setBmi] = useState("--");
+
+  // Initialize tempUser when user data is loaded
+  useEffect(() => {
+    if (user) {
+      console.log("[Profile] User fetched from backend:", user);
+      const [city = "", state = "", country = ""] = user.address
+        ? user.address.split(",").map((part) => part.trim())
+        : [];
+      setTempUser({
+        fullName: user.full_name || "",
+        email: user.email || "",
+        profilePicture: user.profile_picture || "",
+        dateOfBirth: user.dob || "",
+        gender: user.gender || "",
+        phoneNumber: user.phone_number || "",
+        emergencyContact: {
+          name: user.emergency_contact?.name || "",
+          relationship: user.emergency_contact?.relationship || "",
+          phoneNumber: user.emergency_contact?.phone_number || "",
+        },
+        address: {
+          city,
+          state,
+          country,
+        },
+        height: user.height || "",
+        weight: user.weight || "",
+        bloodType: user.blood_type || "",
+      });
+    }
+  }, [user]);
 
   // Calculate BMI when height or weight changes
   useEffect(() => {
-    if (user.healthMetrics.height && user.healthMetrics.weight) {
-      // Assuming height in cm and weight in kg
-      const heightInMeters = parseFloat(user.healthMetrics.height) / 100;
-      const weightInKg = parseFloat(user.healthMetrics.weight);
+    if (user?.height && user?.weight) {
+      const heightInMeters = parseFloat(user.height) / 100;
+      const weightInKg = parseFloat(user.weight);
 
       if (heightInMeters > 0 && weightInKg > 0) {
         const calculatedBmi = (
@@ -66,7 +81,16 @@ const Profile = () => {
         setBmi(calculatedBmi);
       }
     }
-  }, [user.healthMetrics.height, user.healthMetrics.weight]);
+  }, [user?.height, user?.weight]);
+
+  // Handle successful update
+  useEffect(() => {
+    if (isUpdateSuccess) {
+      setEditMode(false);
+      // Refetch user data to get updated information
+      refetch();
+    }
+  }, [isUpdateSuccess, refetch]);
 
   // Handle image upload
   const handleImageUpload = (e) => {
@@ -97,14 +121,59 @@ const Profile = () => {
 
   // Save profile changes
   const saveProfile = () => {
-    setUser(tempUser);
-    localStorage.setItem("user", JSON.stringify(tempUser));
-    setEditMode(false);
+    const { city, state, country } = tempUser.address;
+    const fullAddress = [city, state, country].filter(Boolean).join(", ");
+
+    const updateData = {
+      full_name: tempUser.fullName,
+      email: tempUser.email,
+      profile_picture: tempUser.profilePicture,
+      dob: tempUser.dateOfBirth,
+      gender: tempUser.gender,
+      phone_number: tempUser.phoneNumber,
+      height: tempUser.height,
+      weight: tempUser.weight,
+      blood_type: tempUser.bloodType,
+      address: fullAddress,
+      emergency_contact: {
+        name: tempUser.emergencyContact.name,
+        relationship: tempUser.emergencyContact.relationship,
+        phone_number: tempUser.emergencyContact.phoneNumber,
+      },
+    };
+    console.log("[Profile] Saving profile with data:", updateData);
+    updateProfile(updateData);
   };
 
   // Cancel editing
   const cancelEdit = () => {
-    setTempUser({ ...user });
+    if (user) {
+      const [city = "", state = "", country = ""] = user.address
+        ? user.address.split(",").map((s) => s.trim())
+        : ["", "", ""];
+
+      setTempUser({
+        fullName: user.full_name || "",
+        email: user.email || "",
+        profilePicture: user.profile_picture || "",
+        dateOfBirth: user.dob || "",
+        gender: user.gender || "",
+        phoneNumber: user.phone_number || "",
+        emergencyContact: {
+          name: user.emergency_contact?.name || "",
+          relationship: user.emergency_contact?.relationship || "",
+          phoneNumber: user.emergency_contact?.phone_number || "",
+        },
+        address: {
+          city,
+          state,
+          country,
+        },
+        height: user.height || "",
+        weight: user.weight || "",
+        bloodType: user.blood_type || "",
+      });
+    }
     setEditMode(false);
   };
 
@@ -135,8 +204,48 @@ const Profile = () => {
     return value ? value : placeholder;
   };
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="w-full mx-auto my-8 p-6 pt-20 bg-white rounded-lg flex items-center justify-center">
+        <Loader2 className="animate-spin mr-2" size={24} />
+        <span>Loading profile...</span>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="w-full mx-auto my-8 p-6 pt-20 bg-white rounded-lg">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">
+            Error loading profile: {error?.message}
+          </p>
+          <button
+            onClick={() => refetch()}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // No user data
+  if (!user) {
+    return (
+      <div className="w-full mx-auto my-8 p-6 pt-20 bg-white rounded-lg">
+        <div className="text-center">
+          <p className="text-gray-500">No user data available</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full mx-auto my-8 p-6 pt-20 bg-white  rounded-lg">
+    <div className="w-full mx-auto my-8 p-6 pt-20 bg-white rounded-lg">
       {/* Header with actions */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">
@@ -155,19 +264,42 @@ const Profile = () => {
               <button
                 onClick={cancelEdit}
                 className="flex items-center bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                disabled={isUpdating}
               >
                 <X size={16} className="mr-2" /> Cancel
               </button>
               <button
                 onClick={saveProfile}
-                className="flex items-center bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                className="flex items-center bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 disabled:opacity-50"
+                disabled={isUpdating}
               >
-                <Save size={16} className="mr-2" /> Save
+                {isUpdating ? (
+                  <Loader2 size={16} className="mr-2 animate-spin" />
+                ) : (
+                  <Save size={16} className="mr-2" />
+                )}
+                Save
               </button>
             </div>
           )}
         </div>
       </div>
+
+      {/* Update Error Message */}
+      {isUpdateError && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-600">
+            Error updating profile: {updateError?.message}
+          </p>
+        </div>
+      )}
+
+      {/* Update Success Message */}
+      {isUpdateSuccess && (
+        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-md">
+          <p className="text-green-600">Profile updated successfully!</p>
+        </div>
+      )}
 
       {/* Profile content */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -178,7 +310,7 @@ const Profile = () => {
               src={
                 editMode
                   ? tempUser.profilePicture
-                  : user.profilePicture || "/images/default-profile.png"
+                  : user.profile_picture || "/images/default-profile.png"
               }
               alt="Profile"
               className="w-40 h-40 rounded-full object-cover border-4 border-gray-200 bg-gray-100"
@@ -210,7 +342,7 @@ const Profile = () => {
                 placeholder="Full Name"
               />
             ) : (
-              formatField(user.fullName, "User Name")
+              formatField(user.full_name, "User Name")
             )}
           </h2>
 
@@ -248,12 +380,12 @@ const Profile = () => {
                   />
                 ) : (
                   <span>
-                    {user.dateOfBirth ? (
+                    {user.dob ? (
                       <>
-                        {new Date(user.dateOfBirth).toLocaleDateString()}
+                        {new Date(user.dob).toLocaleDateString()}
                         <br />
                         <span className="text-gray-500">
-                          (Age: {calculateAge(user.dateOfBirth)})
+                          (Age: {calculateAge(user.dob)})
                         </span>
                       </>
                     ) : (
@@ -305,7 +437,7 @@ const Profile = () => {
                   />
                 ) : (
                   <div className="font-medium">
-                    {formatField(user.phoneNumber)}
+                    {formatField(user.phone_number)}
                   </div>
                 )}
               </div>
@@ -340,19 +472,7 @@ const Profile = () => {
                   />
                 </div>
               ) : (
-                <div className="font-medium">
-                  {user.address.city ||
-                  user.address.state ||
-                  user.address.country
-                    ? [
-                        user.address.city,
-                        user.address.state,
-                        user.address.country,
-                      ]
-                        .filter(Boolean)
-                        .join(", ")
-                    : "Not specified"}
-                </div>
+                <div className="font-medium">{formatField(user.address)}</div>
               )}
             </div>
           </div>
@@ -410,19 +530,19 @@ const Profile = () => {
               </div>
             ) : (
               <div className="font-medium">
-                {user.emergencyContact && user.emergencyContact.name ? (
+                {user.emergency_contact && user.emergency_contact.name ? (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <div className="text-sm text-gray-500">Name</div>
-                      {user.emergencyContact.name}
+                      {user.emergency_contact.name}
                     </div>
                     <div>
                       <div className="text-sm text-gray-500">Phone</div>
-                      {formatField(user.emergencyContact.phoneNumber)}
+                      {formatField(user.emergency_contact.phone_number)}
                     </div>
                     <div>
                       <div className="text-sm text-gray-500">Relationship</div>
-                      {formatField(user.emergencyContact.relationship)}
+                      {formatField(user.emergency_contact.relationship)}
                     </div>
                   </div>
                 ) : (
@@ -446,15 +566,15 @@ const Profile = () => {
                 {editMode ? (
                   <input
                     type="number"
-                    value={tempUser.healthMetrics.height}
-                    onChange={(e) => handleChange(e, "healthMetrics", "height")}
+                    value={tempUser.height}
+                    onChange={(e) => handleChange(e, null, "height")}
                     className="w-full p-2 border border-gray-300 rounded"
                     placeholder="Height in cm"
                   />
                 ) : (
                   <div className="font-medium">
-                    {formatField(user.healthMetrics?.height)}
-                    {user.healthMetrics?.height && " cm"}
+                    {formatField(user.height)}
+                    {user.height && " cm"}
                   </div>
                 )}
               </div>
@@ -465,15 +585,15 @@ const Profile = () => {
                 {editMode ? (
                   <input
                     type="number"
-                    value={tempUser.healthMetrics.weight}
-                    onChange={(e) => handleChange(e, "healthMetrics", "weight")}
+                    value={tempUser.weight}
+                    onChange={(e) => handleChange(e, null, "weight")}
                     className="w-full p-2 border border-gray-300 rounded"
                     placeholder="Weight in kg"
                   />
                 ) : (
                   <div className="font-medium">
-                    {formatField(user.healthMetrics?.weight)}
-                    {user.healthMetrics?.weight && " kg"}
+                    {formatField(user.weight)}
+                    {user.weight && " kg"}
                   </div>
                 )}
               </div>
@@ -489,10 +609,8 @@ const Profile = () => {
                 </label>
                 {editMode ? (
                   <select
-                    value={tempUser.healthMetrics.bloodType}
-                    onChange={(e) =>
-                      handleChange(e, "healthMetrics", "bloodType")
-                    }
+                    value={tempUser.bloodType}
+                    onChange={(e) => handleChange(e, null, "bloodType")}
                     className="w-full p-2 border border-gray-300 rounded"
                   >
                     <option value="">Select blood type</option>
@@ -507,7 +625,7 @@ const Profile = () => {
                   </select>
                 ) : (
                   <div className="font-medium">
-                    {formatField(user.healthMetrics?.bloodType)}
+                    {formatField(user.blood_type)}
                   </div>
                 )}
               </div>

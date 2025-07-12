@@ -28,8 +28,13 @@ export const login = async (email, password) => {
 };
 
 export const getUserMe = async () => {
-  const res = await secureAxios.get(`api/user/me`);
+  const res = await secureAxios.get(`users/me`);
   console.log("getuserme", res);
 
   return res;
+};
+
+export const updateUserProfile = async (updatedData) => {
+  const res = await secureAxios.post("users/update", updatedData);
+  return res.data;
 };
