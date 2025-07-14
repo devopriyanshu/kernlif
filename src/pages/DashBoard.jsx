@@ -26,6 +26,15 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import {
+  useAddActivityLog,
+  useAddMealLog,
+  useAddSleepLog,
+  useDashboardLogs,
+  useUpdateActivityLog,
+  useUpdateMealLog,
+  useUpdateSleepLog,
+} from "../hooks/useLogHook";
 
 const WellnessDashboard = () => {
   const [token, setToken] = useState(null);
@@ -37,9 +46,39 @@ const WellnessDashboard = () => {
   const [showAddAppointmentForm, setShowAddAppointmentForm] = useState(false);
   const [showAddActivityForm, setShowAddActivityForm] = useState(false);
 
-  const [user] = useAtom(userAtom);
-  console.log("user at dashboard", user);
+  const { dashboardLogs, isLoading, error } = useDashboardLogs();
+  console.log(dashboardLogs);
 
+  const addActivityMutation = useAddActivityLog();
+  const updateActivityMutation = useUpdateActivityLog();
+  const addMealMutation = useAddMealLog();
+  const updateMealMutation = useUpdateMealLog();
+  const {
+    mutate: addSleep,
+    isLoading: isAddingSleep,
+    isError: isAddSleepError,
+    error: addSleepError,
+    isSuccess: isAddSleepSuccess,
+  } = useAddSleepLog();
+  const updateSleepMutation = useUpdateSleepLog();
+
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex justify-center items-center h-64">
+  //       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+  //     </div>
+  //   );
+  // }
+
+  // if (error) {
+  //   return (
+  //     <div className="bg-red-50 p-4 rounded-lg">
+  //       <p className="text-red-700">
+  //         Error loading dashboard data: {error.message}
+  //       </p>
+  //     </div>
+  //   );
+  // }
   // Form states
   const [newMeal, setNewMeal] = useState({
     name: "",
@@ -48,8 +87,21 @@ const WellnessDashboard = () => {
     carbs: "",
     fat: "",
     time: "",
-    category: "breakfast", // Default category
+    category: "breakfast",
+    date: selectedDate, // This should update when selectedDate changes
   });
+
+  useEffect(() => {
+    const normalizedDate =
+      typeof selectedDate === "string"
+        ? selectedDate.split("T")[0]
+        : new Date(selectedDate).toISOString().split("T")[0];
+
+    setNewMeal((prev) => ({
+      ...prev,
+      date: normalizedDate,
+    }));
+  }, [selectedDate]);
 
   const [newSleep, setNewSleep] = useState({
     date: new Date().toISOString().split("T")[0],
@@ -58,12 +110,6 @@ const WellnessDashboard = () => {
     notes: "",
   });
 
-  const [newAppointment, setNewAppointment] = useState({
-    expert: "",
-    type: "",
-    date: "",
-    time: "",
-  });
   const [newActivity, setNewActivity] = useState({
     activity: "",
     date: "",
@@ -72,36 +118,41 @@ const WellnessDashboard = () => {
     notes: "",
   });
 
-  console.log(user);
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (!storedToken) {
-      alert("Unauthorized! Please log in.");
-      navigate("/");
-    } else {
-      setToken(storedToken);
-    }
-  }, [navigate]);
-
   // Format date for display
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
+  // src/utils/formatDate.js
+  const formatDate = (isoDateStr, options = {}) => {
+    if (!isoDateStr) return "";
+
+    const date = new Date(isoDateStr);
+
+    const defaultOptions = {
       year: "numeric",
-    });
+      month: "short", // e.g., Jul
+      day: "numeric",
+    };
+
+    return date.toLocaleDateString("en-IN", { ...defaultOptions, ...options });
   };
 
   // Navigate between dates
   const changeDate = (direction) => {
     const newDate = new Date(selectedDate);
-    newDate.setDate(selectedDate.getDate() + direction);
-    setSelectedDate(newDate);
+    newDate.setDate(newDate.getDate() + direction);
+
+    // Don't allow future dates
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // Set to end of today
+
+    if (newDate <= today) {
+      setSelectedDate(newDate);
+      console.log("Date changed to:", newDate);
+    } else {
+      console.log("Future date not allowed");
+    }
   };
 
   // Sample data
-  const userData = {
+  const userData = dashboardLogs || {
     name: "Alex Johnson",
     dailyCalories: 1850,
     caloriesGoal: 2200,
@@ -243,7 +294,7 @@ const WellnessDashboard = () => {
         notes: "Used sleep meditation",
       },
     ],
-    nutritionLogs: [
+    meals: [
       {
         id: 1,
         date: "2025-03-01",
@@ -289,24 +340,130 @@ const WellnessDashboard = () => {
       },
     ],
   };
+  const getTodayISODate = () => new Date().toISOString().split("T")[0]; // "2025-07-14"
+  const todaysSleepLog = userData.sleepLogs.find((log) =>
+    log.date.startsWith(getTodayISODate())
+  );
+  const todaysMeals = userData.meals.filter((meal) =>
+    meal.date.startsWith(getTodayISODate())
+  );
 
+  const nutritionTotals = todaysMeals.reduce(
+    (totals, meal) => ({
+      calories: totals.calories + (meal.calories || 0),
+      protein: totals.protein + (meal.protein || 0),
+      carbs: totals.carbs + (meal.carbs || 0),
+      fat: totals.fat + (meal.fat || 0),
+    }),
+    { calories: 0, protein: 0, carbs: 0, fat: 0 }
+  );
+  const todaysActivities = userData.activityLogs.filter((log) =>
+    log.date.startsWith(getTodayISODate())
+  );
+  const overviewData = {
+    // Nutrition Summary
+    dailyCalories: nutritionTotals.calories,
+    caloriesGoal: 2200, // Default goal (can be dynamic if available)
+    protein: nutritionTotals.protein,
+    carbs: nutritionTotals.carbs,
+    fat: nutritionTotals.fat,
+
+    // Sleep Summary
+    sleepHours: todaysSleepLog ? parseFloat(todaysSleepLog.hours) : 0,
+    sleepQuality: todaysSleepLog?.quality === "good" ? 85 : 50, // Adjust based on your quality scale
+
+    // Today's Meals (for Meal Plan section)
+    upcomingMeals: todaysMeals.map((meal) => ({
+      id: meal.id,
+      name: meal.name,
+      time: meal.time,
+      calories: meal.calories,
+      protein: meal.protein,
+      carbs: meal.carbs,
+      fat: meal.fat,
+      category: "meal", // Default (adjust if you have meal types)
+    })),
+
+    // Today's Activities (if needed)
+    physicalActivityLogs: todaysActivities.map((activity) => ({
+      id: activity.id,
+      date: activity.date,
+      activity: activity.activities,
+      duration: parseFloat(activity.duration),
+      calories: activity.calories,
+      notes: activity.notes,
+    })),
+  };
   // Get current date's data or default
   const getCurrentNutritionLog = () => {
-    const formattedSelectedDate = selectedDate
-      .toISOString()
-      .split("T")[0]
-      .substring(0, 10);
-    return (
-      userData.nutritionLogs.find(
-        (log) => log.date === formattedSelectedDate
-      ) || {
+    console.log("Selected date:", selectedDate);
+    console.log("Available meals:", userData?.meals);
+
+    // Handle case where meals doesn't exist yet
+    if (!userData?.meals || userData.meals.length === 0) {
+      console.log("No meals available, returning default");
+      return {
+        id: `temp-${selectedDate}`,
+        date: selectedDate,
         calories: 0,
         protein: 0,
         carbs: 0,
         fat: 0,
         meals: [],
-      }
+      };
+    }
+
+    // Normalize selected date to YYYY-MM-DD format
+    const selectedDateStr = new Date(selectedDate).toLocaleDateString("en-CA");
+
+    console.log("Normalized selected date:", selectedDateStr);
+
+    // Filter meals for the selected date
+    const mealsForDate = userData.meals.filter((meal) => {
+      const mealDateStr = new Date(meal.date).toLocaleDateString("en-CA"); // YYYY-MM-DD
+
+      console.log(
+        `Comparing meal: ${mealDateStr} === selected: ${selectedDateStr}`
+      );
+      return mealDateStr === selectedDateStr;
+    });
+
+    console.log("Found meals for selected date:", mealsForDate);
+
+    // Calculate totals for the selected date
+    const totals = mealsForDate.reduce(
+      (acc, meal) => {
+        return {
+          calories: acc.calories + (parseInt(meal.calories) || 0),
+          protein: acc.protein + (parseInt(meal.protein) || 0),
+          carbs: acc.carbs + (parseInt(meal.carbs) || 0),
+          fat: acc.fat + (parseInt(meal.fat) || 0),
+        };
+      },
+      { calories: 0, protein: 0, carbs: 0, fat: 0 }
     );
+
+    console.log("Calculated totals:", totals);
+
+    // Return structured data
+    return {
+      id: `date-${selectedDateStr}`,
+      date: selectedDateStr,
+      calories: totals.calories,
+      protein: totals.protein,
+      carbs: totals.carbs,
+      fat: totals.fat,
+      meals: mealsForDate.map((meal) => ({
+        id: meal.id,
+        name: meal.name,
+        category: meal.category || "meal",
+        time: meal.time,
+        calories: parseInt(meal.calories) || 0,
+        protein: parseInt(meal.protein) || 0,
+        carbs: parseInt(meal.carbs) || 0,
+        fat: parseInt(meal.fat) || 0,
+      })),
+    };
   };
 
   const getCurrentSleepLog = () => {
@@ -315,7 +472,9 @@ const WellnessDashboard = () => {
       .split("T")[0]
       .substring(0, 10);
     return (
-      userData.sleepLogs.find((log) => log.date === formattedSelectedDate) || {
+      userData?.sleepLogs?.find(
+        (log) => log.date === formattedSelectedDate
+      ) || {
         hours: 0,
         quality: 0,
         notes: "No data",
@@ -333,7 +492,9 @@ const WellnessDashboard = () => {
         name === "protein" ||
         name === "carbs" ||
         name === "fat"
-          ? parseInt(value) || ""
+          ? value === ""
+            ? ""
+            : parseInt(value) || 0
           : value,
     });
   };
@@ -351,60 +512,96 @@ const WellnessDashboard = () => {
     });
   };
 
-  const handleAppointmentChange = (e) => {
-    const { name, value } = e.target;
-    setNewAppointment({
-      ...newAppointment,
-      [name]: value,
-    });
-  };
-
-  const handleAddMeal = (e) => {
+  const handleAddMeal = async (e) => {
     e.preventDefault();
-    // Here you would normally send this to an API
-    console.log("Adding new meal:", newMeal);
-    alert("Meal added successfully!");
-    setShowAddMealForm(false);
-    setNewMeal({
-      name: "",
-      calories: "",
-      protein: "",
-      carbs: "",
-      fat: "",
-      time: "",
-      category: "breakfast",
+
+    // Normalize the date to ensure consistency
+    const normalizedDate =
+      typeof selectedDate === "string"
+        ? selectedDate.split("T")[0]
+        : new Date(selectedDate).toISOString().split("T")[0];
+
+    console.log("Adding meal for date:", normalizedDate);
+
+    const mealToAdd = {
+      ...newMeal,
+      date: normalizedDate,
+      calories: parseInt(newMeal.calories) || 0,
+      protein: parseInt(newMeal.protein) || 0,
+      carbs: parseInt(newMeal.carbs) || 0,
+      fat: parseInt(newMeal.fat) || 0,
+    };
+
+    console.log("Meal to add:", mealToAdd);
+
+    addMealMutation.mutate(mealToAdd, {
+      onSuccess: () => {
+        console.log("Meal added successfully");
+        setShowAddMealForm(false);
+        setNewMeal({
+          name: "",
+          calories: "",
+          protein: "",
+          carbs: "",
+          fat: "",
+          time: "",
+          category: "breakfast",
+          date: normalizedDate,
+        });
+      },
+      onError: (error) => {
+        console.error("Failed to add meal log:", error);
+      },
     });
   };
 
   const handleAddSleep = (e) => {
     e.preventDefault();
-    // Here you would normally send this to an API
-    console.log("Adding new sleep log:", newSleep);
-    alert("Sleep log added successfully!");
-    setShowAddSleepForm(false);
-    setNewSleep({
-      date: new Date().toISOString().split("T")[0],
-      hours: "",
-      quality: "",
-      notes: "",
-    });
+    addSleep(
+      { ...newSleep },
+      {
+        onSuccess: () => {
+          setShowAddSleepForm(false);
+          setNewSleep({
+            date: new Date().toISOString().split("T")[0],
+            hours: "",
+            quality: "",
+            notes: "",
+          });
+        },
+        onError: (error) => {
+          console.error("Failed to add sleep log:", error);
+        },
+      }
+    );
   };
+
   const handleActivityChange = (e) => {
     const { name, value } = e.target;
     setNewActivity((prev) => ({ ...prev, [name]: value }));
   };
   const handleAddActivity = (e) => {
     e.preventDefault();
-    // Add your form submission logic here
-    console.log("New Activity:", newActivity);
-    setShowAddActivityForm(false);
-    setNewActivity({
-      activity: "",
-      date: "",
-      duration: "",
-      calories: "",
-      notes: "",
-    });
+
+    addActivityMutation.mutate(
+      { ...newActivity },
+      {
+        onSuccess: () => {
+          console.log("Activity added:", newActivity);
+          setShowAddActivityForm(false);
+          setNewActivity({
+            activity: "",
+            date: "",
+            duration: "",
+            calories: "",
+            notes: "",
+          });
+        },
+        onError: (error) => {
+          console.error("Failed to add activity log:", error);
+        },
+      }
+    );
   };
 
   // Progress bar component
@@ -621,7 +818,7 @@ const WellnessDashboard = () => {
               </div>
 
               <div className="space-y-4">
-                {userData.appointments.length > 0 && (
+                {userData?.appointments?.length > 0 && (
                   <div className="border-l-4 border-purple-500 pl-3 py-1">
                     <p className="text-sm font-medium text-gray-900">
                       {userData.appointments[0].expert}
@@ -634,7 +831,7 @@ const WellnessDashboard = () => {
                   </div>
                 )}
 
-                {userData.upcomingMeals.length > 0 && (
+                {userData?.upcomingMeals?.length > 0 && (
                   <div className="border-l-4 border-green-500 pl-3 py-1">
                     <p className="text-sm font-medium text-gray-900">
                       {userData.upcomingMeals[0].name}
@@ -646,7 +843,7 @@ const WellnessDashboard = () => {
                   </div>
                 )}
 
-                {userData.courses.length > 0 && (
+                {userData?.courses?.length > 0 && (
                   <div className="border-l-4 border-blue-500 pl-3 py-1">
                     <p className="text-sm font-medium text-gray-900">
                       {userData.courses[0].nextLesson}
@@ -682,9 +879,9 @@ const WellnessDashboard = () => {
               </div>
 
               <div className="space-y-4">
-                {userData.upcomingMeals.map((meal) => (
+                {userData?.upcomingMeals?.map((meal) => (
                   <div
-                    key={meal.id}
+                    key={meal?.id}
                     className="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg border border-gray-100"
                   >
                     <div className="flex items-center space-x-3">
@@ -694,18 +891,18 @@ const WellnessDashboard = () => {
                       <div>
                         <p className="font-medium text-gray-900">{meal.name}</p>
                         <p className="text-sm text-gray-500">
-                          {meal.category.charAt(0).toUpperCase() +
-                            meal.category.slice(1)}{" "}
-                          • {meal.time}
+                          {meal?.category.charAt(0).toUpperCase() +
+                            meal?.category?.slice(1)}{" "}
+                          • {meal?.time}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="font-medium text-gray-900">
-                        {meal.calories} cal
+                        {meal?.calories} cal
                       </p>
                       <p className="text-xs text-gray-500">
-                        {meal.protein}g P • {meal.carbs}g C • {meal.fat}g F
+                        {meal?.protein}g P • {meal?.carbs}g C • {meal?.fat}g F
                       </p>
                     </div>
                   </div>
@@ -742,8 +939,15 @@ const WellnessDashboard = () => {
                 Calories Burned Over Time
               </h3>
               <ResponsiveContainer width="100%" height={250}>
-                <LineChart data={userData.physicalActivityLogs.slice(-7)}>
-                  <XAxis dataKey="date" stroke="#888888" fontSize={12} />
+                <LineChart data={userData?.activityLogs?.slice(-7)}>
+                  <XAxis
+                    dataKey="date"
+                    stroke="#888888"
+                    fontSize={12}
+                    tickFormatter={(date) =>
+                      formatDate(date, { day: "numeric", month: "short" })
+                    }
+                  />
                   <YAxis
                     domain={[0, "dataMax + 100"]}
                     label={{
@@ -753,7 +957,15 @@ const WellnessDashboard = () => {
                       style: { textAnchor: "middle" },
                     }}
                   />
-                  <Tooltip />
+                  <Tooltip
+                    labelFormatter={(label) =>
+                      formatDate(label, {
+                        weekday: "short",
+                        day: "numeric",
+                        month: "short",
+                      })
+                    }
+                  />
                   <Line
                     type="monotone"
                     dataKey="calories"
@@ -790,10 +1002,10 @@ const WellnessDashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {userData.physicalActivityLogs.map((log) => (
+                  {userData?.activityLogs?.map((log) => (
                     <tr key={log.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {log.date}
+                        {formatDate(log.date)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {log.activity}
@@ -819,6 +1031,18 @@ const WellnessDashboard = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex justify-between items-center mb-6">
               <div>
+                <button
+                  onClick={() => {
+                    console.log("Current selectedDate:", selectedDate);
+                    console.log("userData.meals:", userData?.meals);
+                    console.log(
+                      "getCurrentNutritionLog():",
+                      getCurrentNutritionLog()
+                    );
+                  }}
+                >
+                  Debug Data
+                </button>
                 <h2 className="text-xl font-semibold text-gray-900">
                   Nutrition Tracker
                 </h2>
@@ -854,55 +1078,63 @@ const WellnessDashboard = () => {
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-sm text-gray-500">Calories</p>
                 <p className="text-2xl font-bold">
-                  {getCurrentNutritionLog().calories}
+                  {getCurrentNutritionLog().calories || 0}
                 </p>
                 <p className="text-xs text-gray-500">
-                  Goal: {userData.caloriesGoal}
+                  Goal: {userData?.caloriesGoal || 2000}
                 </p>
                 <ProgressBar
-                  value={getCurrentNutritionLog().calories}
-                  max={userData.caloriesGoal}
+                  value={getCurrentNutritionLog().calories || 0}
+                  max={userData?.caloriesGoal || 2000}
                   colorClass="bg-green-500"
                 />
               </div>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-sm text-gray-500">Protein</p>
                 <p className="text-2xl font-bold">
-                  {getCurrentNutritionLog().protein}g
+                  {getCurrentNutritionLog().protein || 0}g
                 </p>
               </div>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-sm text-gray-500">Carbs</p>
                 <p className="text-2xl font-bold">
-                  {getCurrentNutritionLog().carbs}g
+                  {getCurrentNutritionLog().carbs || 0}g
                 </p>
               </div>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-sm text-gray-500">Fat</p>
                 <p className="text-2xl font-bold">
-                  {getCurrentNutritionLog().fat}g
+                  {getCurrentNutritionLog().fat || 0}g
                 </p>
               </div>
             </div>
 
             {/* Meals for the day */}
             <div className="mb-8">
-              <h3 className="text-lg font-medium mb-4">Meals</h3>
+              <h3 className="text-lg font-medium mb-4">
+                Meals for {formatDate(selectedDate)}
+              </h3>
 
               {getCurrentNutritionLog().meals &&
               getCurrentNutritionLog().meals.length > 0 ? (
                 <div className="space-y-3">
                   {getCurrentNutritionLog().meals.map((meal, index) => (
                     <div
-                      key={index}
+                      key={`${meal.id || index}-${selectedDate}`}
                       className="flex justify-between p-3 border rounded-lg hover:bg-gray-50"
                     >
                       <div>
                         <p className="font-medium">{meal.name}</p>
                         <p className="text-sm text-gray-500">{meal.category}</p>
+                        {meal.time && (
+                          <p className="text-xs text-gray-400">{meal.time}</p>
+                        )}
                       </div>
                       <div className="text-right">
                         <p className="font-medium">{meal.calories} cal</p>
+                        <p className="text-xs text-gray-500">
+                          P: {meal.protein}g | C: {meal.carbs}g | F: {meal.fat}g
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -911,7 +1143,7 @@ const WellnessDashboard = () => {
                 <div className="text-center py-8 bg-gray-50 rounded-lg">
                   <Utensils className="mx-auto h-8 w-8 text-gray-400" />
                   <p className="mt-2 text-gray-500">
-                    No meals logged for this day
+                    No meals logged for {formatDate(selectedDate)}
                   </p>
                   <button
                     onClick={() => setShowAddMealForm(true)}
@@ -945,28 +1177,48 @@ const WellnessDashboard = () => {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Fat
                       </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Meals
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {userData.nutritionLogs.map((log) => (
-                      <tr key={log.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {log.date}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {log.calories}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {log.protein}g
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {log.carbs}g
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {log.fat}g
+                    {userData?.meals?.length > 0 ? (
+                      userData.meals
+                        .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort by date, newest first
+                        .map((log) => (
+                          <tr key={log.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {formatDate(log.date)}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              {log.calories || 0}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {log.protein || 0}g
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {log.carbs || 0}g
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {log.fat || 0}g
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {log.meals?.length || 0}
+                            </td>
+                          </tr>
+                        ))
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan="6"
+                          className="px-6 py-4 text-center text-sm text-gray-500"
+                        >
+                          No nutrition logs yet. Start by adding your first
+                          meal!
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -1002,9 +1254,15 @@ const WellnessDashboard = () => {
               <h3 className="text-lg font-medium mb-4">Sleep Trends</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={userData.sleepLogs}>
-                  <XAxis dataKey="date" stroke="#888888" fontSize={12} />
+                  <XAxis
+                    dataKey="date"
+                    stroke="#888888"
+                    fontSize={12}
+                    tickFormatter={(date) =>
+                      formatDate(date, { day: "numeric", month: "short" })
+                    }
+                  />
 
-                  {/* Left Y Axis for Hours */}
                   <YAxis
                     yAxisId="left"
                     domain={[0, 12]}
@@ -1018,7 +1276,6 @@ const WellnessDashboard = () => {
                     }}
                   />
 
-                  {/* Right Y Axis for Quality */}
                   <YAxis
                     yAxisId="right"
                     orientation="right"
@@ -1033,9 +1290,16 @@ const WellnessDashboard = () => {
                     }}
                   />
 
-                  <Tooltip />
+                  <Tooltip
+                    labelFormatter={(label) =>
+                      formatDate(label, {
+                        weekday: "short",
+                        day: "numeric",
+                        month: "short",
+                      })
+                    }
+                  />
 
-                  {/* Line for Hours */}
                   <Line
                     yAxisId="left"
                     type="monotone"
@@ -1046,7 +1310,6 @@ const WellnessDashboard = () => {
                     name="Hours Slept"
                   />
 
-                  {/* Line for Quality */}
                   <Line
                     yAxisId="right"
                     type="monotone"
@@ -1082,10 +1345,10 @@ const WellnessDashboard = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {userData.sleepLogs.map((log) => (
+                    {userData?.sleepLogs?.map((log) => (
                       <tr key={log.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {log.date}
+                          {formatDate(log.date)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {log.hours}
@@ -1120,8 +1383,8 @@ const WellnessDashboard = () => {
 
             <div className="space-y-4 mb-8">
               <h3 className="text-lg font-medium">Upcoming Appointments</h3>
-              {userData.appointments.length > 0 ? (
-                userData.appointments.map((appointment) => (
+              {userData.appointments?.length > 0 ? (
+                userData?.appointments?.map((appointment) => (
                   <div
                     key={appointment.id}
                     className="border rounded-lg p-4 hover:bg-gray-50"
@@ -1137,7 +1400,7 @@ const WellnessDashboard = () => {
                       </div>
                       <div className="text-right">
                         <p className="font-medium text-gray-900">
-                          {appointment.date}
+                          {formatDate(appointment.date)}
                         </p>
                         <p className="text-sm text-gray-500">
                           {appointment.time} • {appointment.location}
@@ -1182,10 +1445,10 @@ const WellnessDashboard = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {userData.appointments
-                      .slice()
-                      .reverse()
-                      .map((appointment) => (
+                    {userData?.appointments
+                      ?.slice()
+                      ?.reverse()
+                      ?.map((appointment) => (
                         <tr key={appointment.id} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {appointment.date} {appointment.time}
