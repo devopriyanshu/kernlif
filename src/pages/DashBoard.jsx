@@ -357,7 +357,7 @@ const WellnessDashboard = () => {
     }),
     { calories: 0, protein: 0, carbs: 0, fat: 0 }
   );
-  const todaysActivities = userData.activityLogs.filter((log) =>
+  const todaysActivities = userData.activityLogs?.filter((log) =>
     log.date.startsWith(getTodayISODate())
   );
   const overviewData = {
@@ -373,7 +373,7 @@ const WellnessDashboard = () => {
     sleepQuality: todaysSleepLog?.quality === "good" ? 85 : 50, // Adjust based on your quality scale
 
     // Today's Meals (for Meal Plan section)
-    upcomingMeals: todaysMeals.map((meal) => ({
+    upcomingMeals: todaysMeals?.map((meal) => ({
       id: meal.id,
       name: meal.name,
       time: meal.time,
@@ -385,7 +385,7 @@ const WellnessDashboard = () => {
     })),
 
     // Today's Activities (if needed)
-    physicalActivityLogs: todaysActivities.map((activity) => ({
+    physicalActivityLogs: todaysActivities?.map((activity) => ({
       id: activity.id,
       date: activity.date,
       activity: activity.activities,
@@ -394,6 +394,44 @@ const WellnessDashboard = () => {
       notes: activity.notes,
     })),
   };
+  console.log(overviewData);
+  const getTodayLogs = (userData) => {
+    const todayStr = new Date().toLocaleDateString("en-CA"); // 'YYYY-MM-DD'
+
+    // Helper to normalize date string
+    const isToday = (dateStr) =>
+      new Date(dateStr).toLocaleDateString("en-CA") === todayStr;
+
+    return {
+      meals: userData.meals?.filter((meal) => isToday(meal.date)) || [],
+      sleepLogs: userData.sleepLogs?.filter((log) => isToday(log.date)) || [],
+      activityLogs:
+        userData.activityLogs?.filter((log) => isToday(log.date)) || [],
+    };
+  };
+  const todayLogs = getTodayLogs(userData);
+
+  // Calculate nutrition totals from today's meals
+  const todayNutrition = todayLogs.meals.reduce(
+    (acc, meal) => ({
+      calories: acc.calories + (parseFloat(meal.calories) || 0),
+      protein: acc.protein + (parseFloat(meal.protein) || 0),
+      carbs: acc.carbs + (parseFloat(meal.carbs) || 0),
+      fat: acc.fat + (parseFloat(meal.fat) || 0),
+    }),
+    { calories: 0, protein: 0, carbs: 0, fat: 0 }
+  );
+
+  // Use most recent sleep log
+  const latestSleep = todayLogs.sleepLogs.at(-1);
+  const sleepHours = latestSleep ? parseFloat(latestSleep.hours) : 0;
+  const sleepQuality = latestSleep?.quality || "N/A";
+
+  // Use most recent activity
+  const latestActivity = todayLogs.activityLogs.at(-1);
+
+  console.log(todayLogs);
+
   // Get current date's data or default
   const getCurrentNutritionLog = () => {
     console.log("Selected date:", selectedDate);
@@ -464,22 +502,6 @@ const WellnessDashboard = () => {
         fat: parseInt(meal.fat) || 0,
       })),
     };
-  };
-
-  const getCurrentSleepLog = () => {
-    const formattedSelectedDate = selectedDate
-      .toISOString()
-      .split("T")[0]
-      .substring(0, 10);
-    return (
-      userData?.sleepLogs?.find(
-        (log) => log.date === formattedSelectedDate
-      ) || {
-        hours: 0,
-        quality: 0,
-        notes: "No data",
-      }
-    );
   };
 
   // Form handlers
@@ -719,11 +741,11 @@ const WellnessDashboard = () => {
                     Calories
                   </span>
                   <span className="text-sm font-medium text-gray-700">
-                    {userData.dailyCalories} / {userData.caloriesGoal}
+                    {todayNutrition.calories} / {userData.caloriesGoal}
                   </span>
                 </div>
                 <ProgressBar
-                  value={userData.dailyCalories}
+                  value={todayNutrition.calories}
                   max={userData.caloriesGoal}
                   colorClass="bg-green-500"
                 />
@@ -752,9 +774,9 @@ const WellnessDashboard = () => {
 
               <div className="mt-4">
                 <MacroChart
-                  protein={userData.protein}
-                  carbs={userData.carbs}
-                  fat={userData.fat}
+                  protein={todayNutrition.protein}
+                  carbs={todayNutrition.carbs}
+                  fat={todayNutrition.fat}
                 />
                 <div className="flex text-xs mt-1 text-gray-500 justify-between">
                   <span>Protein</span>
@@ -776,7 +798,7 @@ const WellnessDashboard = () => {
 
               <div className="flex items-end space-x-2 mb-4">
                 <span className="text-3xl font-bold text-gray-900">
-                  {userData.sleepHours}
+                  {sleepHours}
                 </span>
                 <span className="text-lg font-medium text-gray-500 pb-1">
                   hours
@@ -786,7 +808,7 @@ const WellnessDashboard = () => {
               <div className="mb-4">
                 <div className="flex justify-between items-center mb-1">
                   <span className="text-sm font-medium text-gray-700">
-                    Quality
+                    Quality: {sleepQuality}%
                   </span>
                   <span className="text-sm font-medium text-gray-700">
                     {userData.sleepQuality}%
@@ -799,7 +821,10 @@ const WellnessDashboard = () => {
                 />
               </div>
 
-              <button className="mt-4 text-sm text-indigo-600 hover:text-indigo-800 font-medium flex items-center">
+              <button
+                className="mt-4 text-sm text-indigo-600 hover:text-indigo-800 font-medium flex items-center"
+                onClick={() => setActiveTab("sleep")}
+              >
                 View sleep details
                 <ChevronRight className="h-4 w-4 ml-1" />
               </button>
@@ -855,7 +880,10 @@ const WellnessDashboard = () => {
                 )}
               </div>
 
-              <button className="mt-6 text-sm text-purple-600 hover:text-purple-800 font-medium flex items-center">
+              <button
+                className="mt-6 text-sm text-purple-600 hover:text-purple-800 font-medium flex items-center"
+                onClick={() => setActiveTab("appointments")}
+              >
                 View all upcoming
                 <ChevronRight className="h-4 w-4 ml-1" />
               </button>
@@ -872,14 +900,14 @@ const WellnessDashboard = () => {
                 </div>
                 <button
                   className="p-1.5 bg-green-100 rounded-full text-green-600 hover:bg-green-200"
-                  onClick={() => setShowAddMealForm(true)}
+                  onClick={() => setActiveTab("nutrition")}
                 >
                   <Plus className="h-5 w-5" />
                 </button>
               </div>
 
               <div className="space-y-4">
-                {userData?.upcomingMeals?.map((meal) => (
+                {todayLogs?.meals?.map((meal) => (
                   <div
                     key={meal?.id}
                     className="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg border border-gray-100"
@@ -891,7 +919,7 @@ const WellnessDashboard = () => {
                       <div>
                         <p className="font-medium text-gray-900">{meal.name}</p>
                         <p className="text-sm text-gray-500">
-                          {meal?.category.charAt(0).toUpperCase() +
+                          {meal?.category?.charAt(0).toUpperCase() +
                             meal?.category?.slice(1)}{" "}
                           • {meal?.time}
                         </p>
@@ -1031,18 +1059,6 @@ const WellnessDashboard = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex justify-between items-center mb-6">
               <div>
-                <button
-                  onClick={() => {
-                    console.log("Current selectedDate:", selectedDate);
-                    console.log("userData.meals:", userData?.meals);
-                    console.log(
-                      "getCurrentNutritionLog():",
-                      getCurrentNutritionLog()
-                    );
-                  }}
-                >
-                  Debug Data
-                </button>
                 <h2 className="text-xl font-semibold text-gray-900">
                   Nutrition Tracker
                 </h2>
