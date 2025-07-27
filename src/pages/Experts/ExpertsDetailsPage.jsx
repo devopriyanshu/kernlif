@@ -20,131 +20,51 @@ import {
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { useExpertDetail } from "../../hooks/useExpertHooks";
 
-// Sample expert data (enhanced)
-const expert = {
-  id: 1,
-  name: "Dr. Sophia Carter",
+// Default expert data structure
+const defaultExpert = {
+  id: 0,
+  name: "Expert",
   profilePic: "https://via.placeholder.com/400",
   backgroundImage: "https://via.placeholder.com/1600x400",
-  category: "Psychologist",
-  experience: "10+ years",
-  bio: "Dr. Sophia Carter is a licensed clinical psychologist with over a decade of experience helping individuals overcome anxiety, depression, and stress-related issues. She specializes in cognitive behavioral therapy and mindfulness-based approaches to mental wellness.",
-  qualifications: [
-    "Ph.D. in Clinical Psychology, Stanford University",
-    "M.A. in Psychology, Columbia University",
-    "Certified Cognitive Behavioral Therapist",
-    "Licensed Clinical Psychologist (NY State)",
-  ],
-  specialties: [
-    "Anxiety & Panic Disorders",
-    "Depression & Mood Disorders",
-    "Stress Management",
-    "Trauma Recovery",
-    "Mindfulness Therapy",
-    "Work-Life Balance",
-  ],
-  languages: ["English", "Spanish"],
+  category: "Professional",
+  experience: "Not specified",
+  bio: "No biography available",
+  qualifications: [],
+  specialties: [],
+  languages: [],
   services: [
     {
       id: 1,
-      name: "Initial Consultation",
+      name: "Consultation",
       format: "In-person/Online",
       duration: "60 mins",
-      price: "$90",
-    },
-    {
-      id: 2,
-      name: "Individual Therapy Session",
-      format: "In-person/Online",
-      duration: "50 mins",
-      price: "$80",
-    },
-    {
-      id: 3,
-      name: "Group Therapy",
-      format: "In-person",
-      duration: "90 mins",
-      price: "$60 per person",
-    },
-    {
-      id: 4,
-      name: "Crisis Intervention",
-      format: "Online",
-      duration: "30 mins",
-      price: "$65",
-    },
-    {
-      id: 5,
-      name: "Couples Counseling",
-      format: "In-person/Online",
-      duration: "75 mins",
-      price: "$120",
+      price: "$0",
     },
   ],
   availability: {
-    days: ["Monday", "Tuesday", "Wednesday", "Friday"],
-    time: "9:00 AM - 6:00 PM",
-    nextAvailable: "Tomorrow, 11:30 AM",
+    days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    time: "9:00 AM - 5:00 PM",
+    nextAvailable: "Not available",
   },
   contact: {
-    phone: "+1 987 654 3210",
-    email: "sophia.carter@wellness.com",
-    website: "www.drsophiacarter.com",
-    location: "Serenity Wellness Center, 123 Healing St., New York, NY",
-    googleMaps: "https://www.google.com/maps", // Replace with actual location link
+    phone: "Not provided",
+    email: "Not provided",
+    website: "example.com",
+    location: "Location not provided",
+    googleMaps: "https://www.google.com/maps",
   },
   socialProof: {
-    clientsHelped: 500,
-    yearsOfPractice: 10,
-    certificationsCount: 8,
+    clientsHelped: 0,
+    yearsOfPractice: 0,
+    certificationsCount: 0,
   },
-  rating: 4.8,
-  reviewCount: 124,
-  reviews: [
-    {
-      id: 1,
-      user: "Emily Johnson",
-      userImage: "https://via.placeholder.com/50",
-      date: "October 15, 2024",
-      rating: 5,
-      text: "Dr. Carter completely transformed my approach to anxiety. After struggling with panic attacks for years, her mindfulness techniques have given me the tools to manage my symptoms effectively. She's empathetic, professional, and truly invested in her clients' well-being.",
-    },
-    {
-      id: 2,
-      user: "Michael Smith",
-      userImage: "https://via.placeholder.com/50",
-      date: "September 28, 2024",
-      rating: 5,
-      text: "Professional, attentive, and incredibly knowledgeable. Dr. Carter helped me work through some difficult trauma in a safe and supportive environment. I've seen multiple therapists over the years, but she's the first one who really helped me make progress.",
-    },
-    {
-      id: 3,
-      user: "Aisha Patel",
-      userImage: "https://via.placeholder.com/50",
-      date: "October 2, 2024",
-      rating: 4,
-      text: "Dr. Carter is a compassionate listener who provides practical strategies for managing stress. Her cognitive behavioral approach has been very effective for me. The only reason for 4 stars instead of 5 is occasional scheduling difficulties.",
-    },
-  ],
-  faq: [
-    {
-      question: "What should I expect from our first session?",
-      answer:
-        "The initial consultation is focused on understanding your concerns, history, and goals for therapy. We'll discuss your background, current challenges, and what you hope to achieve. This session helps me tailor my approach to your specific needs.",
-    },
-    {
-      question: "Do you accept insurance?",
-      answer:
-        "I am an out-of-network provider for most insurance plans. I can provide you with a detailed receipt that you can submit to your insurance for potential reimbursement. I recommend checking with your insurance provider about their policies for mental health services.",
-    },
-    {
-      question: "How often will we meet?",
-      answer:
-        "The frequency of sessions depends on your individual needs. Typically, I recommend weekly sessions when starting therapy. As you progress, we might transition to biweekly or monthly sessions. We'll regularly assess your progress and adjust accordingly.",
-    },
-  ],
+  rating: 0,
+  reviewCount: 0,
+  reviews: [],
+  faq: [],
 };
 
 const WellnessExpertDetails = () => {
@@ -154,6 +74,37 @@ const WellnessExpertDetails = () => {
   const [expandedFaq, setExpandedFaq] = useState(null);
   const [selectedService, setSelectedService] = useState(null);
   const [showAllReviews, setShowAllReviews] = useState(false);
+  const { id } = useParams();
+  const { data: expertdata, isLoading, isError } = useExpertDetail(id);
+
+  // Merge API data with defaults
+  const expert = {
+    ...defaultExpert,
+    id: expertdata?.id || defaultExpert.id,
+    name: expertdata?.name || defaultExpert.name,
+    profilePic: expertdata?.profile_image || defaultExpert.profilePic,
+    backgroundImage: expertdata?.bg_image || defaultExpert.backgroundImage,
+    category: expertdata?.category || defaultExpert.category,
+    experience: expertdata?.experience || defaultExpert.experience,
+    bio: expertdata?.bio || defaultExpert.bio,
+    qualifications: expertdata?.qualifications?.length
+      ? expertdata.qualifications
+      : defaultExpert.qualifications,
+    specialties: expertdata?.specialties?.length
+      ? expertdata.specialties
+      : defaultExpert.specialties,
+    languages: expertdata?.languages?.length
+      ? expertdata.languages
+      : defaultExpert.languages,
+    contact: {
+      ...defaultExpert.contact,
+      phone: expertdata?.phone || defaultExpert.contact.phone,
+      email: expertdata?.email || defaultExpert.contact.email,
+      website: expertdata?.website || defaultExpert.contact.website,
+      location: expertdata?.location || defaultExpert.contact.location,
+    },
+    faq: expertdata?.faq?.length ? expertdata.faq : defaultExpert.faq,
+  };
 
   // Function to render star ratings
   const renderStars = (rating) => {
@@ -193,6 +144,22 @@ const WellnessExpertDetails = () => {
   const toggleFaq = (index) => {
     setExpandedFaq(expandedFaq === index ? null : index);
   };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        Loading expert details...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        Error loading expert details
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -318,28 +285,36 @@ const WellnessExpertDetails = () => {
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">
                   Qualifications
                 </h2>
-                <ul className="space-y-2 mb-6">
-                  {expert.qualifications.map((qual, index) => (
-                    <li key={index} className="flex items-start">
-                      <FaCheckCircle className="text-green-500 mt-1 mr-2 flex-shrink-0" />
-                      <span className="text-gray-700">{qual}</span>
-                    </li>
-                  ))}
-                </ul>
+                {expert.qualifications.length > 0 ? (
+                  <ul className="space-y-2 mb-6">
+                    {expert.qualifications.map((qual, index) => (
+                      <li key={index} className="flex items-start">
+                        <FaCheckCircle className="text-green-500 mt-1 mr-2 flex-shrink-0" />
+                        <span className="text-gray-700">{qual}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-500">No qualifications listed</p>
+                )}
 
                 <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-4">
                   Areas of Expertise
                 </h2>
-                <div className="flex flex-wrap gap-2">
-                  {expert.specialties.map((specialty, index) => (
-                    <span
-                      key={index}
-                      className="bg-gray-100 text-gray-800 px-3 py-1 rounded-lg text-sm"
-                    >
-                      {specialty}
-                    </span>
-                  ))}
-                </div>
+                {expert.specialties.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {expert.specialties.map((specialty, index) => (
+                      <span
+                        key={index}
+                        className="bg-gray-100 text-gray-800 px-3 py-1 rounded-lg text-sm"
+                      >
+                        {specialty}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No specialties listed</p>
+                )}
               </div>
             </div>
 
@@ -417,102 +392,43 @@ const WellnessExpertDetails = () => {
               </div>
             </div>
 
-            {/* Reviews Section */}
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold text-gray-800">
-                    Reviews & Ratings
-                  </h2>
-                  <div className="flex items-center">
-                    <div className="text-yellow-400 mr-2">
-                      {renderStars(expert.rating)}
-                    </div>
-                    <p className="text-gray-700 font-medium">{expert.rating}</p>
-                    <span className="mx-1 text-gray-400">•</span>
-                    <p className="text-gray-600">
-                      {expert.reviewCount} reviews
-                    </p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  {(showAllReviews
-                    ? expert.reviews
-                    : expert.reviews.slice(0, 2)
-                  ).map((review, index) => (
-                    <div key={review.id} className="p-4 bg-gray-50 rounded-lg">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex items-center">
-                          <img
-                            src={review.userImage}
-                            alt={review.user}
-                            className="w-10 h-10 rounded-full mr-3"
-                          />
-                          <div>
-                            <p className="font-semibold text-gray-800">
-                              {review.user}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {review.date}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-yellow-400">
-                          {renderStars(review.rating)}
-                        </div>
-                      </div>
-                      <p className="text-gray-600">{review.text}</p>
-                    </div>
-                  ))}
-
-                  {expert.reviews.length > 2 && (
-                    <button
-                      onClick={() => setShowAllReviews(!showAllReviews)}
-                      className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                    >
-                      {showAllReviews
-                        ? "Show Less"
-                        : `View All ${expert.reviews.length} Reviews`}
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-
             {/* FAQ Section */}
             <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
               <div className="p-6">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">
                   Frequently Asked Questions
                 </h2>
-                <div className="space-y-3">
-                  {expert.faq.map((item, index) => (
-                    <div
-                      key={index}
-                      className="border border-gray-200 rounded-lg overflow-hidden"
-                    >
-                      <button
-                        className="w-full p-4 text-left flex justify-between items-center hover:bg-gray-50"
-                        onClick={() => toggleFaq(index)}
+                {expert.faq.length > 0 ? (
+                  <div className="space-y-3">
+                    {expert.faq.map((item, index) => (
+                      <div
+                        key={index}
+                        className="border border-gray-200 rounded-lg overflow-hidden"
                       >
-                        <span className="font-medium text-gray-800">
-                          {item.question}
-                        </span>
-                        {expandedFaq === index ? (
-                          <FaChevronUp />
-                        ) : (
-                          <FaChevronDown />
+                        <button
+                          className="w-full p-4 text-left flex justify-between items-center hover:bg-gray-50"
+                          onClick={() => toggleFaq(index)}
+                        >
+                          <span className="font-medium text-gray-800">
+                            {item.question}
+                          </span>
+                          {expandedFaq === index ? (
+                            <FaChevronUp />
+                          ) : (
+                            <FaChevronDown />
+                          )}
+                        </button>
+                        {expandedFaq === index && (
+                          <div className="p-4 pt-0 border-t border-gray-200 bg-gray-50">
+                            <p className="text-gray-600">{item.answer}</p>
+                          </div>
                         )}
-                      </button>
-                      {expandedFaq === index && (
-                        <div className="p-4 pt-0 border-t border-gray-200 bg-gray-50">
-                          <p className="text-gray-600">{item.answer}</p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No FAQs available</p>
+                )}
               </div>
             </div>
 
@@ -535,15 +451,19 @@ const WellnessExpertDetails = () => {
                     <FaEnvelope className="mr-3 text-blue-500" />{" "}
                     {expert.contact.email}
                   </p>
-                  <p className="flex items-center text-gray-700">
-                    <FaGlobe className="mr-3 text-purple-500" />
-                    <a
-                      href={`https://${expert.contact.website}`}
-                      className="text-blue-600 hover:underline"
-                    >
-                      {expert.contact.website}
-                    </a>
-                  </p>
+                  {expert.contact.website && (
+                    <p className="flex items-center text-gray-700">
+                      <FaGlobe className="mr-3 text-purple-500" />
+                      <a
+                        href={`https://${expert.contact.website}`}
+                        className="text-blue-600 hover:underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {expert.contact.website}
+                      </a>
+                    </p>
+                  )}
                 </div>
                 <div className="mt-4 bg-gray-100 rounded-lg overflow-hidden h-56">
                   <iframe

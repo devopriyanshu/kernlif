@@ -10,6 +10,7 @@ import {
   FaMapMarkerAlt,
   FaCalendarAlt,
 } from "react-icons/fa";
+import { useExperts } from "../../hooks/useExpertHooks";
 
 // Sample Expert Data (enhanced with more fields)
 const expertsData = [
@@ -85,53 +86,59 @@ const expertsData = [
 const WellnessExperts = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("All");
-  const [sortBy, setSortBy] = useState("rating");
+  const [sortBy, setSortBy] = useState("experience");
   const [locationFilter, setLocationFilter] = useState("All");
-  const [experts, setExperts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const filters = {
+    search: searchTerm,
+    category: filter !== "All" ? filter : null,
+    sortBy,
+  };
+  const { data: experts = [], isLoading } = useExperts(filters);
+  console.log(experts);
+
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
 
   // Simulate data loading
-  useEffect(() => {
-    setIsLoading(true);
-    // Simulating API fetch delay
-    setTimeout(() => {
-      setExperts(expertsData);
-      setIsLoading(false);
-    }, 800);
-  }, []);
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   // Simulating API fetch delay
+  //   setTimeout(() => {
+  //     setExperts(expertsData);
+  //     setIsLoading(false);
+  //   }, 800);
+  // }, []);
 
   // Handle filtering and sorting
-  const filteredExperts = experts
-    .filter((expert) => {
-      const matchesSearch =
-        expert.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        expert.specialty.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        expert.specialFocus.some((focus) =>
-          focus.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+  // const filteredExperts = experts
+  //   .filter((expert) => {
+  //     const matchesSearch =
+  //       expert.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //       expert.specialty.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //       expert.specialFocus.some((focus) =>
+  //         focus.toLowerCase().includes(searchTerm.toLowerCase())
+  //       );
 
-      const matchesCategory = filter === "All" || expert.specialty === filter;
-      const matchesLocation =
-        locationFilter === "All" || expert.location.includes(locationFilter);
-      const matchesFeatured = !showFeaturedOnly || expert.featured;
+  //     const matchesCategory = filter === "All" || expert.specialty === filter;
+  //     const matchesLocation =
+  //       locationFilter === "All" || expert.location.includes(locationFilter);
+  //     const matchesFeatured = !showFeaturedOnly || expert.featured;
 
-      return (
-        matchesSearch && matchesCategory && matchesLocation && matchesFeatured
-      );
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case "rating":
-          return b.rating - a.rating;
-        case "experience":
-          return parseInt(b.experience) - parseInt(a.experience);
-        case "reviews":
-          return b.reviews - a.reviews;
-        default:
-          return b.rating - a.rating;
-      }
-    });
+  //     return (
+  //       matchesSearch && matchesCategory && matchesLocation && matchesFeatured
+  //     );
+  //   })
+  //   .sort((a, b) => {
+  //     switch (sortBy) {
+  //       case "rating":
+  //         return b.rating - a.rating;
+  //       case "experience":
+  //         return parseInt(b.experience) - parseInt(a.experience);
+  //       case "reviews":
+  //         return b.reviews - a.reviews;
+  //       default:
+  //         return b.rating - a.rating;
+  //     }
+  //   });
 
   // Function to render star ratings
   const renderStars = (rating) => {
@@ -276,7 +283,7 @@ const WellnessExperts = () => {
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
         </div>
-      ) : filteredExperts.length === 0 ? (
+      ) : experts.length === 0 ? (
         <div className="bg-white rounded-xl shadow-md p-8 mx-6 text-center">
           <h3 className="text-xl font-semibold text-gray-800 mb-2">
             No experts match your search criteria
@@ -298,9 +305,9 @@ const WellnessExperts = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 px-6 mx-6 gap-6">
-          {filteredExperts.map((expert) => (
+          {experts.map((expert) => (
             <Link
-              to={`/expert`}
+              to={`/experts/${expert.id}`} // Use dynamic route if implemented
               key={expert.id}
               className="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 relative w-[350px] flex flex-col"
             >
@@ -309,9 +316,10 @@ const WellnessExperts = () => {
                   FEATURED
                 </div>
               )}
-              <div className="flex justify-center mt-6 ">
+
+              <div className="flex justify-center mt-6">
                 <img
-                  src={expert.profilePic}
+                  src={expert.image}
                   alt={expert.name}
                   className="w-32 h-32 rounded-full object-cover border-2 border-blue-600 shadow-md"
                 />
@@ -321,17 +329,17 @@ const WellnessExperts = () => {
                 <h2 className="text-xl text-center font-bold text-gray-800 mb-1">
                   {expert.name}
                 </h2>
-                <p className="text-blue-600 font-medium">{expert.specialty}</p>
+                <p className="text-blue-600 font-medium">{expert.category}</p>
 
                 <div className="flex items-center mt-2 mb-3">
                   {renderStars(expert.rating)}
                   <span className="ml-2 text-gray-600">
-                    ({expert.rating}) • {expert.reviews} reviews
+                    ({expert.rating}) • {expert.reviewCount} reviews
                   </span>
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {expert.specialFocus.slice(0, 3).map((focus, index) => (
+                  {expert.specialties?.slice(0, 3).map((focus, index) => (
                     <span
                       key={index}
                       className="bg-blue-50 text-blue-700 text-xs font-medium px-2 py-1 rounded-full"
@@ -342,17 +350,19 @@ const WellnessExperts = () => {
                 </div>
 
                 <div className="border-t border-gray-100 pt-4 mb-4 flex flex-col gap-2 text-sm">
-                  <div className="flex items-center text-gray-600">
-                    <FaClock className="mr-2 text-blue-500" />
-                    <span>{expert.experience} Experience</span>
-                  </div>
+                  {expert.experience && (
+                    <div className="flex items-center text-gray-600">
+                      <FaClock className="mr-2 text-blue-500" />
+                      <span>{expert.experience}</span>
+                    </div>
+                  )}
                   <div className="flex items-center text-gray-600">
                     <FaMapMarkerAlt className="mr-2 text-blue-500" />
                     <span>{expert.location}</span>
                   </div>
                   <div className="flex items-center text-gray-600">
                     <FaCalendarAlt className="mr-2 text-blue-500" />
-                    <span>Available: {expert.availability}</span>
+                    <span>Available: {expert.availability || "N/A"}</span>
                   </div>
                 </div>
 
