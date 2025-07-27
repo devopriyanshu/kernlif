@@ -16,135 +16,134 @@ import {
   FaQuoteLeft,
 } from "react-icons/fa";
 
-const WellnessCenterDetails = () => {
+// Mock hook for demonstration
+const useExpertDetail = (id) => {
+  // Simulating the actual hook behavior
+  const mockData = {
+    id: 5,
+    name: "BodyForge Functional Center",
+    category: "CrossFit Box",
+    description: "Functional fitness and high-intensity programs",
+    address: null,
+    phone: "7564839201",
+    email: "hello@bodyforge.com",
+    website: "https://bodyforge.com",
+    created_at: "2025-06-15T17:18:05.744Z",
+    offers: "First 2 sessions free",
+    user_id: null,
+    latitude: null,
+    longitude: null,
+    amenities: [
+      {
+        value: "Parking",
+      },
+      {
+        value: "Free Weights",
+      },
+    ],
+    equipment: [
+      {
+        value: "Kettlebells",
+      },
+      {
+        value: "Pull-Up Bars",
+      },
+    ],
+    services: [
+      {
+        name: "CrossFit",
+        icon: "🏋️",
+        description: "Total-body conditioning",
+      },
+      {
+        name: "Mobility Training",
+        icon: "🤸",
+        description: "Improve flexibility",
+      },
+    ],
+    trainers: [
+      {
+        name: "Ravi Mehta",
+        specialty: "CrossFit",
+        bio: "Level 2 Certified",
+        image: "ravi.jpg",
+      },
+    ],
+    pricing: [
+      {
+        type: "monthly",
+        price: "65.00",
+      },
+      {
+        type: "annual",
+        price: "650.00",
+      },
+      {
+        type: "dayPass",
+        price: "18.00",
+      },
+      {
+        type: "classPackages",
+        price: "180.00",
+      },
+      {
+        type: "personalTraining",
+        price: "50.00",
+      },
+    ],
+    schedule: [
+      {
+        day_of_week: "Monday",
+        is_open: true,
+        opening_time: "05:30:00",
+        closing_time: "22:00:00",
+      },
+      {
+        day_of_week: "Wednesday",
+        is_open: true,
+        opening_time: "05:30:00",
+        closing_time: "22:00:00",
+      },
+    ],
+  };
+
+  return {
+    data: mockData,
+    isLoading: false,
+    error: null,
+  };
+};
+
+const WellnessCenterDetails = ({ expertId = 5 }) => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [activeTab, setActiveTab] = useState("about");
 
-  const wellnessCenter = {
-    name: "ZenFit Wellness Hub",
-    category: "Gym & Yoga Center",
-    rating: 4.8,
-    reviews: 256,
-    description:
-      "A holistic wellness center offering gym, yoga, meditation, and personal training. Our mission is to help you achieve balance in body and mind through our comprehensive wellness programs and state-of-the-art facilities.",
+  const { data: apiData, isLoading, error } = useExpertDetail(expertId);
+
+  // Default data for missing fields
+  const defaultData = {
     images: [
       "/images/wellness1.jpg",
       "/images/wellness2.jpg",
       "/images/wellness3.jpg",
       "/images/wellness4.jpg",
     ],
+    rating: 4.8,
+    reviews: 256,
     address: "123 Wellness Street, Los Angeles, CA 90001",
-    phone: "+1 (123) 456-7890",
-    email: "info@zenfit.com",
-    website: "www.zenfit.com",
-    services: [
-      {
-        name: "Personal Training",
-        icon: "💪",
-        description: "One-on-one sessions with certified trainers",
-      },
-      {
-        name: "Yoga Classes",
-        icon: "🧘",
-        description: "Various styles for all levels",
-      },
-      {
-        name: "Sauna & Steam",
-        icon: "🔥",
-        description: "Relaxation and recovery facilities",
-      },
-      {
-        name: "Meditation Rooms",
-        icon: "🧠",
-        description: "Guided and self-directed sessions",
-      },
-      {
-        name: "Strength Training",
-        icon: "🏋️",
-        description: "Full equipment for resistance training",
-      },
-      {
-        name: "Diet Consultation",
-        icon: "🥗",
-        description: "Personalized nutrition planning",
-      },
-      {
-        name: "Group Fitness",
-        icon: "👯",
-        description: "Energetic classes for community building",
-      },
-      {
-        name: "Recovery Zone",
-        icon: "🔄",
-        description: "Massage and physical therapy",
-      },
-    ],
-    equipment: [
-      "Treadmills",
-      "Ellipticals",
-      "Rowing Machines",
-      "Free Weights",
-      "Dumbbells",
-      "Yoga Mats",
-      "Resistance Bands",
-      "Smith Machines",
-      "Cable Machines",
-    ],
-    trainers: [
-      {
-        name: "John Doe",
-        specialty: "Strength & Conditioning",
-        bio: "Certified trainer with 10+ years experience in bodybuilding and functional fitness.",
-        image: "/images/trainer1.jpg",
-      },
-      {
-        name: "Emily Smith",
-        specialty: "Yoga & Meditation",
-        bio: "RYT-500 certified instructor specializing in Vinyasa and Yin yoga practices.",
-        image: "/images/trainer2.jpg",
-      },
-      {
-        name: "Michael Rodriguez",
-        specialty: "Nutrition & Weight Management",
-        bio: "Nutritionist with expertise in creating sustainable eating plans for fitness goals.",
-        image: "/images/trainer3.jpg",
-      },
-    ],
-    pricing: {
-      monthly: "$49/month",
-      annual: "$499/year",
-      dayPass: "$10/day",
-      classPackages: "$120/10 classes",
-      personalTraining: "$65/session",
-    },
-    offers: "First Month Free for New Members",
-    amenities: [
-      "Towel Service",
-      "Locker Rooms",
-      "Showers",
-      "Filtered Water Stations",
-      "Juice Bar",
-      "Free WiFi",
-      "Parking",
-    ],
-    openingHours: {
-      weekdays: "6 AM - 10 PM",
-      weekends: "8 AM - 8 PM",
-      special: "Ladies-only Hours: 12 PM - 3 PM (Tuesdays & Thursdays)",
-    },
     googleMapsEmbed:
       "https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=123+Wellness+Street,Los+Angeles,CA",
     testimonials: [
       {
         name: "Sarah J.",
         comment:
-          "ZenFit completely transformed my approach to fitness. The trainers are knowledgeable and supportive!",
+          "Amazing facility with great trainers. The atmosphere is welcoming and supportive!",
         rating: 5,
       },
       {
         name: "Mark T.",
         comment:
-          "Great facilities and a welcoming atmosphere. The yoga classes are exceptional.",
+          "Great facilities and a welcoming atmosphere. The classes are exceptional.",
         rating: 4,
       },
       {
@@ -156,31 +155,188 @@ const WellnessCenterDetails = () => {
     ],
     upcomingClasses: [
       {
-        name: "Morning Vinyasa",
+        name: "Morning CrossFit",
         time: "7:00 AM",
-        trainer: "Emily Smith",
+        trainer: "Ravi Mehta",
         duration: "60 min",
       },
       {
         name: "HIIT Circuit",
         time: "12:00 PM",
-        trainer: "John Doe",
+        trainer: "Ravi Mehta",
         duration: "45 min",
       },
       {
-        name: "Meditation Session",
+        name: "Mobility Session",
         time: "5:30 PM",
-        trainer: "Emily Smith",
+        trainer: "Ravi Mehta",
         duration: "30 min",
       },
       {
         name: "Strength Basics",
         time: "6:30 PM",
-        trainer: "Michael Rodriguez",
+        trainer: "Ravi Mehta",
         duration: "60 min",
       },
     ],
   };
+
+  // Process API data and merge with defaults
+  const processWellnessCenterData = (apiData) => {
+    if (!apiData) return { ...defaultData };
+
+    // Process amenities
+    const amenities =
+      apiData.amenities?.length > 0
+        ? apiData.amenities.map((item) => item.value)
+        : [
+            "Towel Service",
+            "Locker Rooms",
+            "Showers",
+            "Filtered Water Stations",
+            "Juice Bar",
+            "Free WiFi",
+            "Parking",
+          ];
+
+    // Process equipment
+    const equipment =
+      apiData.equipment?.length > 0
+        ? apiData.equipment.map((item) => item.value)
+        : [
+            "Treadmills",
+            "Ellipticals",
+            "Rowing Machines",
+            "Free Weights",
+            "Dumbbells",
+            "Yoga Mats",
+            "Resistance Bands",
+            "Smith Machines",
+            "Cable Machines",
+          ];
+
+    // Process services
+    const services =
+      apiData.services?.length > 0
+        ? apiData.services
+        : [
+            {
+              name: "Personal Training",
+              icon: "💪",
+              description: "One-on-one sessions with certified trainers",
+            },
+            {
+              name: "Group Classes",
+              icon: "👯",
+              description: "Energetic classes for community building",
+            },
+            {
+              name: "Strength Training",
+              icon: "🏋️",
+              description: "Full equipment for resistance training",
+            },
+            {
+              name: "Recovery Zone",
+              icon: "🔄",
+              description: "Massage and physical therapy",
+            },
+          ];
+
+    // Process trainers
+    const trainers =
+      apiData.trainers?.length > 0
+        ? apiData.trainers.map((trainer) => ({
+            ...trainer,
+            image: trainer.image || "/images/trainer-default.jpg",
+          }))
+        : [
+            {
+              name: "John Doe",
+              specialty: "Strength & Conditioning",
+              bio: "Certified trainer with 10+ years experience in bodybuilding and functional fitness.",
+              image: "/images/trainer1.jpg",
+            },
+            {
+              name: "Emily Smith",
+              specialty: "Yoga & Meditation",
+              bio: "RYT-500 certified instructor specializing in Vinyasa and Yin yoga practices.",
+              image: "/images/trainer2.jpg",
+            },
+          ];
+
+    // Process pricing
+    const pricingObj = {};
+    if (apiData.pricing?.length > 0) {
+      apiData.pricing.forEach((item) => {
+        pricingObj[item.type] = `$${item.price}${
+          item.type === "monthly"
+            ? "/month"
+            : item.type === "annual"
+            ? "/year"
+            : item.type === "dayPass"
+            ? "/day"
+            : item.type === "classPackages"
+            ? "/10 classes"
+            : "/session"
+        }`;
+      });
+    } else {
+      pricingObj.monthly = "$49/month";
+      pricingObj.annual = "$499/year";
+      pricingObj.dayPass = "$10/day";
+      pricingObj.classPackages = "$120/10 classes";
+      pricingObj.personalTraining = "$65/session";
+    }
+
+    return {
+      ...defaultData,
+      name: apiData.name || "Wellness Center",
+      category: apiData.category || "Gym & Wellness Center",
+      description:
+        apiData.description ||
+        "A comprehensive wellness center offering various fitness and wellness programs.",
+      address: apiData.address || defaultData.address,
+      phone: apiData.phone || "+1 (123) 456-7890",
+      email: apiData.email || "info@wellnesscenter.com",
+      website:
+        apiData.website?.replace("https://", "") || "www.wellnesscenter.com",
+      offers: apiData.offers || "First Month Free for New Members",
+      amenities,
+      equipment,
+      services,
+      trainers,
+      pricing: pricingObj,
+      schedule: apiData.schedule || [],
+    };
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">
+            Loading wellness center details...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <p className="text-red-600 text-xl">
+            Error loading wellness center details
+          </p>
+          <p className="text-gray-600 mt-2">Please try again later</p>
+        </div>
+      </div>
+    );
+  }
+
+  const wellnessCenter = processWellnessCenterData(apiData);
 
   const handlePrevImage = () => {
     setActiveImageIndex((prevIndex) =>
@@ -276,7 +432,7 @@ const WellnessCenterDetails = () => {
             {wellnessCenter.trainers.map((trainer, index) => (
               <div
                 key={index}
-                className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-all"
+                className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-all w-80"
               >
                 <div className="h-48 bg-gray-200 relative">
                   <img
@@ -386,60 +542,43 @@ const WellnessCenterDetails = () => {
                 Operating Hours
               </h3>
               <div className="bg-white p-4 rounded-lg shadow-md">
-                <div className="flex items-center mb-2">
-                  <FaClock className="text-blue-500 mr-2" />
-                  <span className="font-medium">Weekdays:</span>
-                  <span className="ml-2">
-                    {wellnessCenter.openingHours.weekdays}
-                  </span>
-                </div>
-                <div className="flex items-center mb-2">
-                  <FaClock className="text-blue-500 mr-2" />
-                  <span className="font-medium">Weekends:</span>
-                  <span className="ml-2">
-                    {wellnessCenter.openingHours.weekends}
-                  </span>
-                </div>
-                <div className="flex items-center text-blue-700">
-                  <FaInfoCircle className="mr-2" />
-                  <span>{wellnessCenter.openingHours.special}</span>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-xl font-semibold text-blue-700 mb-3">
-                Upcoming Classes Today
-              </h3>
-              <div className="space-y-3">
-                {wellnessCenter.upcomingClasses.map((cls, index) => (
-                  <div
-                    key={index}
-                    className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center"
-                  >
-                    <div>
-                      <h4 className="font-medium">{cls.name}</h4>
-                      <p className="text-sm text-gray-600">
-                        with {cls.trainer} • {cls.duration}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium text-blue-600">{cls.time}</p>
-                      <button className="text-xs text-white bg-green-500 px-2 py-1 rounded mt-1 hover:bg-green-600 transition-colors">
-                        Book
-                      </button>
-                    </div>
+                {wellnessCenter.schedule &&
+                wellnessCenter.schedule.length > 0 ? (
+                  <div className="space-y-3">
+                    {wellnessCenter.schedule.map((day, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between"
+                      >
+                        <div className="flex items-center">
+                          <FaClock className="text-blue-500 mr-2" />
+                          <span className="font-medium">
+                            {day.day_of_week}:
+                          </span>
+                        </div>
+                        {day.is_open ? (
+                          <span>
+                            {day.opening_time} - {day.closing_time}
+                          </span>
+                        ) : (
+                          <span className="text-gray-500">Closed</span>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                ))}
+                ) : (
+                  <div className="text-gray-500">
+                    No schedule information available
+                  </div>
+                )}
               </div>
             </div>
           </div>
         );
-
       case "reviews":
         return (
           <div className="space-y-6 min-w-3/4 max-w-7xl">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-center">
               <div className="flex items-center">
                 <span className="text-3xl font-bold text-blue-700 mr-2">
                   {wellnessCenter.rating}
@@ -638,8 +777,8 @@ const WellnessCenterDetails = () => {
           Ready to Start Your Wellness Journey?
         </h2>
         <p className="mb-4">
-          Join ZenFit today and experience the perfect balance of mind and body
-          wellness.
+          Join {wellnessCenter.name} today and experience the perfect balance of
+          mind and body wellness.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <button className="bg-white text-blue-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors">

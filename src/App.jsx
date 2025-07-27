@@ -46,10 +46,7 @@ const App = () => {
             <Route path="/physical-tracker" element={<PhysicalTracking />} />
             <Route path="/track-meal" element={<MealTracker />} />
             <Route path="/centers" element={<WellnessCenters />} />
-            <Route
-              path="/wellness-center"
-              element={<WellnessCenterDetails />}
-            />
+            <Route path="/centers/:id" element={<WellnessCenterDetails />} />
 
             <Route path="/experts/:id" element={<WellnessExpertDetails />} />
             <Route path="/profile" element={<Profile />} />
