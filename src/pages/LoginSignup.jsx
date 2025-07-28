@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaGoogle, FaEnvelope, FaLock } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import { login, signup } from "../services/authService";
+import { useAuth } from "../context/Authcontext";
 
 const LoginSignup = () => {
   const [isSignup, setIsSignup] = useState(false);
@@ -10,6 +11,14 @@ const LoginSignup = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const role = new URLSearchParams(location.search).get("role") || "user";
+  const { user } = useAuth(); // Get user from auth context
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -41,7 +50,7 @@ const LoginSignup = () => {
       // store token and proceed
       localStorage.setItem("token", response.token);
       alert(`${isSignup ? "Signup" : "Login"} successful! 🎉`);
-      navigate("/dashboard");
+      window.location.reload();
     } catch (error) {
       alert(error.message || "Authentication failed");
     }
