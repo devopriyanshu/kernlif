@@ -132,7 +132,7 @@ const Header = () => {
 
           {/* User Actions */}
           <div className="flex items-center space-x-4">
-            {/* Login */}
+            {/* Login - Only show when user is NOT logged in */}
             {!user && (
               <div className="relative">
                 <Link to={"/login"}>
@@ -142,97 +142,102 @@ const Header = () => {
                 </Link>
               </div>
             )}
-            {/* Notifications */}
-            <div className="relative" ref={notificationsRef}>
-              <button
-                onClick={() => {
-                  setNotificationsOpen(!notificationsOpen);
-                  setProfileOpen(false);
-                }}
-                className={`p-2 rounded-full hover:bg-gray-100  transition-colors relative text-black`}
-              >
-                <Bell size={25} className="fill-indigo-50" />
-                <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">
-                  3
-                </span>
-              </button>
 
-              {/* Notifications Dropdown */}
-              {notificationsOpen && (
-                <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-lg py-2 z-20">
-                  <h3 className="px-4 py-2 text-sm font-semibold text-gray-700 border-b">
-                    Notifications
-                  </h3>
-                  <div className="max-h-64 overflow-y-auto">
-                    {notifications.map((notification) => (
-                      <div
-                        key={notification.id}
-                        className="px-4 py-3 hover:bg-gray-50 border-b border-gray-100"
+            {/* Notifications - Only show when user IS logged in */}
+            {user && (
+              <div className="relative" ref={notificationsRef}>
+                <button
+                  onClick={() => {
+                    setNotificationsOpen(!notificationsOpen);
+                    setProfileOpen(false);
+                  }}
+                  className={`p-2 rounded-full hover:bg-gray-100  transition-colors relative text-black`}
+                >
+                  <Bell size={25} className="fill-indigo-50" />
+                  <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">
+                    3
+                  </span>
+                </button>
+
+                {/* Notifications Dropdown */}
+                {notificationsOpen && (
+                  <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-lg py-2 z-20">
+                    <h3 className="px-4 py-2 text-sm font-semibold text-gray-700 border-b">
+                      Notifications
+                    </h3>
+                    <div className="max-h-64 overflow-y-auto">
+                      {notifications.map((notification) => (
+                        <div
+                          key={notification.id}
+                          className="px-4 py-3 hover:bg-gray-50 border-b border-gray-100"
+                        >
+                          <p className="text-sm text-gray-800">
+                            {notification.text}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {notification.time}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="px-4 py-2 text-center">
+                      <Link
+                        to="/"
+                        className="text-sm text-blue-600 hover:text-blue-800"
                       >
-                        <p className="text-sm text-gray-800">
-                          {notification.text}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {notification.time}
-                        </p>
-                      </div>
-                    ))}
+                        Show More
+                      </Link>
+                    </div>
                   </div>
-                  <div className="px-4 py-2 text-center">
+                )}
+              </div>
+            )}
+
+            {/* User Profile - Only show when user IS logged in */}
+            {user && (
+              <div className="relative" ref={profileRef}>
+                <button
+                  onClick={() => {
+                    setProfileOpen(!profileOpen);
+                    setNotificationsOpen(false);
+                  }}
+                  className="flex items-center space-x-2"
+                >
+                  <Avatar name={user?.full_name} width={36} height={36} />
+
+                  <ChevronDown
+                    size={16}
+                    className={`transition-colors text-gray-700`}
+                  />
+                </button>
+
+                {/* Profile Dropdown */}
+                {profileOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20">
                     <Link
-                      to="/"
-                      className="text-sm text-blue-600 hover:text-blue-800"
+                      to="/profile"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                      Show More
+                      My Profile
                     </Link>
+                    <Link
+                      to="/dashboard"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Dashboard
+                    </Link>
+
+                    <div className="border-t border-gray-100 my-1"></div>
+                    <button
+                      onClick={logout}
+                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    >
+                      Sign Out
+                    </button>
                   </div>
-                </div>
-              )}
-            </div>
-
-            {/* User Profile */}
-            <div className="relative" ref={profileRef}>
-              <button
-                onClick={() => {
-                  setProfileOpen(!profileOpen);
-                  setNotificationsOpen(false);
-                }}
-                className="flex items-center space-x-2"
-              >
-                <Avatar name="Priyanshu Patel" width={36} height={36} />
-
-                <ChevronDown
-                  size={16}
-                  className={`transition-colors text-gray-700`}
-                />
-              </button>
-
-              {/* Profile Dropdown */}
-              {profileOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20">
-                  <Link
-                    to="/profile"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    My Profile
-                  </Link>
-                  <Link
-                    to="/dashboard"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Dashboard
-                  </Link>
-
-                  <div className="border-t border-gray-100 my-1"></div>
-                  <button
-                    onClick={logout}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                  >
-                    Sign Out
-                  </button>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
 
             {/* Mobile Menu Button */}
             <button
@@ -277,36 +282,42 @@ const Header = () => {
                 {link.name}
               </Link>
             ))}
-            <div className="pt-4">
-              <Link
-                to="/profile"
-                className="flex items-center py-3 text-gray-700 hover:text-blue-600"
-                onClick={() => setMenuOpen(false)}
-              >
-                <User size={18} className="mr-3" />
-                My Profile
-              </Link>
-              <button
-                onClick={logout}
-                className="flex items-center py-3 text-red-600 hover:text-red-700 w-full"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-3"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+            {/* Mobile menu user options - Only show when user IS logged in */}
+            {user && (
+              <div className="pt-4">
+                <Link
+                  to="/profile"
+                  className="flex items-center py-3 text-gray-700 hover:text-blue-600"
+                  onClick={() => setMenuOpen(false)}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                  />
-                </svg>
-                Sign Out
-              </button>
-            </div>
+                  <User size={18} className="mr-3" />
+                  My Profile
+                </Link>
+                <button
+                  onClick={() => {
+                    logout();
+                    setMenuOpen(false);
+                  }}
+                  className="flex items-center py-3 text-red-600 hover:text-red-700 w-full"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 mr-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                    />
+                  </svg>
+                  Sign Out
+                </button>
+              </div>
+            )}
           </nav>
         </div>
       )}

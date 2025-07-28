@@ -10,7 +10,7 @@ export const fetchCenters = async ({ page = 1, limit = 10, filters = {} }) => {
   params.append("limit", limit);
 
   const response = await secureAxios.get(`/centers/list?${params.toString()}`);
-  return response.data; // should return { centers, page }
+  return response; // should return { centers, page }
 };
 
 export const fetchCenterDetails = async (id) => {

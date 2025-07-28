@@ -15,110 +15,18 @@ import {
   FaChevronRight,
   FaQuoteLeft,
 } from "react-icons/fa";
+import { useParams } from "react-router-dom";
+import { useExpertDetail } from "../../hooks/useExpertHooks";
+import { useCenterDetail } from "../../hooks/useCenterHooks";
 
 // Mock hook for demonstration
-const useExpertDetail = (id) => {
-  // Simulating the actual hook behavior
-  const mockData = {
-    id: 5,
-    name: "BodyForge Functional Center",
-    category: "CrossFit Box",
-    description: "Functional fitness and high-intensity programs",
-    address: null,
-    phone: "7564839201",
-    email: "hello@bodyforge.com",
-    website: "https://bodyforge.com",
-    created_at: "2025-06-15T17:18:05.744Z",
-    offers: "First 2 sessions free",
-    user_id: null,
-    latitude: null,
-    longitude: null,
-    amenities: [
-      {
-        value: "Parking",
-      },
-      {
-        value: "Free Weights",
-      },
-    ],
-    equipment: [
-      {
-        value: "Kettlebells",
-      },
-      {
-        value: "Pull-Up Bars",
-      },
-    ],
-    services: [
-      {
-        name: "CrossFit",
-        icon: "🏋️",
-        description: "Total-body conditioning",
-      },
-      {
-        name: "Mobility Training",
-        icon: "🤸",
-        description: "Improve flexibility",
-      },
-    ],
-    trainers: [
-      {
-        name: "Ravi Mehta",
-        specialty: "CrossFit",
-        bio: "Level 2 Certified",
-        image: "ravi.jpg",
-      },
-    ],
-    pricing: [
-      {
-        type: "monthly",
-        price: "65.00",
-      },
-      {
-        type: "annual",
-        price: "650.00",
-      },
-      {
-        type: "dayPass",
-        price: "18.00",
-      },
-      {
-        type: "classPackages",
-        price: "180.00",
-      },
-      {
-        type: "personalTraining",
-        price: "50.00",
-      },
-    ],
-    schedule: [
-      {
-        day_of_week: "Monday",
-        is_open: true,
-        opening_time: "05:30:00",
-        closing_time: "22:00:00",
-      },
-      {
-        day_of_week: "Wednesday",
-        is_open: true,
-        opening_time: "05:30:00",
-        closing_time: "22:00:00",
-      },
-    ],
-  };
 
-  return {
-    data: mockData,
-    isLoading: false,
-    error: null,
-  };
-};
-
-const WellnessCenterDetails = ({ expertId = 5 }) => {
+const WellnessCenterDetails = () => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [activeTab, setActiveTab] = useState("about");
-
-  const { data: apiData, isLoading, error } = useExpertDetail(expertId);
+  const { id } = useParams();
+  const { data: apiData, isLoading, error } = useCenterDetail(id);
+  console.log("data", apiData);
 
   // Default data for missing fields
   const defaultData = {
