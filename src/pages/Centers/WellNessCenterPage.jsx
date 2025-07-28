@@ -22,116 +22,115 @@ import {
   FaMapMarkerAlt,
   FaCalendarAlt,
 } from "react-icons/fa";
-import { useCenters } from "../../hooks/useCenterHooks";
 
 // Sample Wellness Center Data
-// const centersData = [
-//   {
-//     id: 1,
-//     name: "ZenFit Wellness Hub",
-//     category: "Gym & Yoga Center",
-//     rating: 4.8,
-//     reviewCount: 156,
-//     location: "Los Angeles, CA",
-//     distance: 1.2,
-//     image: "/api/placeholder/600/400",
-//     description:
-//       "A holistic wellness center offering premium fitness equipment, yoga classes, and meditation sessions.",
-//     amenities: [
-//       "24/7 Access",
-//       "Personal Training",
-//       "Meditation Room",
-//       "Spa Services",
-//     ],
-//     prices: "$$$",
-//     openHours: "6:00 AM - 10:00 PM",
-//   },
-//   {
-//     id: 2,
-//     name: "Tranquil Meditation Center",
-//     category: "Meditation & Relaxation",
-//     rating: 4.9,
-//     reviewCount: 203,
-//     location: "San Francisco, CA",
-//     distance: 0.8,
-//     image: "/api/placeholder/600/400",
-//     description:
-//       "Find your inner peace with guided meditation sessions and relaxation therapies in our serene environment.",
-//     amenities: ["Guided Sessions", "Sound Healing", "Aromatherapy", "Tea Room"],
-//     prices: "$$",
-//     openHours: "7:00 AM - 9:00 PM",
-//   },
-//   {
-//     id: 3,
-//     name: "Pure Fitness Club",
-//     category: "Gym & Personal Training",
-//     rating: 4.7,
-//     reviewCount: 189,
-//     location: "New York, NY",
-//     distance: 2.5,
-//     image: "/api/placeholder/600/400",
-//     description:
-//       "State-of-the-art fitness facility with certified trainers and customized workout programs.",
-//     amenities: [
-//       "Modern Equipment",
-//       "Group Classes",
-//       "Nutrition Coaching",
-//       "Recovery Zone",
-//     ],
-//     prices: "$$$",
-//     openHours: "5:00 AM - 11:00 PM",
-//   },
-//   {
-//     id: 4,
-//     name: "Harmony Yoga Studio",
-//     category: "Yoga & Wellness",
-//     rating: 4.6,
-//     reviewCount: 142,
-//     location: "Austin, TX",
-//     distance: 1.5,
-//     image: "/api/placeholder/600/400",
-//     description:
-//       "Authentic yoga practices in a peaceful setting with experienced instructors for all levels.",
-//     amenities: ["Hot Yoga", "Aerial Yoga", "Beginners Classes", "Workshops"],
-//     prices: "$$",
-//     openHours: "6:30 AM - 8:30 PM",
-//   },
-//   {
-//     id: 5,
-//     name: "Mindful Health Collective",
-//     category: "Holistic Wellness",
-//     rating: 4.5,
-//     reviewCount: 98,
-//     location: "Portland, OR",
-//     distance: 3.1,
-//     image: "/api/placeholder/600/400",
-//     description:
-//       "A community-focused wellness center offering holistic health services and classes.",
-//     amenities: [
-//       "Acupuncture",
-//       "Nutrition Counseling",
-//       "Tai Chi",
-//       "Community Events",
-//     ],
-//     prices: "$$",
-//     openHours: "8:00 AM - 7:00 PM",
-//   },
-//   {
-//     id: 6,
-//     name: "Elevate Health Club",
-//     category: "Gym & Personal Training",
-//     rating: 4.8,
-//     reviewCount: 176,
-//     location: "Chicago, IL",
-//     distance: 2.8,
-//     image: "/api/placeholder/600/400",
-//     description:
-//       "Elevate your fitness journey with high-intensity training and premium facilities.",
-//     amenities: ["HIIT Classes", "Boxing", "Indoor Pool", "Sauna"],
-//     prices: "$$$",
-//     openHours: "5:30 AM - 10:00 PM",
-//   },
-// ];
+const centersData = [
+  {
+    id: 1,
+    name: "ZenFit Wellness Hub",
+    category: "Gym & Yoga Center",
+    rating: 4.8,
+    reviewCount: 156,
+    location: "Los Angeles, CA",
+    distance: 1.2,
+    image: "/api/placeholder/600/400",
+    description:
+      "A holistic wellness center offering premium fitness equipment, yoga classes, and meditation sessions.",
+    amenities: [
+      "24/7 Access",
+      "Personal Training",
+      "Meditation Room",
+      "Spa Services",
+    ],
+    prices: "$$$",
+    openHours: "6:00 AM - 10:00 PM",
+  },
+  {
+    id: 2,
+    name: "Tranquil Meditation Center",
+    category: "Meditation & Relaxation",
+    rating: 4.9,
+    reviewCount: 203,
+    location: "San Francisco, CA",
+    distance: 0.8,
+    image: "/api/placeholder/600/400",
+    description:
+      "Find your inner peace with guided meditation sessions and relaxation therapies in our serene environment.",
+    amenities: ["Guided Sessions", "Sound Healing", "Aromatherapy", "Tea Room"],
+    prices: "$$",
+    openHours: "7:00 AM - 9:00 PM",
+  },
+  {
+    id: 3,
+    name: "Pure Fitness Club",
+    category: "Gym & Personal Training",
+    rating: 4.7,
+    reviewCount: 189,
+    location: "New York, NY",
+    distance: 2.5,
+    image: "/api/placeholder/600/400",
+    description:
+      "State-of-the-art fitness facility with certified trainers and customized workout programs.",
+    amenities: [
+      "Modern Equipment",
+      "Group Classes",
+      "Nutrition Coaching",
+      "Recovery Zone",
+    ],
+    prices: "$$$",
+    openHours: "5:00 AM - 11:00 PM",
+  },
+  {
+    id: 4,
+    name: "Harmony Yoga Studio",
+    category: "Yoga & Wellness",
+    rating: 4.6,
+    reviewCount: 142,
+    location: "Austin, TX",
+    distance: 1.5,
+    image: "/api/placeholder/600/400",
+    description:
+      "Authentic yoga practices in a peaceful setting with experienced instructors for all levels.",
+    amenities: ["Hot Yoga", "Aerial Yoga", "Beginners Classes", "Workshops"],
+    prices: "$$",
+    openHours: "6:30 AM - 8:30 PM",
+  },
+  {
+    id: 5,
+    name: "Mindful Health Collective",
+    category: "Holistic Wellness",
+    rating: 4.5,
+    reviewCount: 98,
+    location: "Portland, OR",
+    distance: 3.1,
+    image: "/api/placeholder/600/400",
+    description:
+      "A community-focused wellness center offering holistic health services and classes.",
+    amenities: [
+      "Acupuncture",
+      "Nutrition Counseling",
+      "Tai Chi",
+      "Community Events",
+    ],
+    prices: "$$",
+    openHours: "8:00 AM - 7:00 PM",
+  },
+  {
+    id: 6,
+    name: "Elevate Health Club",
+    category: "Gym & Personal Training",
+    rating: 4.8,
+    reviewCount: 176,
+    location: "Chicago, IL",
+    distance: 2.8,
+    image: "/api/placeholder/600/400",
+    description:
+      "Elevate your fitness journey with high-intensity training and premium facilities.",
+    amenities: ["HIIT Classes", "Boxing", "Indoor Pool", "Sauna"],
+    prices: "$$$",
+    openHours: "5:30 AM - 10:00 PM",
+  },
+];
 
 // List of categories for filtering
 const categories = [
@@ -161,7 +160,6 @@ const WellnessCenters = () => {
   const [sortBy, setSortBy] = useState("rating");
   const [favorites, setFavorites] = useState([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const { data: centersData, isLoading, isError } = useCenters();
   const [filteredCenters, setFilteredCenters] = useState(centersData);
   const [userLocation, setUserLocation] = useState(null);
   const [filter, setFilter] = useState("All");
@@ -182,7 +180,7 @@ const WellnessCenters = () => {
 
   // Handle filtering and sorting
   useEffect(() => {
-    let results = centersData?.filter((center) => {
+    let results = centersData.filter((center) => {
       const matchesSearch =
         center.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         center.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -267,7 +265,7 @@ const WellnessCenters = () => {
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             >
-              <option value="">All Categories</option>
+              <option value="All">All Categories</option>
               <option value="Gym & Yoga Center">Gym & Yoga Center</option>
               <option value="Yoga Studio">Yoga Studio</option>
               <option value="Fitness Center">Fitness Center</option>
@@ -328,7 +326,7 @@ const WellnessCenters = () => {
       </div>
 
       {/* Centers Grid/List */}
-      {filteredCenters?.length > 0 ? (
+      {filteredCenters.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6">
           {filteredCenters.map((center) => (
             <Link
@@ -411,9 +409,9 @@ const WellnessCenters = () => {
                       {amenity}
                     </span>
                   ))}
-                  {center.amenities?.length > 2 && (
+                  {center.amenities.length > 2 && (
                     <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                      +{center.amenities?.length - 2} more
+                      +{center.amenities.length - 2} more
                     </span>
                   )}
                 </div>
