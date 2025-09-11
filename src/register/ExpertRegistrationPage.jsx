@@ -80,7 +80,7 @@ const ExpertRegistrationPage = () => {
     if (files && files[0]) {
       setFormData({
         ...formData,
-        [name]: URL.createObjectURL(files[0]),
+        [name]: files[0], // keep File
       });
     }
   };
@@ -180,21 +180,55 @@ const ExpertRegistrationPage = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In a real app, you would send this data to your backend
-    console.log({
-      ...formData,
-      qualifications: qualifications.map((q) => q.value).filter(Boolean),
-      specialties: specialties.map((s) => s.value).filter(Boolean),
-      services,
-      availability,
-      contact,
-      faq,
-    });
 
-    // For demonstration, go to preview
-    setShowPreview(true);
+    const formDataData = new FormData();
+
+    // Basic fields
+    formDataData.append("name", formData.name);
+    formDataData.append("category", formData.category);
+    formDataData.append("experience", formData.experience);
+    formDataData.append("bio", formData.bio);
+
+    // Languages
+    formDataData.append("languages", JSON.stringify(formData.languages));
+
+    // Profile & background images
+    if (formData.profilePic) {
+      formDataData.append("profilePic", formData.profilePic); // send actual file, not just preview URL
+    }
+    if (formData.backgroundImage) {
+      formDataData.append("backgroundImage", formData.backgroundImage);
+    }
+
+    // Contact
+    formDataData.append("contact", JSON.stringify(contact));
+
+    // Qualifications, specialties, services, availability, faq
+    formDataData.append("qualifications", JSON.stringify(qualifications));
+    formDataData.append("specialties", JSON.stringify(specialties));
+    formDataData.append("services", JSON.stringify(services));
+    formDataData.append("availability", JSON.stringify(availability));
+    formDataData.append("faq", JSON.stringify(faq));
+    console.log();
+
+    try {
+      const res = await fetch("http://localhost:4000/experts/register", {
+        method: "POST",
+        body: formDataData,
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("Expert registered successfully!");
+      } else {
+        alert("Error: " + data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong!");
+    }
   };
 
   // Render form progress

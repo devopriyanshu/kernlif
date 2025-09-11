@@ -16,6 +16,7 @@ import {
   FaMinus,
   FaTrash,
   FaArrowLeft,
+  FaUser,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
@@ -25,11 +26,15 @@ const WellnessCenterRegistration = () => {
     category: "",
     description: "",
     address: "",
+    longitude: "",
+    latitude: "",
     phone: "",
     email: "",
     website: "",
   });
   const [images, setImages] = useState([]);
+  const [centerImage, setCenterImage] = useState(null);
+
   const [amenities, setAmenities] = useState([{ value: "" }]);
   const [equipment, setEquipment] = useState([{ value: "" }]);
   const [services, setServices] = useState([
@@ -114,6 +119,16 @@ const WellnessCenterRegistration = () => {
   const removeObjectArrayItem = (index, setState) => {
     setState((prevState) => prevState.filter((_, i) => i !== index));
   };
+  const handleCenterImageUpload = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setCenterImage({
+        file,
+        preview: URL.createObjectURL(file),
+        name: file.name,
+      });
+    }
+  };
 
   // Available emojis for services
   const availableIcons = [
@@ -183,24 +198,51 @@ const WellnessCenterRegistration = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation
-    if (!formData.basicInfo.name || !formData.basicInfo.category) {
-      alert("Please fill out all required fields.");
-      return;
+    const formData = new FormData();
+
+    // Append basicData fields
+    Object.entries(basicData).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    // Append main image
+    if (centerImage?.file) {
+      formData.append("centerImage", centerImage.file);
     }
 
-    // Additional validation as needed
-    if (formData.images.length < 4) {
-      alert("Please upload at least 4 images.");
-      return;
-    }
+    // Append gallery images
+    images.forEach((img) => {
+      formData.append("images", img.file);
+    });
 
-    // Submit data (replace with API call)
-    console.log("Form Data Submitted:", formData);
-    alert("Registration submitted successfully!");
+    // Example: amenities, equipment, services as JSON
+    formData.append("amenities", JSON.stringify(amenities));
+    formData.append("equipment", JSON.stringify(equipment));
+    formData.append("services", JSON.stringify(services));
+    formData.append("trainers", JSON.stringify(trainers));
+    formData.append("pricingData", JSON.stringify(pricingData));
+    formData.append("offers", offers);
+    formData.append("schedule", JSON.stringify(schedule));
+
+    try {
+      const res = await fetch("http://localhost:4000/centers/register", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert("Center registered successfully!");
+      } else {
+        alert("Error: " + data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    }
   };
 
   // Render basic information section
@@ -252,6 +294,29 @@ const WellnessCenterRegistration = () => {
             </option>
           </select>
         </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-2">
+            Center Image*
+          </label>
+          <div className="flex items-start space-x-4">
+            {centerImage?.preview ? (
+              <img
+                src={centerImage.preview}
+                alt="Main Preview"
+                className="w-32 h-32 rounded-lg object-cover border-2 border-gray-200"
+              />
+            ) : (
+              <div className="w-32 h-32 rounded-lg bg-gray-200 flex items-center justify-center border-2 border-gray-300">
+                <span className="text-gray-500">No Image</span>
+              </div>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleCenterImageUpload}
+            />
+          </div>
+        </div>
 
         <div className="md:col-span-2">
           <label className="block text-gray-700 font-medium mb-2">
@@ -271,17 +336,121 @@ const WellnessCenterRegistration = () => {
           <label className="block text-gray-700 font-medium mb-2">
             Address*
           </label>
-          <div className="flex items-center">
-            <FaMapMarkerAlt className="text-blue-500 mr-2" />
+
+          {/* Address parts */}
+          <div className="flex flex-col space-y-2 mb-2">
             <input
               type="text"
-              name="address"
-              value={basicData.address}
-              onChange={(e) => handleChange(e, setBasicData)}
+              placeholder="Street"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
-              placeholder="Street address, City, State, ZIP"
+              required
+              onChange={(e) =>
+                setBasicData({
+                  ...basicData,
+                  address: `${e.target.value}, ${basicData.city || ""}, ${
+                    basicData.state || ""
+                  }, ${basicData.zip || ""}`,
+                })
+              }
+            />
+            <div className="flex space-x-2">
+              <input
+                type="text"
+                placeholder="City"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
+                required
+                onChange={(e) =>
+                  setBasicData({
+                    ...basicData,
+                    address: `${basicData.address.split(",")[0] || ""}, ${
+                      e.target.value
+                    }, ${basicData.state || ""}, ${basicData.zip || ""}`,
+                    city: e.target.value,
+                  })
+                }
+              />
+              <input
+                type="text"
+                placeholder="State"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
+                required
+                onChange={(e) =>
+                  setBasicData({
+                    ...basicData,
+                    address: `${basicData.address.split(",")[0] || ""}, ${
+                      basicData.city || ""
+                    }, ${e.target.value}, ${basicData.zip || ""}`,
+                    state: e.target.value,
+                  })
+                }
+              />
+              <input
+                type="text"
+                placeholder="ZIP"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
+                required
+                onChange={(e) =>
+                  setBasicData({
+                    ...basicData,
+                    address: `${basicData.address.split(",")[0] || ""}, ${
+                      basicData.city || ""
+                    }, ${basicData.state || ""}, ${e.target.value}`,
+                    zip: e.target.value,
+                  })
+                }
+              />
+            </div>
+          </div>
+
+          {/* Latitude & Longitude */}
+          <div className="flex space-x-2 mb-2">
+            <input
+              type="number"
+              placeholder="Latitude"
+              value={basicData.latitude || ""}
+              onChange={(e) =>
+                setBasicData({ ...basicData, latitude: e.target.value })
+              }
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
+              step="any"
               required
             />
+            <input
+              type="number"
+              placeholder="Longitude"
+              value={basicData.longitude || ""}
+              onChange={(e) =>
+                setBasicData({ ...basicData, longitude: e.target.value })
+              }
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500"
+              step="any"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => {
+                if (navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                      setBasicData({
+                        ...basicData,
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                      });
+                    },
+                    (error) => {
+                      console.error("Error fetching location:", error);
+                      alert("Could not fetch location. Please enter manually.");
+                    }
+                  );
+                } else {
+                  alert("Geolocation is not supported by your browser.");
+                }
+              }}
+              className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+            >
+              Use Current Location
+            </button>
           </div>
         </div>
 

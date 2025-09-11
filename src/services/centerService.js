@@ -1,25 +1,28 @@
 import { secureAxios } from "./authAxios";
 
 export const fetchCenters = async ({ page = 1, limit = 10, filters = {} }) => {
-  const params = new URLSearchParams();
+  try {
+    const params = {};
+    if (filters.category) params.category = filters.category;
+    if (filters.search) params.search = filters.search;
 
-  if (filters.category) params.append("category", filters.category);
-  if (filters.city) params.append("city", filters.city);
-  if (filters.search) params.append("search", filters.search);
-  params.append("page", page);
-  params.append("limit", limit);
+    params.page = page;
+    params.limit = limit;
 
-  const response = await secureAxios.get(`/centers/list?${params.toString()}`);
-  return response; // should return { centers, page }
+    const response = await secureAxios.get(`/centers/list`, { params });
+    return response.data || { centers: [], page: 1 };
+  } catch (error) {
+    console.error("Error fetching centers:", error);
+    return { centers: [], page: 1 }; // fallback
+  }
 };
 
 export const fetchCenterDetails = async (id) => {
   try {
     const response = await secureAxios.get(`centers/${id}`);
-    console.log(response);
-
-    return response;
-  } catch {
-    console.error("error fetching center details:", error);
+    return response.data || {};
+  } catch (error) {
+    console.error("Error fetching center details:", error);
+    return {};
   }
 };

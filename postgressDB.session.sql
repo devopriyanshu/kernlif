@@ -1,2 +1,1 @@
-SELECT * FROM central_users;
-
+ALTER TABLE centers ADD COLUMN center_image TEXT ;
