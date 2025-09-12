@@ -157,10 +157,10 @@ const ExpertRegistrationPage = () => {
 
   // Handle contact info changes
   const handleContactChange = (field, value) => {
-    setContact({
-      ...contact,
+    setContact((prev) => ({
+      ...prev,
       [field]: value,
-    });
+    }));
   };
 
   // Handle language selection
@@ -192,7 +192,12 @@ const ExpertRegistrationPage = () => {
     formDataData.append("bio", formData.bio);
 
     // Languages
-    formDataData.append("languages", JSON.stringify(formData.languages));
+    // Languages
+    if (formData.languages?.length) {
+      formData.languages.forEach((lang) => {
+        formDataData.append("languages", lang); // multiple form-data fields with same key
+      });
+    }
 
     // Profile & background images
     if (formData.profilePic) {
