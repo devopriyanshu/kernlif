@@ -14,6 +14,7 @@ export const fetchExpertsList = async (
     if (sortBy) params.sortBy = sortBy;
     params.page = page;
     params.limit = limit;
+    console.log(params);
 
     const response = await secureAxios.get("experts/list", { params });
     console.log("rsponse service", response.data);

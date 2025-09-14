@@ -98,49 +98,6 @@ const WellnessExperts = () => {
 
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
 
-  // Simulate data loading
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   // Simulating API fetch delay
-  //   setTimeout(() => {
-  //     setExperts(expertsData);
-  //     setIsLoading(false);
-  //   }, 800);
-  // }, []);
-
-  // Handle filtering and sorting
-  // const filteredExperts = experts
-  //   .filter((expert) => {
-  //     const matchesSearch =
-  //       expert.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //       expert.specialty.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //       expert.specialFocus.some((focus) =>
-  //         focus.toLowerCase().includes(searchTerm.toLowerCase())
-  //       );
-
-  //     const matchesCategory = filter === "All" || expert.specialty === filter;
-  //     const matchesLocation =
-  //       locationFilter === "All" || expert.location.includes(locationFilter);
-  //     const matchesFeatured = !showFeaturedOnly || expert.featured;
-
-  //     return (
-  //       matchesSearch && matchesCategory && matchesLocation && matchesFeatured
-  //     );
-  //   })
-  //   .sort((a, b) => {
-  //     switch (sortBy) {
-  //       case "rating":
-  //         return b.rating - a.rating;
-  //       case "experience":
-  //         return parseInt(b.experience) - parseInt(a.experience);
-  //       case "reviews":
-  //         return b.reviews - a.reviews;
-  //       default:
-  //         return b.rating - a.rating;
-  //     }
-  //   });
-
-  // Function to render star ratings
   const renderStars = (rating) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -249,7 +206,7 @@ const WellnessExperts = () => {
 
         <div className="flex flex-wrap gap-4 items-center">
           {/* Location Filter */}
-          <div className="flex items-center bg-gray-50 border border-gray-300 rounded-lg p-3">
+          {/* <div className="flex items-center bg-gray-50 border border-gray-300 rounded-lg p-3">
             <FaMapMarkerAlt className="text-blue-500 mr-2" />
             <select
               className="bg-transparent focus:outline-none"
@@ -257,13 +214,11 @@ const WellnessExperts = () => {
               onChange={(e) => setLocationFilter(e.target.value)}
             >
               <option value="All">All Locations</option>
-              <option value="Online">Online Available</option>
-              <option value="In-person">In-person Available</option>
             </select>
-          </div>
+          </div> */}
 
           {/* Featured Checkbox */}
-          <div className="flex items-center ml-2">
+          {/* <div className="flex items-center ml-2">
             <input
               type="checkbox"
               id="featured"
@@ -274,7 +229,7 @@ const WellnessExperts = () => {
             <label htmlFor="featured" className="ml-2 text-gray-700">
               Featured Experts Only
             </label>
-          </div>
+          </div> */}
         </div>
       </div>
 

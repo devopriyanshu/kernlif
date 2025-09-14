@@ -168,18 +168,17 @@ const WellnessCenters = () => {
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
   // const [centersData, setCentersData] = useState([]);
 
-  const { data: centersData = [], isLoading } = useCenters({
-    filters: {
-      search: searchTerm,
-      category:
-        selectedCategory !== "All Categories" ? selectedCategory : undefined,
-    },
-    page: 1,
-    limit: 10,
-  });
+  const filters = {
+    search: searchTerm,
+    category: filter !== "All" ? filter : null,
+    sortBy,
+  };
+  const { data: centersData = [], isLoading } = useCenters(filters);
+  console.log("centersData", centersData);
+
   const [filteredCenters, setFilteredCenters] = useState(centersData);
 
-  console.log(filteredCenters);
+  console.log("filteredCenters", filteredCenters);
 
   // Simulate getting user's location
   useEffect(() => {
@@ -192,48 +191,6 @@ const WellnessCenters = () => {
       });
     }, 1000);
   }, []);
-
-  // Handle filtering and sorting
-  useEffect(() => {
-    let results = centersData.filter((center) => {
-      const matchesSearch =
-        center.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        center.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        center.amenities.some((amenity) =>
-          amenity.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-
-      const matchesCategory =
-        selectedCategory === "All Categories" ||
-        center.category === selectedCategory;
-
-      const matchesLocation =
-        selectedLocation === "All Locations" ||
-        center.location === selectedLocation;
-
-      return matchesSearch && matchesCategory && matchesLocation;
-    });
-
-    // Sort results
-    if (sortBy === "rating") {
-      results = results.sort((a, b) => b.rating - a.rating);
-    } else if (sortBy === "distance") {
-      results = results.sort((a, b) => a.distance - b.distance);
-    } else if (sortBy === "name") {
-      results = results.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    setFilteredCenters(results);
-  }, [searchTerm, selectedCategory, selectedLocation, sortBy]);
-
-  // Toggle favorite
-  // const toggleFavorite = (e, id) => {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-  //   setFavorites((prev) =>
-  //     prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id]
-  //   );
-  // };
 
   return (
     <div className=" mx-auto  bg-gray-100 min-h-screen">
@@ -311,7 +268,7 @@ const WellnessCenters = () => {
 
         <div className="flex flex-wrap gap-4 items-center">
           {/* Location Filter */}
-          <div className="flex items-center bg-gray-50 border border-gray-300 rounded-lg p-3">
+          {/* <div className="flex items-center bg-gray-50 border border-gray-300 rounded-lg p-3">
             <FaMapMarkerAlt className="text-blue-500 mr-2" />
             <select
               className="bg-transparent focus:outline-none"
@@ -322,10 +279,10 @@ const WellnessCenters = () => {
               <option value="Online">Online Available</option>
               <option value="In-person">In-person Available</option>
             </select>
-          </div>
+          </div> */}
 
           {/* Featured Checkbox */}
-          <div className="flex items-center ml-2">
+          {/* <div className="flex items-center ml-2">
             <input
               type="checkbox"
               id="featured"
@@ -336,16 +293,16 @@ const WellnessCenters = () => {
             <label htmlFor="featured" className="ml-2 text-gray-700">
               Open Now
             </label>
-          </div>
+          </div> */}
         </div>
       </div>
 
       {/* Centers Grid/List */}
-      {filteredCenters.length > 0 ? (
+      {centersData.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6">
-          {filteredCenters.map((center) => (
+          {centersData.map((center) => (
             <Link
-              to={`/wellness-center`}
+              to={`/centers/${center.id}`}
               key={center.id}
               className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 flex-col h-full"
             >

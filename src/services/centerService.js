@@ -1,11 +1,17 @@
 import { secureAxios } from "./authAxios";
 
-export const fetchCenters = async ({ page = 1, limit = 10, filters = {} }) => {
+export const fetchCenters = async (
+  search,
+  category,
+  sortBy,
+  page = 1,
+  limit = 10
+) => {
   try {
     const params = {};
-    if (filters.category) params.category = filters.category;
-    if (filters.search) params.search = filters.search;
-
+    if (category) params.category = category;
+    if (search) params.search = search;
+    if (sortBy) params.sortBy = sortBy;
     params.page = page;
     params.limit = limit;
 
@@ -20,7 +26,7 @@ export const fetchCenters = async ({ page = 1, limit = 10, filters = {} }) => {
 export const fetchCenterDetails = async (id) => {
   try {
     const response = await secureAxios.get(`centers/${id}`);
-    return response.data || {};
+    return response || {};
   } catch (error) {
     console.error("Error fetching center details:", error);
     return {};

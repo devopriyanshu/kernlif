@@ -16,7 +16,6 @@ import {
   FaQuoteLeft,
 } from "react-icons/fa";
 import { useParams } from "react-router-dom";
-import { useExpertDetail } from "../../hooks/useExpertHooks";
 import { useCenterDetail } from "../../hooks/useCenterHooks";
 
 // Mock hook for demonstration
@@ -28,127 +27,24 @@ const WellnessCenterDetails = () => {
   const { data: apiData, isLoading, error } = useCenterDetail(id);
   console.log("data", apiData);
 
-  // Default data for missing fields
-  const defaultData = {
-    images: [
-      "/images/wellness1.jpg",
-      "/images/wellness2.jpg",
-      "/images/wellness3.jpg",
-      "/images/wellness4.jpg",
-    ],
-    rating: 4.8,
-    reviews: 256,
-    address: "123 Wellness Street, Los Angeles, CA 90001",
-    googleMapsEmbed:
-      "https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=123+Wellness+Street,Los+Angeles,CA",
-    testimonials: [
-      {
-        name: "Sarah J.",
-        comment:
-          "Amazing facility with great trainers. The atmosphere is welcoming and supportive!",
-        rating: 5,
-      },
-      {
-        name: "Mark T.",
-        comment:
-          "Great facilities and a welcoming atmosphere. The classes are exceptional.",
-        rating: 4,
-      },
-      {
-        name: "Priya M.",
-        comment:
-          "I love the variety of equipment and classes. Definitely worth the membership fee.",
-        rating: 5,
-      },
-    ],
-    upcomingClasses: [
-      {
-        name: "Morning CrossFit",
-        time: "7:00 AM",
-        trainer: "Ravi Mehta",
-        duration: "60 min",
-      },
-      {
-        name: "HIIT Circuit",
-        time: "12:00 PM",
-        trainer: "Ravi Mehta",
-        duration: "45 min",
-      },
-      {
-        name: "Mobility Session",
-        time: "5:30 PM",
-        trainer: "Ravi Mehta",
-        duration: "30 min",
-      },
-      {
-        name: "Strength Basics",
-        time: "6:30 PM",
-        trainer: "Ravi Mehta",
-        duration: "60 min",
-      },
-    ],
-  };
-
-  // Process API data and merge with defaults
+  // Process API data without defaults
   const processWellnessCenterData = (apiData) => {
-    if (!apiData) return { ...defaultData };
+    if (!apiData) return {};
 
     // Process amenities
     const amenities =
       apiData.amenities?.length > 0
         ? apiData.amenities.map((item) => item.value)
-        : [
-            "Towel Service",
-            "Locker Rooms",
-            "Showers",
-            "Filtered Water Stations",
-            "Juice Bar",
-            "Free WiFi",
-            "Parking",
-          ];
+        : [];
 
     // Process equipment
     const equipment =
       apiData.equipment?.length > 0
         ? apiData.equipment.map((item) => item.value)
-        : [
-            "Treadmills",
-            "Ellipticals",
-            "Rowing Machines",
-            "Free Weights",
-            "Dumbbells",
-            "Yoga Mats",
-            "Resistance Bands",
-            "Smith Machines",
-            "Cable Machines",
-          ];
+        : [];
 
     // Process services
-    const services =
-      apiData.services?.length > 0
-        ? apiData.services
-        : [
-            {
-              name: "Personal Training",
-              icon: "💪",
-              description: "One-on-one sessions with certified trainers",
-            },
-            {
-              name: "Group Classes",
-              icon: "👯",
-              description: "Energetic classes for community building",
-            },
-            {
-              name: "Strength Training",
-              icon: "🏋️",
-              description: "Full equipment for resistance training",
-            },
-            {
-              name: "Recovery Zone",
-              icon: "🔄",
-              description: "Massage and physical therapy",
-            },
-          ];
+    const services = apiData.services?.length > 0 ? apiData.services : [];
 
     // Process trainers
     const trainers =
@@ -157,20 +53,7 @@ const WellnessCenterDetails = () => {
             ...trainer,
             image: trainer.image || "/images/trainer-default.jpg",
           }))
-        : [
-            {
-              name: "John Doe",
-              specialty: "Strength & Conditioning",
-              bio: "Certified trainer with 10+ years experience in bodybuilding and functional fitness.",
-              image: "/images/trainer1.jpg",
-            },
-            {
-              name: "Emily Smith",
-              specialty: "Yoga & Meditation",
-              bio: "RYT-500 certified instructor specializing in Vinyasa and Yin yoga practices.",
-              image: "/images/trainer2.jpg",
-            },
-          ];
+        : [];
 
     // Process pricing
     const pricingObj = {};
@@ -188,33 +71,35 @@ const WellnessCenterDetails = () => {
             : "/session"
         }`;
       });
-    } else {
-      pricingObj.monthly = "$49/month";
-      pricingObj.annual = "$499/year";
-      pricingObj.dayPass = "$10/day";
-      pricingObj.classPackages = "$120/10 classes";
-      pricingObj.personalTraining = "$65/session";
     }
 
+    // Process images
+    const images =
+      apiData.images?.length > 0
+        ? apiData.images.map((img) => img.image_url)
+        : [];
+
     return {
-      ...defaultData,
-      name: apiData.name || "Wellness Center",
-      category: apiData.category || "Gym & Wellness Center",
-      description:
-        apiData.description ||
-        "A comprehensive wellness center offering various fitness and wellness programs.",
-      address: apiData.address || defaultData.address,
-      phone: apiData.phone || "+1 (123) 456-7890",
-      email: apiData.email || "info@wellnesscenter.com",
-      website:
-        apiData.website?.replace("https://", "") || "www.wellnesscenter.com",
-      offers: apiData.offers || "First Month Free for New Members",
+      name: apiData.name || "",
+      category: apiData.category || "",
+      description: apiData.description || "",
+      address: apiData.address || "",
+      phone: apiData.phone || "",
+      email: apiData.email || "",
+      website: apiData.website?.replace("https://", "") || "",
+      offers: apiData.offers || "",
+      center_image: apiData.center_image || "",
+      images,
       amenities,
       equipment,
       services,
       trainers,
       pricing: pricingObj,
       schedule: apiData.schedule || [],
+      rating: 0, // No rating data in API
+      reviews: 0, // No reviews data in API
+      testimonials: [], // No testimonials data in API
+      upcomingClasses: [], // No upcoming classes data in API
     };
   };
 
@@ -245,6 +130,7 @@ const WellnessCenterDetails = () => {
   }
 
   const wellnessCenter = processWellnessCenterData(apiData);
+  console.log("wellnessCenter", wellnessCenter);
 
   const handlePrevImage = () => {
     setActiveImageIndex((prevIndex) =>
@@ -277,35 +163,47 @@ const WellnessCenterDetails = () => {
         return (
           <div className=" space-y-4 min-w-3/4  max-w-7xl">
             <p className="text-gray-700 leading-relaxed">
-              {wellnessCenter.description}
+              {wellnessCenter.description || "No description available."}
             </p>
 
             <div className="mt-6">
               <h3 className="text-xl font-semibold text-blue-700 mb-3">
                 Amenities
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {wellnessCenter.amenities.map((amenity, index) => (
-                  <div key={index} className="flex items-center">
-                    <div className="h-2 w-2 bg-blue-500 rounded-full mr-2"></div>
-                    <span>{amenity}</span>
-                  </div>
-                ))}
-              </div>
+              {wellnessCenter.amenities.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {wellnessCenter.amenities.map((amenity, index) => (
+                    <div key={index} className="flex items-center">
+                      <div className="h-2 w-2 bg-blue-500 rounded-full mr-2"></div>
+                      <span>{amenity}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500">
+                  No amenities information available.
+                </p>
+              )}
             </div>
 
             <div className="mt-6">
               <h3 className="text-xl font-semibold text-blue-700 mb-3">
                 Equipment
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {wellnessCenter.equipment.map((equipment, index) => (
-                  <div key={index} className="flex items-center">
-                    <div className="h-2 w-2 bg-blue-500 rounded-full mr-2"></div>
-                    <span>{equipment}</span>
-                  </div>
-                ))}
-              </div>
+              {wellnessCenter.equipment.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {wellnessCenter.equipment.map((equipment, index) => (
+                    <div key={index} className="flex items-center">
+                      <div className="h-2 w-2 bg-blue-500 rounded-full mr-2"></div>
+                      <span>{equipment}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500">
+                  No equipment information available.
+                </p>
+              )}
             </div>
           </div>
         );
@@ -313,132 +211,166 @@ const WellnessCenterDetails = () => {
       case "services":
         return (
           <div className="grid grid-cols-1 w-3/4 md:grid-cols-2 gap-4 max-w-7xl">
-            {wellnessCenter.services.map((service, index) => (
-              <div
-                key={index}
-                className="bg-white p-4 rounded-lg shadow-md border border-blue-100 hover:border-blue-300 transition-all"
-              >
-                <div className="flex items-start">
-                  <span className="text-2xl mr-3">{service.icon}</span>
-                  <div>
-                    <h3 className="font-semibold text-blue-700">
-                      {service.name}
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      {service.description}
-                    </p>
+            {wellnessCenter.services.length > 0 ? (
+              wellnessCenter.services.map((service, index) => (
+                <div
+                  key={index}
+                  className="bg-white p-4 rounded-lg shadow-md border border-blue-100 hover:border-blue-300 transition-all"
+                >
+                  <div className="flex items-start">
+                    <span className="text-2xl mr-3">{service.icon}</span>
+                    <div>
+                      <h3 className="font-semibold text-blue-700">
+                        {service.name}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {service.description}
+                      </p>
+                    </div>
                   </div>
                 </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center text-gray-500">
+                No services information available.
               </div>
-            ))}
+            )}
           </div>
         );
 
       case "trainers":
         return (
           <div className="grid grid-cols-1 min-w-3/4 md:grid-cols-3 gap-6 max-w-7xl">
-            {wellnessCenter.trainers.map((trainer, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-all w-80"
-              >
-                <div className="h-48 bg-gray-200 relative">
-                  <img
-                    src={trainer.image}
-                    alt={trainer.name}
-                    className="w-full h-full object-cover"
-                  />
+            {wellnessCenter.trainers.length > 0 ? (
+              wellnessCenter.trainers.map((trainer, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-all w-80"
+                >
+                  <div className="h-48 bg-gray-200 relative">
+                    <img
+                      src={trainer.image}
+                      alt={trainer.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-lg font-medium text-blue-700">
+                      {trainer.name}
+                    </h3>
+                    <p className="text-sm font-medium text-blue-500">
+                      {trainer.specialty}
+                    </p>
+                    <p className="text-sm text-gray-600 mt-2">{trainer.bio}</p>
+                  </div>
                 </div>
-                <div className="p-4">
-                  <h3 className="text-lg font-medium text-blue-700">
-                    {trainer.name}
-                  </h3>
-                  <p className="text-sm font-medium text-blue-500">
-                    {trainer.specialty}
-                  </p>
-                  <p className="text-sm text-gray-600 mt-2">{trainer.bio}</p>
-                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center text-gray-500">
+                No trainers information available.
               </div>
-            ))}
+            )}
           </div>
         );
 
       case "pricing":
         return (
           <div className="space-y-6 min-w-3/4 max-w-7xl">
-            <div className="bg-blue-50 p-5 rounded-lg shadow-md border border-blue-100">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-blue-700">
-                  Current Offer
-                </h3>
-                <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm">
-                  Active
-                </span>
-              </div>
-              <p className="text-lg font-medium">{wellnessCenter.offers}</p>
-              <p className="text-sm text-gray-600 mt-2">
-                Sign up today to take advantage of this limited-time offer!
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white p-5 rounded-lg shadow-md border border-gray-200 hover:border-blue-300 transition-all">
-                <h3 className="text-xl font-semibold text-blue-700 mb-2">
-                  Monthly Plan
-                </h3>
-                <p className="text-2xl font-bold">
-                  {wellnessCenter.pricing.monthly}
-                </p>
-                <p className="text-sm text-gray-600 mt-2">
-                  Flexible month-to-month membership with no long-term
-                  commitment.
-                </p>
-              </div>
-
-              <div className="bg-white p-5 rounded-lg shadow-md border border-gray-200 hover:border-blue-300 transition-all">
-                <h3 className="text-xl font-semibold text-blue-700 mb-2">
-                  Annual Plan
-                </h3>
-                <p className="text-2xl font-bold">
-                  {wellnessCenter.pricing.annual}
-                </p>
-                <p className="text-sm text-gray-600 mt-2">
-                  Our best value! Save over 15% compared to monthly payments.
-                </p>
-              </div>
-
-              <div className="bg-white p-5 rounded-lg shadow-md border border-gray-200 hover:border-blue-300 transition-all">
-                <h3 className="text-xl font-semibold text-blue-700 mb-2">
-                  Day Pass
-                </h3>
-                <p className="text-2xl font-bold">
-                  {wellnessCenter.pricing.dayPass}
-                </p>
-                <p className="text-sm text-gray-600 mt-2">
-                  Try our facilities without commitment. Perfect for visitors.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <h3 className="text-lg font-semibold text-blue-700 mb-2">
-                Additional Options
-              </h3>
-              <ul className="space-y-2">
-                <li className="flex justify-between">
-                  <span>Class Packages:</span>
-                  <span className="font-medium">
-                    {wellnessCenter.pricing.classPackages}
+            {wellnessCenter.offers && (
+              <div className="bg-blue-50 p-5 rounded-lg shadow-md border border-blue-100">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-bold text-blue-700">
+                    Current Offer
+                  </h3>
+                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm">
+                    Active
                   </span>
-                </li>
-                <li className="flex justify-between">
-                  <span>Personal Training:</span>
-                  <span className="font-medium">
-                    {wellnessCenter.pricing.personalTraining}
-                  </span>
-                </li>
-              </ul>
-            </div>
+                </div>
+                <p className="text-lg font-medium">{wellnessCenter.offers}</p>
+                <p className="text-sm text-gray-600 mt-2">
+                  Sign up today to take advantage of this limited-time offer!
+                </p>
+              </div>
+            )}
+
+            {Object.keys(wellnessCenter.pricing).length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {wellnessCenter.pricing.monthly && (
+                    <div className="bg-white p-5 rounded-lg shadow-md border border-gray-200 hover:border-blue-300 transition-all">
+                      <h3 className="text-xl font-semibold text-blue-700 mb-2">
+                        Monthly Plan
+                      </h3>
+                      <p className="text-2xl font-bold">
+                        {wellnessCenter.pricing.monthly}
+                      </p>
+                      <p className="text-sm text-gray-600 mt-2">
+                        Flexible month-to-month membership with no long-term
+                        commitment.
+                      </p>
+                    </div>
+                  )}
+
+                  {wellnessCenter.pricing.annual && (
+                    <div className="bg-white p-5 rounded-lg shadow-md border border-gray-200 hover:border-blue-300 transition-all">
+                      <h3 className="text-xl font-semibold text-blue-700 mb-2">
+                        Annual Plan
+                      </h3>
+                      <p className="text-2xl font-bold">
+                        {wellnessCenter.pricing.annual}
+                      </p>
+                      <p className="text-sm text-gray-600 mt-2">
+                        Our best value! Save over 15% compared to monthly
+                        payments.
+                      </p>
+                    </div>
+                  )}
+
+                  {wellnessCenter.pricing.dayPass && (
+                    <div className="bg-white p-5 rounded-lg shadow-md border border-gray-200 hover:border-blue-300 transition-all">
+                      <h3 className="text-xl font-semibold text-blue-700 mb-2">
+                        Day Pass
+                      </h3>
+                      <p className="text-2xl font-bold">
+                        {wellnessCenter.pricing.dayPass}
+                      </p>
+                      <p className="text-sm text-gray-600 mt-2">
+                        Try our facilities without commitment. Perfect for
+                        visitors.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-4">
+                  <h3 className="text-lg font-semibold text-blue-700 mb-2">
+                    Additional Options
+                  </h3>
+                  <ul className="space-y-2">
+                    {wellnessCenter.pricing.classPackages && (
+                      <li className="flex justify-between">
+                        <span>Class Packages:</span>
+                        <span className="font-medium">
+                          {wellnessCenter.pricing.classPackages}
+                        </span>
+                      </li>
+                    )}
+                    {wellnessCenter.pricing.personalTraining && (
+                      <li className="flex justify-between">
+                        <span>Personal Training:</span>
+                        <span className="font-medium">
+                          {wellnessCenter.pricing.personalTraining}
+                        </span>
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              </>
+            ) : (
+              <div className="text-center text-gray-500">
+                No pricing information available.
+              </div>
+            )}
           </div>
         );
 
@@ -483,51 +415,66 @@ const WellnessCenterDetails = () => {
             </div>
           </div>
         );
+
       case "reviews":
         return (
           <div className="space-y-6 min-w-3/4 max-w-7xl">
-            <div className="flex items-center justify-center">
-              <div className="flex items-center">
-                <span className="text-3xl font-bold text-blue-700 mr-2">
-                  {wellnessCenter.rating}
-                </span>
-                <div className="flex mr-2">
-                  {renderStars(Math.round(wellnessCenter.rating))}
+            {wellnessCenter.rating > 0 ? (
+              <div className="flex items-center justify-center">
+                <div className="flex items-center">
+                  <span className="text-3xl font-bold text-blue-700 mr-2">
+                    {wellnessCenter.rating}
+                  </span>
+                  <div className="flex mr-2">
+                    {renderStars(Math.round(wellnessCenter.rating))}
+                  </div>
+                  <span className="text-gray-500">
+                    ({wellnessCenter.reviews} reviews)
+                  </span>
                 </div>
-                <span className="text-gray-500">
-                  ({wellnessCenter.reviews} reviews)
-                </span>
+                <button className="text-sm bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors">
+                  Write a Review
+                </button>
               </div>
-              <button className="text-sm bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors">
-                Write a Review
-              </button>
-            </div>
+            ) : (
+              <div className="text-center text-gray-500">
+                No rating information available.
+              </div>
+            )}
 
-            <div className="space-y-4">
-              {wellnessCenter.testimonials.map((testimonial, index) => (
-                <div
-                  key={index}
-                  className="bg-white p-4 rounded-lg shadow-md border border-gray-200"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium">{testimonial.name}</h4>
+            {wellnessCenter.testimonials.length > 0 ? (
+              <div className="space-y-4">
+                {wellnessCenter.testimonials.map((testimonial, index) => (
+                  <div
+                    key={index}
+                    className="bg-white p-4 rounded-lg shadow-md border border-gray-200"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium">{testimonial.name}</h4>
+                      <div className="flex">
+                        {renderStars(testimonial.rating)}
+                      </div>
+                    </div>
                     <div className="flex">
-                      {renderStars(testimonial.rating)}
+                      <FaQuoteLeft className="text-gray-300 text-xl mr-2 mt-1 flex-shrink-0" />
+                      <p className="text-gray-700">{testimonial.comment}</p>
                     </div>
                   </div>
-                  <div className="flex">
-                    <FaQuoteLeft className="text-gray-300 text-xl mr-2 mt-1 flex-shrink-0" />
-                    <p className="text-gray-700">{testimonial.comment}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center text-gray-500">
+                No testimonials available.
+              </div>
+            )}
 
-            <div className="text-center">
-              <button className="text-blue-600 font-medium hover:text-blue-800 transition-colors">
-                View All Reviews →
-              </button>
-            </div>
+            {wellnessCenter.testimonials.length > 0 && (
+              <div className="text-center">
+                <button className="text-blue-600 font-medium hover:text-blue-800 transition-colors">
+                  View All Reviews →
+                </button>
+              </div>
+            )}
           </div>
         );
 

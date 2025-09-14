@@ -22,6 +22,7 @@ import {
 } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import { useExpertDetail } from "../../hooks/useExpertHooks";
+import { useCreateAppointment } from "../../hooks/useAppointmentHooks";
 
 // Default expert data structure
 const defaultExpert = {
@@ -76,6 +77,27 @@ const WellnessExpertDetails = () => {
   const [showAllReviews, setShowAllReviews] = useState(false);
   const { id } = useParams();
   const { data: expertdata, isLoading, isError } = useExpertDetail(id);
+
+  const createAppointmentMutation = useCreateAppointment();
+  const [formData, setFormData] = useState({
+    appointment_date: "",
+    type: "consultation",
+    notes: "",
+  });
+  const handleBookAppointment = async (e) => {
+    e.preventDefault();
+    try {
+      await createAppointmentMutation.mutateAsync({
+        expert_id: id,
+        ...formData,
+      });
+      alert("Appointment created successfully!");
+      onSuccess?.();
+      setFormData({ appointment_date: "", type: "consultation", notes: "" });
+    } catch (error) {
+      alert("Error creating appointment");
+    }
+  };
 
   // Merge API data with defaults
   const expert = {
@@ -132,13 +154,13 @@ const WellnessExpertDetails = () => {
 
   // Sample time slots
   const timeSlots = [
-    { time: "9:00 AM", available: false },
+    { time: "9:00 AM", available: true },
     { time: "10:00 AM", available: true },
     { time: "11:30 AM", available: true },
-    { time: "1:00 PM", available: false },
+    { time: "1:00 PM", available: true },
     { time: "2:30 PM", available: true },
     { time: "4:00 PM", available: true },
-    { time: "5:30 PM", available: false },
+    { time: "5:30 PM", available: true },
   ];
 
   const toggleFaq = (index) => {
