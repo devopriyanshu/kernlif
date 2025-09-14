@@ -84,6 +84,7 @@ const WellnessExpertDetails = () => {
     type: "consultation",
     notes: "",
   });
+
   const handleBookAppointment = async (e) => {
     e.preventDefault();
     try {
@@ -99,33 +100,85 @@ const WellnessExpertDetails = () => {
     }
   };
 
-  // Merge API data with defaults
-  const expert = {
-    ...defaultExpert,
-    id: expertdata?.id || defaultExpert.id,
-    name: expertdata?.name || defaultExpert.name,
-    profilePic: expertdata?.profile_image || defaultExpert.profilePic,
-    backgroundImage: expertdata?.bg_image || defaultExpert.backgroundImage,
-    category: expertdata?.category || defaultExpert.category,
-    experience: expertdata?.experience || defaultExpert.experience,
-    bio: expertdata?.bio || defaultExpert.bio,
-    qualifications: expertdata?.qualifications?.length
-      ? expertdata.qualifications
-      : defaultExpert.qualifications,
-    specialties: expertdata?.specialties?.length
-      ? expertdata.specialties
-      : defaultExpert.specialties,
-    languages: expertdata?.languages?.length
-      ? expertdata.languages
-      : defaultExpert.languages,
-    contact: {
-      ...defaultExpert.contact,
-      phone: expertdata?.phone || defaultExpert.contact.phone,
-      email: expertdata?.email || defaultExpert.contact.email,
-      website: expertdata?.website || defaultExpert.contact.website,
-      location: expertdata?.location || defaultExpert.contact.location,
-    },
-    faq: expertdata?.faq?.length ? expertdata.faq : defaultExpert.faq,
+  // Helper function to generate time slots
+  const generateTimeSlots = (startTime, endTime) => {
+    const slots = [];
+    const start = new Date(`2000-01-01T${startTime}`);
+    const end = new Date(`2000-01-01T${endTime}`);
+    const lunchStart = new Date(`2000-01-01T12:00:00`);
+    const lunchEnd = new Date(`2000-01-01T14:00:00`);
+
+    let current = new Date(start);
+
+    while (current < end) {
+      const timeString = current.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
+
+      // Skip lunch break (12 PM to 2 PM)
+      const isLunchTime = current >= lunchStart && current < lunchEnd;
+
+      if (!isLunchTime) {
+        slots.push({
+          time: timeString,
+          available: true,
+          value: current.toTimeString().slice(0, 5), // HH:MM format
+        });
+      }
+
+      // Add 30 minutes
+      current.setMinutes(current.getMinutes() + 30);
+    }
+
+    return slots;
+  };
+
+  // Helper function to get next 7 days with availability
+  const getNextWeekDates = () => {
+    const dates = [];
+    const today = new Date();
+    const dayNames = [
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+    ];
+    const shortDayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+
+      const dayName = dayNames[date.getDay()];
+      const schedule = expertdata?.schedules?.find((s) => s.day === dayName);
+
+      dates.push({
+        day: shortDayNames[date.getDay()],
+        date: date.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        }),
+        fullDate: date.toISOString().split("T")[0],
+        available: schedule?.selected || false,
+        schedule: schedule,
+      });
+    }
+
+    return dates;
+  };
+
+  // Generate time slots for selected date
+  const getTimeSlotsForDate = (dateData) => {
+    if (!dateData?.schedule?.selected) return [];
+    return generateTimeSlots(
+      dateData.schedule.start_time,
+      dateData.schedule.end_time
+    );
   };
 
   // Function to render star ratings
@@ -140,28 +193,6 @@ const WellnessExpertDetails = () => {
     }
     return <div className="flex">{stars}</div>;
   };
-
-  // Sample dates for booking calendar
-  const nextWeekDates = [
-    { day: "Mon", date: "Mar 3", available: true },
-    { day: "Tue", date: "Mar 4", available: true },
-    { day: "Wed", date: "Mar 5", available: true },
-    { day: "Thu", date: "Mar 6", available: false },
-    { day: "Fri", date: "Mar 7", available: true },
-    { day: "Sat", date: "Mar 8", available: false },
-    { day: "Sun", date: "Mar 9", available: false },
-  ];
-
-  // Sample time slots
-  const timeSlots = [
-    { time: "9:00 AM", available: true },
-    { time: "10:00 AM", available: true },
-    { time: "11:30 AM", available: true },
-    { time: "1:00 PM", available: true },
-    { time: "2:30 PM", available: true },
-    { time: "4:00 PM", available: true },
-    { time: "5:30 PM", available: true },
-  ];
 
   const toggleFaq = (index) => {
     setExpandedFaq(expandedFaq === index ? null : index);
@@ -182,6 +213,66 @@ const WellnessExpertDetails = () => {
       </div>
     );
   }
+
+  if (!expertdata) {
+    return <div className="container mx-auto px-4 py-8">Expert not found</div>;
+  }
+
+  // Process the API data directly without defaults
+  const expert = {
+    id: expertdata.id,
+    name: expertdata.name,
+    profilePic:
+      expertdata.profile_image ||
+      "https://res.cloudinary.com/drer12ar3/image/upload/v1757876592/1501beba-54fc-46dd-a4c1-541520e924de_wwcw8l.jpg",
+    backgroundImage:
+      expertdata.bg_image || "https://via.placeholder.com/1600x400",
+    category: expertdata.category,
+    experience: expertdata.experience,
+    bio: expertdata.bio,
+    qualifications: expertdata.qualifications?.map((q) => q.value) || [],
+    specialties: expertdata.specialties?.map((s) => s.value) || [],
+    languages: expertdata.languages || [],
+    services:
+      expertdata.services?.map((service) => ({
+        id: service.id,
+        name: service.name,
+        format: service.format,
+        duration: `${service.duration} mins`,
+        price: `$${service.price}`,
+      })) || [],
+    availability: {
+      days:
+        expertdata.schedules?.filter((s) => s.selected).map((s) => s.day) || [],
+      schedules: expertdata.schedules || [],
+    },
+    contact: {
+      phone: expertdata.phone || "Not provided",
+      email: expertdata.email || "Not provided",
+      website: expertdata.website || "Not provided",
+      location: expertdata.location || "Location not provided",
+      googleMaps: expertdata.location
+        ? `https://www.google.com/maps/search/${encodeURIComponent(
+            expertdata.location
+          )}`
+        : "https://www.google.com/maps",
+    },
+    socialProof: {
+      clientsHelped: 0, // This would come from API if available
+      yearsOfPractice: expertdata.experience
+        ? parseInt(expertdata.experience)
+        : 0,
+      certificationsCount: expertdata.qualifications?.length || 0,
+    },
+    rating: 5, // This would come from API if available
+    reviewCount: 100, // This would come from API if available
+    reviews: [], // This would come from API if available
+    faq: expertdata.faq || [],
+  };
+
+  // Generate dates and time slots based on actual data
+  const nextWeekDates = getNextWeekDates();
+  const timeSlots = selectedDate ? getTimeSlotsForDate(selectedDate) : [];
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -506,13 +597,9 @@ const WellnessExpertDetails = () => {
               {/* Booking Widget */}
               <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
                 <div className="p-6">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-1">
+                  <h2 className="text-xl font-semibold text-gray-800 mb-4">
                     Book a Session
                   </h2>
-                  <p className="text-gray-600 mb-4">
-                    <FaCalendarAlt className="inline mr-2 text-blue-500" />
-                    Next available: {expert.availability.nextAvailable}
-                  </p>
 
                   {/* Service Selection */}
                   <div className="mb-4">
@@ -547,14 +634,14 @@ const WellnessExpertDetails = () => {
                         <button
                           key={index}
                           className={`p-2 rounded-lg text-center transition-colors ${
-                            !date.available
-                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                              : selectedDate === index
-                              ? "bg-blue-500 text-white"
-                              : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                            date.available
+                              ? selectedDate?.fullDate === date.fullDate
+                                ? "bg-blue-600 text-white"
+                                : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                              : "bg-gray-50 text-gray-400 cursor-not-allowed"
                           }`}
                           onClick={() =>
-                            date.available && setSelectedDate(index)
+                            date.available ? setSelectedDate(date) : null
                           }
                           disabled={!date.available}
                         >
@@ -566,7 +653,7 @@ const WellnessExpertDetails = () => {
                   </div>
 
                   {/* Time Selection */}
-                  {selectedDate !== null && (
+                  {selectedDate && (
                     <div className="mb-4">
                       <label className="block text-gray-700 font-medium mb-2">
                         Select a Time
@@ -582,31 +669,12 @@ const WellnessExpertDetails = () => {
                                 ? "bg-blue-500 text-white"
                                 : "bg-gray-100 text-gray-800 hover:bg-gray-200"
                             }`}
-                            onClick={() =>
-                              slot.available && setSelectedTimeSlot(index)
-                            }
+                            onClick={() => setSelectedTimeSlot(index)}
                             disabled={!slot.available}
                           >
                             {slot.time}
                           </button>
                         ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Format Selection */}
-                  {selectedTimeSlot !== null && selectedService !== null && (
-                    <div className="mb-6">
-                      <label className="block text-gray-700 font-medium mb-2">
-                        Session Format
-                      </label>
-                      <div className="grid grid-cols-2 gap-2">
-                        <button className="flex items-center justify-center gap-2 p-3 bg-blue-50 text-blue-700 font-medium rounded-lg border-2 border-blue-200 hover:bg-blue-100 transition-colors">
-                          <FaVideo /> Online Session
-                        </button>
-                        <button className="flex items-center justify-center gap-2 p-3 bg-gray-50 text-gray-700 font-medium rounded-lg border-2 border-gray-200 hover:bg-gray-100 transition-colors">
-                          <FaUser /> In-person
-                        </button>
                       </div>
                     </div>
                   )}
