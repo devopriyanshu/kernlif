@@ -23,6 +23,7 @@ import {
 import { Link, useParams } from "react-router-dom";
 import { useExpertDetail } from "../../hooks/useExpertHooks";
 import { useCreateAppointment } from "../../hooks/useAppointmentHooks";
+import { format, parse } from "date-fns";
 
 // Default expert data structure
 const defaultExpert = {
@@ -79,24 +80,43 @@ const WellnessExpertDetails = () => {
   const { data: expertdata, isLoading, isError } = useExpertDetail(id);
 
   const createAppointmentMutation = useCreateAppointment();
-  const [formData, setFormData] = useState({
-    appointment_date: "",
-    type: "consultation",
-    notes: "",
-  });
 
-  const handleBookAppointment = async (e) => {
-    e.preventDefault();
+  const handleBookAppointment = async () => {
     try {
-      await createAppointmentMutation.mutateAsync({
-        expert_id: id,
-        ...formData,
+      // Combine selected date and time slot
+      const combined = parse(
+        `${selectedDate.fullDate} ${timeSlots[selectedTimeSlot].time}`,
+        "yyyy-MM-dd hh:mm a",
+        new Date()
+      );
+
+      // Convert to ISO timestamp for database
+      const timestamp = format(combined, "yyyy-MM-dd HH:mm:ss");
+
+      console.log("Booking appointment with:", {
+        service: selectedService,
+        date: selectedDate.fullDate,
+        slot: timeSlots[selectedTimeSlot].time,
+        timestamp: timestamp,
       });
-      alert("Appointment created successfully!");
-      onSuccess?.();
-      setFormData({ appointment_date: "", type: "consultation", notes: "" });
+
+      // Create appointment using the hook
+      await createAppointmentMutation.mutateAsync({
+        expert_id: parseInt(id),
+        appointment_date: timestamp,
+        type: selectedService, // Set type as "service" as requested
+        notes: `Service: ${selectedService || "Selected Service"}`,
+      });
+
+      alert("Appointment booked successfully!");
+
+      // Reset selections after successful booking
+      setSelectedDate(null);
+      setSelectedTimeSlot(null);
+      setSelectedService(null);
     } catch (error) {
-      alert("Error creating appointment");
+      console.error("Error booking appointment:", error);
+      alert("Error booking appointment. Please try again.");
     }
   };
 
@@ -163,7 +183,7 @@ const WellnessExpertDetails = () => {
           month: "short",
           day: "numeric",
         }),
-        fullDate: date.toISOString().split("T")[0],
+        fullDate: format(date, "yyyy-MM-dd"),
         available: schedule?.selected || false,
         schedule: schedule,
       });
@@ -608,16 +628,14 @@ const WellnessExpertDetails = () => {
                     </label>
                     <select
                       className="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      onChange={(e) =>
-                        setSelectedService(parseInt(e.target.value))
-                      }
+                      onChange={(e) => setSelectedService(e.target.value)}
                       value={selectedService || ""}
                     >
                       <option value="" disabled>
                         Choose a service
                       </option>
                       {expert.services.map((service) => (
-                        <option key={service.id} value={service.id}>
+                        <option key={service.id} value={service.name}>
                           {service.name} ({service.duration} - {service.price})
                         </option>
                       ))}
@@ -692,6 +710,7 @@ const WellnessExpertDetails = () => {
                       selectedDate === null ||
                       selectedTimeSlot === null
                     }
+                    onClick={handleBookAppointment}
                   >
                     Book Appointment
                   </button>

@@ -1397,41 +1397,85 @@ const WellnessDashboard = () => {
               </div>
             </div>
 
+            {/* Upcoming Appointments Section */}
             <div className="space-y-4 mb-8">
               <h3 className="text-lg font-medium">Upcoming Appointments</h3>
-              {userData.appointments?.length > 0 ? (
-                userData?.appointments?.map((appointment) => (
-                  <div
-                    key={appointment.id}
-                    className="border rounded-lg p-4 hover:bg-gray-50"
-                  >
-                    <div className="flex justify-between">
-                      <div>
-                        <p className="font-medium text-gray-900">
-                          {appointment.expert}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {appointment.type}
-                        </p>
+              {userData?.appointments?.filter(
+                (appointment) =>
+                  new Date(appointment.appointment_date) > new Date()
+              ).length > 0 ? (
+                userData?.appointments
+                  ?.filter(
+                    (appointment) =>
+                      new Date(appointment.appointment_date) > new Date()
+                  )
+                  ?.sort(
+                    (a, b) =>
+                      new Date(a.appointment_date) -
+                      new Date(b.appointment_date)
+                  )
+                  ?.map((appointment) => (
+                    <div
+                      key={appointment.id}
+                      className="border rounded-lg p-4 hover:bg-gray-50"
+                    >
+                      <div className="flex justify-between">
+                        <div>
+                          <p className="font-medium text-gray-900">
+                            {appointment.expert_name}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {appointment.type}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {appointment.expert_email} •{" "}
+                            {appointment.expert_phone}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium text-gray-900">
+                            {new Date(
+                              appointment.appointment_date
+                            ).toLocaleDateString("en-US", {
+                              weekday: "short",
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {new Date(
+                              appointment.appointment_date
+                            ).toLocaleTimeString("en-US", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            })}
+                          </p>
+                          <span
+                            className={`inline-flex px-2 py-1 text-xs rounded-full ${
+                              appointment.status === "confirmed"
+                                ? "bg-green-100 text-green-800"
+                                : appointment.status === "pending"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : appointment.status === "upcoming"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
+                            {appointment.status}
+                          </span>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-medium text-gray-900">
-                          {formatDate(appointment.date)}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {appointment.time} • {appointment.location}
-                        </p>
-                      </div>
+                      {appointment.notes && (
+                        <div className="mt-3 p-2 bg-gray-50 rounded">
+                          <p className="text-sm text-gray-700">
+                            {appointment.notes}
+                          </p>
+                        </div>
+                      )}
                     </div>
-                    {appointment.notes && (
-                      <div className="mt-3 p-2 bg-gray-50 rounded">
-                        <p className="text-sm text-gray-700">
-                          {appointment.notes}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                ))
+                  ))
               ) : (
                 <div className="text-center py-8 bg-gray-50 rounded-lg">
                   <User className="mx-auto h-8 w-8 text-gray-400" />
@@ -1440,49 +1484,110 @@ const WellnessDashboard = () => {
               )}
             </div>
 
+            {/* Past Appointments Section */}
             <div>
               <h3 className="text-lg font-medium mb-4">Past Appointments</h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Date
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Expert
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Type
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Notes
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {userData?.appointments
-                      ?.slice()
-                      ?.reverse()
-                      ?.map((appointment) => (
-                        <tr key={appointment.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {appointment.date} {appointment.time}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {appointment.expert}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {appointment.type}
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-500">
-                            {appointment.notes}
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              </div>
+              {userData?.appointments?.filter(
+                (appointment) =>
+                  new Date(appointment.appointment_date) <= new Date()
+              ).length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Slot
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Expert
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Type
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Notes
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {userData?.appointments
+                        ?.filter(
+                          (appointment) =>
+                            new Date(appointment.appointment_date) <= new Date()
+                        )
+                        ?.sort(
+                          (a, b) =>
+                            new Date(b.appointment_date) -
+                            new Date(a.appointment_date)
+                        )
+                        ?.map((appointment) => (
+                          <tr key={appointment.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {new Date(
+                                appointment.appointment_date
+                              ).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              })}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {new Date(
+                                appointment.appointment_date
+                              ).toLocaleTimeString("en-US", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              })}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div>
+                                <div className="text-sm font-medium text-gray-900">
+                                  {appointment.expert_name}
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                  {appointment.expert_email}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {appointment.type}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span
+                                className={`inline-flex px-2 py-1 text-xs rounded-full ${
+                                  appointment.status === "completed"
+                                    ? "bg-green-100 text-green-800"
+                                    : appointment.status === "confirmed"
+                                    ? "bg-blue-100 text-blue-800"
+                                    : appointment.status === "cancelled"
+                                    ? "bg-red-100 text-red-800"
+                                    : "bg-gray-100 text-gray-800"
+                                }`}
+                              >
+                                {appointment.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                              {appointment.notes || "-"}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-8 bg-gray-50 rounded-lg">
+                  <Calendar className="mx-auto h-8 w-8 text-gray-400" />
+                  <p className="mt-2 text-gray-500">No past appointments</p>
+                </div>
+              )}
             </div>
           </div>
         )}

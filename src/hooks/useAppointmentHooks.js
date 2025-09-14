@@ -41,7 +41,7 @@ export const useCreateAppointment = () => {
 
   return useMutation({
     mutationFn: createAppointment,
-    onSuccess: (data) => {
+    onSuccess: () => {
       // Invalidate and refetch appointment queries
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
     },
