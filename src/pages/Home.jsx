@@ -23,6 +23,11 @@ import {
   CheckCircle,
   DumbbellIcon,
   CreditCard,
+  CheckCircle2,
+  Building,
+  User,
+  Phone,
+  Mail,
 } from "lucide-react";
 import { assessmentImage } from "../utils/constant";
 
@@ -878,6 +883,154 @@ const Home = () => {
                 )}
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+      {/* Join Our Network Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-100 to-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-700 mb-4">
+              Join Our Wellness Network
+            </h2>
+            <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+              Partner with WellNest to expand your reach and help more people on
+              their wellness journey. Whether you're a health expert or wellness
+              center, we provide the platform to grow your impact.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            {/* For Experts */}
+            <motion.div
+              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+              whileHover={{ y: -5 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="flex items-center mb-6">
+                <div className="bg-blue-100 p-3 rounded-full mr-4">
+                  <Brain className="text-blue-600" size={32} />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900">
+                  For Wellness Experts
+                </h3>
+              </div>
+
+              <p className="text-gray-600 mb-6">
+                Share your expertise with thousands of users seeking guidance on
+                their wellness journey. Build your practice and make a
+                meaningful impact.
+              </p>
+
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-start">
+                  <div className="bg-green-100 rounded-full p-1 mr-3 mt-1">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                  </div>
+                  <span className="text-gray-700">
+                    Create your professional profile and showcase credentials
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <div className="bg-green-100 rounded-full p-1 mr-3 mt-1">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                  </div>
+                  <span className="text-gray-700">
+                    Manage appointments and client communications
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <div className="bg-green-100 rounded-full p-1 mr-3 mt-1">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                  </div>
+                  <span className="text-gray-700">
+                    Access analytics and grow your client base
+                  </span>
+                </li>
+              </ul>
+
+              <Link
+                to="/expert_register"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full transition duration-300 inline-flex items-center justify-center"
+              >
+                Register as Expert
+                <ChevronRight className="ml-2" size={18} />
+              </Link>
+            </motion.div>
+
+            {/* For Centers */}
+            <motion.div
+              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+              whileHover={{ y: -5 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="flex items-center mb-6">
+                <div className="bg-blue-100 p-3 rounded-full mr-4">
+                  <Building2 className="text-blue-600" size={32} />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900">
+                  For Wellness Centers
+                </h3>
+              </div>
+
+              <p className="text-gray-600 mb-6">
+                List your wellness center and connect with health-conscious
+                individuals in your area. Increase visibility and grow your
+                membership base.
+              </p>
+
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-start">
+                  <div className="bg-green-100 rounded-full p-1 mr-3 mt-1">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                  </div>
+                  <span className="text-gray-700">
+                    Showcase facilities, services, and class schedules
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <div className="bg-green-100 rounded-full p-1 mr-3 mt-1">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                  </div>
+                  <span className="text-gray-700">
+                    Manage bookings and membership subscriptions
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <div className="bg-green-100 rounded-full p-1 mr-3 mt-1">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                  </div>
+                  <span className="text-gray-700">
+                    Track performance metrics and customer feedback
+                  </span>
+                </li>
+              </ul>
+
+              <Link
+                to="/center_register"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full transition duration-300 inline-flex items-center justify-center"
+              >
+                Register Your Center
+                <ChevronRight className="ml-2" size={18} />
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Contact Information */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-center">
+            <h3 className="text-2xl font-bold text-gray-700 mb-4">
+              Need More Information?
+            </h3>
+            <p className="text-gray-700 mb-6">
+              Our partnership team is here to help you get started and answer
+              any questions about joining our network.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button className="bg-white text-gray-700 hover:text-blue-600 font-semibold py-3 px-6 rounded-full transition duration-300 inline-flex items-center justify-center">
+                Contact Partnership Team
+                <ArrowRight className="ml-2" size={18} />
+              </button>
+            </div>
           </div>
         </div>
       </section>
