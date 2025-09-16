@@ -511,7 +511,7 @@ const WellnessExpertDetails = () => {
                           <p className="text-blue-600 font-bold">
                             {service.price}
                           </p>
-                          {service.name.includes("Group") && (
+                          {service?.name?.includes("Group") && (
                             <span className="inline-flex items-center bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded-full mt-1">
                               <FaUserFriends className="mr-1" size={10} />
                               Group
@@ -598,13 +598,13 @@ const WellnessExpertDetails = () => {
                     </p>
                   )}
                 </div>
-                <div className="mt-4 bg-gray-100 rounded-lg overflow-hidden h-56">
+                <div className="bg-white p-0 rounded-lg shadow-md mt-4 h-full">
                   <iframe
-                    src={expert.contact.googleMaps}
-                    className="w-full h-full"
-                    title="Google Maps"
-                    allowFullScreen=""
+                    src={`https://www.google.com/maps?q=23.081821659945877,76.84451747165399&z=15&output=embed`}
+                    className="w-full h-64 md:h-[calc(500px-6rem)] rounded-lg"
+                    allowFullScreen
                     loading="lazy"
+                    title="Google Map"
                   ></iframe>
                 </div>
               </div>
