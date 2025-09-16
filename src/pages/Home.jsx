@@ -30,94 +30,113 @@ import {
   Mail,
 } from "lucide-react";
 import { assessmentImage } from "../utils/constant";
+import { useCenters } from "../hooks/useCenterHooks";
+import { useExperts } from "../hooks/useExpertHooks";
 
 const Home = () => {
-  const consultants = [
-    {
-      name: "Dr. Sarah Johnson",
-      category: "Psychologist",
-      experience: "10+ Years Experience",
-      specialties: ["Anxiety", "Depression", "Stress Management"],
-      image: "/doctor1.jpg",
-    },
-    {
-      name: "Dr. Alex Carter",
-      category: "Dietitian",
-      experience: "8+ Years Experience",
-      specialties: [
-        "Nutrition Planning",
-        "Weight Management",
-        "Sports Nutrition",
-      ],
-      image: "/api/placeholder/400/400",
-    },
-    {
-      name: "Dr. Emily Brown",
-      category: "Nutritionist",
-      experience: "7+ Years Experience",
-      specialties: ["Holistic Nutrition", "Diet Planning", "Gut Health"],
-      image: "/api/placeholder/400/400",
-    },
-    {
-      name: "Michael Lee",
-      category: "Yoga Instructor",
-      experience: "5+ Years Experience",
-      specialties: ["Hatha Yoga", "Meditation", "Mindfulness"],
-      image: "/api/placeholder/400/400",
-    },
-    {
-      name: "Michael Lee",
-      category: "Yoga Instructor",
-      experience: "5+ Years Experience",
-      specialties: ["Hatha Yoga", "Meditation", "Mindfulness"],
-      image: "/api/placeholder/400/400",
-    },
-    {
-      name: "Michael Lee",
-      category: "Yoga Instructor",
-      experience: "5+ Years Experience",
-      specialties: ["Hatha Yoga", "Meditation", "Mindfulness"],
-      image: "/api/placeholder/400/400",
-    },
-    {
-      name: "Michael Lee",
-      category: "Yoga Instructor",
-      experience: "5+ Years Experience",
-      specialties: ["Hatha Yoga", "Meditation", "Mindfulness"],
-      image: "/api/placeholder/400/400",
-    },
-    {
-      name: "Michael Lee",
-      category: "Yoga Instructor",
-      experience: "5+ Years Experience",
-      specialties: ["Hatha Yoga", "Meditation", "Mindfulness"],
-      image: "/api/placeholder/400/400",
-    },
-  ];
+  // const consultants = [
+  //   {
+  //     name: "Dr. Sarah Johnson",
+  //     category: "Psychologist",
+  //     experience: "10+ Years Experience",
+  //     specialties: ["Anxiety", "Depression", "Stress Management"],
+  //     image: "/doctor1.jpg",
+  //   },
+  //   {
+  //     name: "Dr. Alex Carter",
+  //     category: "Dietitian",
+  //     experience: "8+ Years Experience",
+  //     specialties: [
+  //       "Nutrition Planning",
+  //       "Weight Management",
+  //       "Sports Nutrition",
+  //     ],
+  //     image: "/api/placeholder/400/400",
+  //   },
+  //   {
+  //     name: "Dr. Emily Brown",
+  //     category: "Nutritionist",
+  //     experience: "7+ Years Experience",
+  //     specialties: ["Holistic Nutrition", "Diet Planning", "Gut Health"],
+  //     image: "/api/placeholder/400/400",
+  //   },
+  //   {
+  //     name: "Michael Lee",
+  //     category: "Yoga Instructor",
+  //     experience: "5+ Years Experience",
+  //     specialties: ["Hatha Yoga", "Meditation", "Mindfulness"],
+  //     image: "/api/placeholder/400/400",
+  //   },
+  //   {
+  //     name: "Michael Lee",
+  //     category: "Yoga Instructor",
+  //     experience: "5+ Years Experience",
+  //     specialties: ["Hatha Yoga", "Meditation", "Mindfulness"],
+  //     image: "/api/placeholder/400/400",
+  //   },
+  //   {
+  //     name: "Michael Lee",
+  //     category: "Yoga Instructor",
+  //     experience: "5+ Years Experience",
+  //     specialties: ["Hatha Yoga", "Meditation", "Mindfulness"],
+  //     image: "/api/placeholder/400/400",
+  //   },
+  //   {
+  //     name: "Michael Lee",
+  //     category: "Yoga Instructor",
+  //     experience: "5+ Years Experience",
+  //     specialties: ["Hatha Yoga", "Meditation", "Mindfulness"],
+  //     image: "/api/placeholder/400/400",
+  //   },
+  //   {
+  //     name: "Michael Lee",
+  //     category: "Yoga Instructor",
+  //     experience: "5+ Years Experience",
+  //     specialties: ["Hatha Yoga", "Meditation", "Mindfulness"],
+  //     image: "/api/placeholder/400/400",
+  //   },
+  // ];
 
-  const wellnessCenters = [
-    {
-      name: "Zen Yoga Studio",
-      type: "Yoga & Meditation",
-      location: "Downtown, New York",
-      rating: 4.8,
-      image: "/bg4.jpg",
-    },
-    {
-      name: "Muscle Factory Gym",
-      type: "Fitness & Gym",
-      location: "Brooklyn, NY",
-      rating: 4.6,
-      image: "/api/placeholder/600/400",
-    },
-    {
-      name: "Peaceful Retreat",
-      type: "Relaxation & Meditation",
-      location: "Central Park, NY",
-      rating: 4.9,
-      image: "/api/placeholder/600/400",
-    },
-  ];
+  const expertfilters = {
+    search: "",
+    category: "",
+    sortBy: "",
+    limit: 8,
+  };
+  const { data: consultants = [], isLoading: isExpertsLoading } =
+    useExperts(expertfilters);
+
+  // const wellnessCenters = [
+  //   {
+  //     name: "Zen Yoga Studio",
+  //     type: "Yoga & Meditation",
+  //     location: "Downtown, New York",
+  //     rating: 4.8,
+  //     image: "/bg4.jpg",
+  //   },
+  //   {
+  //     name: "Muscle Factory Gym",
+  //     type: "Fitness & Gym",
+  //     location: "Brooklyn, NY",
+  //     rating: 4.6,
+  //     image: "/api/placeholder/600/400",
+  //   },
+  //   {
+  //     name: "Peaceful Retreat",
+  //     type: "Relaxation & Meditation",
+  //     location: "Central Park, NY",
+  //     rating: 4.9,
+  //     image: "/api/placeholder/600/400",
+  //   },
+  // ];
+  const centerfilters = {
+    search: "",
+    category: "",
+    sortBy: "",
+    limit: 5,
+  };
+  const { data: wellnessCenters = [], isLoading: isCemtersLoading } =
+    useCenters(centerfilters);
 
   const wellnessStats = [
     { label: "Active Users", value: "50K+", icon: <Activity size={24} /> },
