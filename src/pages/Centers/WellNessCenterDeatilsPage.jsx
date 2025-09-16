@@ -89,6 +89,8 @@ const WellnessCenterDetails = () => {
       website: apiData.website?.replace("https://", "") || "",
       offers: apiData.offers || "",
       center_image: apiData.center_image || "",
+      latitude: apiData.latitude || "",
+      longitude: apiData.longitude || "",
       images,
       amenities,
       equipment,
@@ -585,13 +587,19 @@ const WellnessCenterDetails = () => {
 
             {/* Google Map */}
             <div className="bg-white p-0 rounded-lg shadow-md h-full">
-              <iframe
-                src={wellnessCenter.googleMapsEmbed}
-                className="w-full h-64 md:h-[calc(500px-6rem)] rounded-lg"
-                allowFullScreen
-                loading="lazy"
-                title="Google Map"
-              ></iframe>
+              <a
+                href={`https://www.google.com/maps?q=${wellnessCenter.latitude},${wellnessCenter.longitude}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <iframe
+                  src={`https://www.google.com/maps/embed/v1/view?key=API_KEYcenter=${wellnessCenter.latitude},${wellnessCenter.longitude}&zoom=15`}
+                  className="w-full h-64 md:h-[calc(500px-6rem)] rounded-lg pointer-events-none"
+                  allowFullScreen
+                  loading="lazy"
+                  title="Google Map"
+                ></iframe>
+              </a>
             </div>
           </div>
         </div>
