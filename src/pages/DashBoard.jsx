@@ -1452,7 +1452,7 @@ const WellnessDashboard = () => {
                               hour12: true,
                             })}
                           </p>
-                          <span
+                          {/* <span
                             className={`inline-flex px-2 py-1 text-xs rounded-full ${
                               appointment.status === "confirmed"
                                 ? "bg-green-100 text-green-800"
@@ -1464,7 +1464,7 @@ const WellnessDashboard = () => {
                             }`}
                           >
                             {appointment.status}
-                          </span>
+                          </span> */}
                         </div>
                       </div>
                       {appointment.notes && (
@@ -1507,9 +1507,9 @@ const WellnessDashboard = () => {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Type
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Status
-                        </th>
+                        </th> */}
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Notes
                         </th>
@@ -1559,7 +1559,7 @@ const WellnessDashboard = () => {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {appointment.type}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            {/* <td className="px-6 py-4 whitespace-nowrap">
                               <span
                                 className={`inline-flex px-2 py-1 text-xs rounded-full ${
                                   appointment.status === "completed"
@@ -1573,7 +1573,7 @@ const WellnessDashboard = () => {
                               >
                                 {appointment.status}
                               </span>
-                            </td>
+                            </td> */}
                             <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
                               {appointment.notes || "-"}
                             </td>
