@@ -589,31 +589,32 @@ const Home = () => {
       <section className="pb-16  sm:px-6 bg-gradient-to-br from-blue-50 to-indigo-50 lg:px-10 ">
         <div className="relative">
           <div className="flex overflow-x-auto px-20 pb-6 gap-6 scrollbar-hide">
-            {consultants.map((consultant, index) => (
-              <motion.div
-                key={index}
-                className="flex-shrink-0 w-72  rounded-xl   transition-shadow duration-300 flex flex-col items-center py-6"
-                whileHover={{ y: -5 }}
-              >
-                <div className="w-50 h-50 rounded-full overflow-hidden mb-4 border-4 border-blue-100">
-                  {consultant.image ? (
-                    <img
-                      src={consultant.image}
-                      alt={consultant.name}
-                      className="w-72 h-72 rounded-full object-cover"
-                    />
-                  ) : (
-                    <Skeleton circle={true} height={96} width={96} />
-                  )}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 text-center mb-1">
-                  {consultant.name}
-                </h3>
-                <p className="text-blue-600 font-medium text-center">
-                  {consultant.category}
-                </p>
-              </motion.div>
-            ))}
+            {Array.isArray(consultants) &&
+              consultants.map((consultant, index) => (
+                <motion.div
+                  key={index}
+                  className="flex-shrink-0 w-72  rounded-xl   transition-shadow duration-300 flex flex-col items-center py-6"
+                  whileHover={{ y: -5 }}
+                >
+                  <div className="w-50 h-50 rounded-full overflow-hidden mb-4 border-4 border-blue-100">
+                    {consultant.image ? (
+                      <img
+                        src={consultant.image}
+                        alt={consultant.name}
+                        className="w-72 h-72 rounded-full object-cover"
+                      />
+                    ) : (
+                      <Skeleton circle={true} height={96} width={96} />
+                    )}
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 text-center mb-1">
+                    {consultant.name}
+                  </h3>
+                  <p className="text-blue-600 font-medium text-center">
+                    {consultant.category}
+                  </p>
+                </motion.div>
+              ))}
 
             {/* View All Experts Card */}
             <div className="flex-shrink-0 w-72  flex flex-col items-center justify-center p-8 text-black">
@@ -717,69 +718,72 @@ const Home = () => {
           <div className="relative">
             {/* Scrollable container */}
             <div className="flex overflow-x-auto pb-8 -mx-4 px-4 gap-8 scrollbar-hide snap-x snap-mandatory">
-              {wellnessCenters.map((center, index) => (
-                <motion.div
-                  key={index}
-                  className="flex-shrink-0 w-[600px] rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 relative snap-center"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                >
-                  {/* Image with gradient overlay */}
-                  <div className="h-[400px] bg-gray-200 relative">
-                    <img
-                      src={center.image}
-                      alt={center.name}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                    <div className="absolute top-4 left-4">
-                      <span className="bg-white/90 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full">
-                        {center.category}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Content overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none"></div>
-
-                  {/* Card content */}
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <div className="flex items-center mb-2">
-                      <div className="flex items-center mr-3">
-                        <Star
-                          className="fill-yellow-400 text-yellow-400"
-                          size={18}
-                        />
-                        <span className="font-bold ml-1">{center.rating}</span>
+              {Array.isArray(wellnessCenters) &&
+                wellnessCenters.map((center, index) => (
+                  <motion.div
+                    key={index}
+                    className="flex-shrink-0 w-[600px] rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 relative snap-center"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                  >
+                    {/* Image with gradient overlay */}
+                    <div className="h-[400px] bg-gray-200 relative">
+                      <img
+                        src={center.image}
+                        alt={center.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                      <div className="absolute top-4 left-4">
+                        <span className="bg-white/90 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full">
+                          {center.category}
+                        </span>
                       </div>
-                      <span className="text-sm text-gray-200">
-                        ({center.reviewCount} reviews)
-                      </span>
                     </div>
 
-                    <h3 className="text-2xl font-bold mb-2">{center.name}</h3>
+                    {/* Content overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pointer-events-none"></div>
 
-                    <div className="flex items-center mb-4">
-                      <MapPin className="text-gray-300 mr-2" size={16} />
-                      <span className="text-gray-300">{center.location}</span>
-                      <span className="mx-2 text-gray-400">•</span>
-                      <span className="text-gray-300">
-                        {center.distance} miles
-                      </span>
+                    {/* Card content */}
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                      <div className="flex items-center mb-2">
+                        <div className="flex items-center mr-3">
+                          <Star
+                            className="fill-yellow-400 text-yellow-400"
+                            size={18}
+                          />
+                          <span className="font-bold ml-1">
+                            {center.rating}
+                          </span>
+                        </div>
+                        <span className="text-sm text-gray-200">
+                          ({center.reviewCount} reviews)
+                        </span>
+                      </div>
+
+                      <h3 className="text-2xl font-bold mb-2">{center.name}</h3>
+
+                      <div className="flex items-center mb-4">
+                        <MapPin className="text-gray-300 mr-2" size={16} />
+                        <span className="text-gray-300">{center.location}</span>
+                        <span className="mx-2 text-gray-400">•</span>
+                        <span className="text-gray-300">
+                          {center.distance} miles
+                        </span>
+                      </div>
+
+                      <p className="text-gray-200 mb-5 line-clamp-2">
+                        {center.description}
+                      </p>
+
+                      <button className="pointer-events-auto bg-white/90 hover:bg-white text-indigo-700 font-semibold py-2.5 px-5 rounded-lg transition duration-300 flex items-center">
+                        View Center
+                        <ArrowRight className="ml-2" size={16} />
+                      </button>
                     </div>
-
-                    <p className="text-gray-200 mb-5 line-clamp-2">
-                      {center.description}
-                    </p>
-
-                    <button className="pointer-events-auto bg-white/90 hover:bg-white text-indigo-700 font-semibold py-2.5 px-5 rounded-lg transition duration-300 flex items-center">
-                      View Center
-                      <ArrowRight className="ml-2" size={16} />
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
 
               {/* View All Card */}
               <div className="flex-shrink-0 w-96 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 snap-center">
