@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaGoogle, FaEnvelope, FaLock } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import { login, signup } from "../services/authService";
-import { useAuth } from "../context/Authcontext";
+import { useAuth } from "../context/AuthContext";
 
 const LoginSignup = () => {
   const [isSignup, setIsSignup] = useState(false);
