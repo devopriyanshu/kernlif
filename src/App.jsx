@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom"; // ❌ removed BrowserRouter here
+import { Routes, Route, useLocation } from "react-router-dom"; // ❌ removed BrowserRouter here
 import Home from "./pages/Home";
 import LoginSignup from "./pages/LoginSignup";
 import WellnessDashboard from "./pages/DashBoard";
@@ -19,9 +19,15 @@ import WellnessExpertDashboard from "./register/Dashboards/ExpertDashboard";
 import ProductsPage from "./pages/Products/ProuductsPage";
 
 const App = () => {
+  const location = useLocation();
+
+  // Routes where Header & Footer should be hidden
+  const hideLayoutRoutes = ["/expert_register", "/center_register"];
+
+  const hideLayout = hideLayoutRoutes.includes(location.pathname);
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      {!hideLayout && <Header />}
       <main className="flex-grow ">
         <Routes>
           {/* Public Routes */}
@@ -53,7 +59,7 @@ const App = () => {
           </Route>
         </Routes>
       </main>
-      <Footer />
+      {!hideLayout && <Footer />}
     </div>
   );
 };
