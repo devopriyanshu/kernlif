@@ -259,7 +259,7 @@ const WellnessExperts = () => {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 px-6 mx-6 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 px-6 mx-6 gap-6">
           {experts.map((expert) => (
             <Link
               to={`/experts/${expert.id}`} // Use dynamic route if implemented
