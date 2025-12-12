@@ -57,7 +57,7 @@ const LoginSignup = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:4000/auth/google";
+    window.location.href = "http://www.mywellnest.app/auth/google";
   };
 
   return (
