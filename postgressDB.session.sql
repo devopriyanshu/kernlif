@@ -1,1 +1,0 @@
-ALTER TABLE centers ADD COLUMN center_image TEXT ;

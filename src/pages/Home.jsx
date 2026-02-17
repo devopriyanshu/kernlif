@@ -289,7 +289,7 @@ const Home = () => {
               </p>
               <div className="flex flex-wrap  gap-4">
                 <Link
-                  to="/health-check"
+                  to="/signup/user"
                   className="bg-white text-blue-700 hover:bg-blue-50 shadow-lg font-semibold py-3 px-6 rounded-full transition duration-300 inline-flex items-center"
                 >
                   Start Your Wellness Journey
@@ -604,7 +604,7 @@ const Home = () => {
                         className="w-72 h-72 rounded-full object-cover"
                       />
                     ) : (
-                      <Skeleton circle={true} height={96} width={96} />
+                      <div className="w-72 h-72 rounded-full bg-gray-200 animate-pulse" />
                     )}
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 text-center mb-1">
@@ -625,7 +625,7 @@ const Home = () => {
                 Explore our complete network of wellness professionals
               </p>
               <Link
-                to="/all-experts"
+                to="/experts"
                 className="bg-white text-blue-600 hover:bg-blue-300 font-bold py-2 px-6 rounded-lg transition duration-300 inline-flex items-center"
               >
                 Browse All
@@ -798,7 +798,7 @@ const Home = () => {
                     Discover hundreds of premium wellness destinations near you
                   </p>
                   <Link
-                    to="/all-centers"
+                    to="/centers"
                     className="bg-white text-indigo-600 hover:bg-gray-100 font-semibold py-3 px-8 rounded-lg transition duration-300 inline-flex items-center"
                   >
                     Browse All
@@ -973,7 +973,7 @@ const Home = () => {
               </ul>
 
               <Link
-                to="/expert_register"
+                to="/signup/expert"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full transition duration-300 inline-flex items-center justify-center"
               >
                 Register as Expert
@@ -1030,7 +1030,7 @@ const Home = () => {
               </ul>
 
               <Link
-                to="/center_register"
+                to="/signup/center"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full transition duration-300 inline-flex items-center justify-center"
               >
                 Register Your Center

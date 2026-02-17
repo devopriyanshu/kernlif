@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frontend API Test Runner</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      opacity: 0.9;
+    }
+    
+    .content {
+      padding: 30px;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+      background: #e0e7ff;
+      color: #667eea;
+    }
+    
+    .btn-secondary:hover {
+      background: #c7d2fe;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .stat-card.passed {
+      background: #d1fae5;
+      border: 2px solid #10b981;
+    }
+    
+    .stat-card.failed {
+      background: #fee2e2;
+      border: 2px solid #ef4444;
+    }
+    
+    .stat-card.skipped {
+      background: #fef3c7;
+      border: 2px solid #f59e0b;
+    }
+    
+    .stat-card.total {
+      background: #e0e7ff;
+      border: 2px solid #667eea;
+    }
+    
+    .stat-number {
+      font-size: 2.5em;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .stat-label {
+      font-size: 0.9em;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .test-results {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 20px;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    
+    .test-group {
+      margin-bottom: 25px;
+    }
+    
+    .test-group-title {
+      font-size: 1.2em;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .test-item {
+      padding: 12px 15px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
+    
+    .test-item:hover {
+      transform: translateX(5px);
+    }
+    
+    .test-item.pass {
+      background: white;
+      border-left: 4px solid #10b981;
+    }
+    
+    .test-item.fail {
+      background: white;
+      border-left: 4px solid #ef4444;
+    }
+    
+    .test-item.skip {
+      background: white;
+      border-left: 4px solid #f59e0b;
+    }
+    
+    .test-name {
+      font-weight: 500;
+      color: #1f2937;
+    }
+    
+    .test-status {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+    
+    .test-status.pass {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .test-status.fail {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .test-status.skip {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .test-details {
+      font-size: 0.85em;
+      color: #6b7280;
+      margin-top: 5px;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #6b7280;
+    }
+    
+    .spinner {
+      border: 3px solid #f3f4f6;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .console-output {
+      background: #1f2937;
+      color: #10b981;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    
+    .console-line {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🧪 Frontend API Test Runner</h1>
+      <p>Comprehensive testing of all API integrations</p>
+    </div>
+    
+    <div class="content">
+      <div class="controls">
+        <button class="btn-primary" onclick="runTests()">▶️ Run All Tests</button>
+        <button class="btn-secondary" onclick="clearResults()">🗑️ Clear Results</button>
+        <button class="btn-secondary" onclick="exportResults()">📥 Export Results</button>
+      </div>
+      
+      <div class="stats" id="stats" style="display: none;">
+        <div class="stat-card total">
+          <div class="stat-number" id="total-tests">0</div>
+          <div class="stat-label">Total Tests</div>
+        </div>
+        <div class="stat-card passed">
+          <div class="stat-number" id="passed-tests">0</div>
+          <div class="stat-label">Passed</div>
+        </div>
+        <div class="stat-card failed">
+          <div class="stat-number" id="failed-tests">0</div>
+          <div class="stat-label">Failed</div>
+        </div>
+        <div class="stat-card skipped">
+          <div class="stat-number" id="skipped-tests">0</div>
+          <div class="stat-label">Skipped</div>
+        </div>
+      </div>
+      
+      <div class="test-results" id="results">
+        <div class="loading">
+          <p>Click "Run All Tests" to begin testing</p>
+        </div>
+      </div>
+      
+      <div class="console-output" id="console" style="display: none;"></div>
+    </div>
+  </div>
+  
+  <script type="module">
+    import { API_BASE_URL, APIENDPOINT } from './src/services/api.js';
+    import { publicAxios, secureAxios } from './src/services/authAxios.js';
+    import * as authService from './src/services/authService.js';
+    import * as expertService from './src/services/expertService.js';
+    import * as centerService from './src/services/centerService.js';
+    import * as logService from './src/services/logService.js';
+    import * as appointmentService from './src/services/appointmentService.js';
+    import * as adminService from './src/services/adminService.js';
+    
+    let testResults = { passed: [], failed: [], skipped: [] };
+    let authToken = null;
+    let userId = null;
+    
+    function logToConsole(message, type = 'info') {
+      const consoleEl = document.getElementById('console');
+      consoleEl.style.display = 'block';
+      const line = document.createElement('div');
+      line.className = 'console-line';
+      line.textContent = message;
+      consoleEl.appendChild(line);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+    
+    function logTest(name, status, details = '') {
+      const result = { name, status, details, timestamp: new Date().toISOString() };
+      
+      if (status === 'PASS') {
+        testResults.passed.push(result);
+        logToConsole(`✅ ${name}`, 'pass');
+      } else if (status === 'FAIL') {
+        testResults.failed.push(result);
+        logToConsole(`❌ ${name}: ${details}`, 'fail');
+      } else {
+        testResults.skipped.push(result);
+        logToConsole(`⏭️  ${name}: ${details}`, 'skip');
+      }
+      
+      updateUI();
+    }
+    
+    function updateUI() {
+      const total = testResults.passed.length + testResults.failed.length + testResults.skipped.length;
+      
+      document.getElementById('stats').style.display = 'grid';
+      document.getElementById('total-tests').textContent = total;
+      document.getElementById('passed-tests').textContent = testResults.passed.length;
+      document.getElementById('failed-tests').textContent = testResults.failed.length;
+      document.getElementById('skipped-tests').textContent = testResults.skipped.length;
+      
+      renderResults();
+    }
+    
+    function renderResults() {
+      const resultsEl = document.getElementById('results');
+      resultsEl.innerHTML = '';
+      
+      const groups = [
+        { title: '✅ Passed Tests', tests: testResults.passed, className: 'pass' },
+        { title: '❌ Failed Tests', tests: testResults.failed, className: 'fail' },
+        { title: '⏭️ Skipped Tests', tests: testResults.skipped, className: 'skip' }
+      ];
+      
+      groups.forEach(group => {
+        if (group.tests.length > 0) {
+          const groupDiv = document.createElement('div');
+          groupDiv.className = 'test-group';
+          
+          const titleDiv = document.createElement('div');
+          titleDiv.className = 'test-group-title';
+          titleDiv.textContent = `${group.title} (${group.tests.length})`;
+          groupDiv.appendChild(titleDiv);
+          
+          group.tests.forEach(test => {
+            const testDiv = document.createElement('div');
+            testDiv.className = `test-item ${group.className}`;
+            
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'test-name';
+            nameDiv.textContent = test.name;
+            
+            if (test.details) {
+              const detailsDiv = document.createElement('div');
+              detailsDiv.className = 'test-details';
+              detailsDiv.textContent = test.details;
+              nameDiv.appendChild(detailsDiv);
+            }
+            
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `test-status ${group.className}`;
+            statusDiv.textContent = test.status;
+            
+            testDiv.appendChild(nameDiv);
+            testDiv.appendChild(statusDiv);
+            groupDiv.appendChild(testDiv);
+          });
+          
+          resultsEl.appendChild(groupDiv);
+        }
+      });
+    }
+    
+    async function runAllTests() {
+      testResults = { passed: [], failed: [], skipped: [] };
+      document.getElementById('console').innerHTML = '';
+      document.getElementById('results').innerHTML = '<div class="loading"><div class="spinner"></div><p>Running tests...</p></div>';
+      
+      logToConsole('🚀 Starting Frontend API Integration Tests...');
+      
+      await testConfiguration();
+      await testAuthService();
+      await testExpertService();
+      await testCenterService();
+      await testLogService();
+      await testAppointmentService();
+      await testAdminService();
+      
+      logToConsole('✨ All tests completed!');
+      updateUI();
+    }
+    
+    async function testConfiguration() {
+      logToConsole('\n🔧 Testing Configuration...');
+      
+      if (API_BASE_URL === 'http://localhost:4000/api/v1') {
+        logTest('API_BASE_URL Configuration', 'PASS');
+      } else {
+        logTest('API_BASE_URL Configuration', 'FAIL', `Got ${API_BASE_URL}`);
+      }
+      
+      const requiredEndpoints = ['LOGIN', 'SIGNUP', 'GET_USER_ME', 'EXPERTS_LIST', 'CENTERS_LIST'];
+      const missingEndpoints = requiredEndpoints.filter(key => !APIENDPOINT[key]);
+      
+      if (missingEndpoints.length === 0) {
+        logTest('APIENDPOINT Configuration', 'PASS');
+      } else {
+        logTest('APIENDPOINT Configuration', 'FAIL', `Missing: ${missingEndpoints.join(', ')}`);
+      }
+    }
+    
+    async function testAuthService() {
+      logToConsole('\n🔐 Testing Auth Service...');
+      
+      const testEmail = `test_${Date.now()}@example.com`;
+      const testPassword = 'Test123!@#';
+      
+      try {
+        const signupResult = await authService.signup(testEmail, testPassword, 'user');
+        if (signupResult && signupResult.token) {
+          authToken = signupResult.token;
+          userId = signupResult.user?.id;
+          localStorage.setItem('token', authToken);
+          logTest('Auth: Signup', 'PASS');
+        } else {
+          logTest('Auth: Signup', 'FAIL', 'No token returned');
+        }
+      } catch (error) {
+        logTest('Auth: Signup', 'FAIL', error.toString());
+      }
+      
+      try {
+        const loginResult = await authService.login(testEmail, testPassword);
+        if (loginResult && loginResult.token) {
+          authToken = loginResult.token;
+          localStorage.setItem('token', authToken);
+          logTest('Auth: Login', 'PASS');
+        } else {
+          logTest('Auth: Login', 'FAIL', 'No token returned');
+        }
+      } catch (error) {
+        logTest('Auth: Login', 'FAIL', error.toString());
+      }
+      
+      if (authToken) {
+        try {
+          const userResult = await authService.getUserMe();
+          if (userResult && userResult.id) {
+            userId = userResult.id;
+            logTest('Auth: Get User Me', 'PASS');
+          } else {
+            logTest('Auth: Get User Me', 'FAIL', 'No user data');
+          }
+        } catch (error) {
+          logTest('Auth: Get User Me', 'FAIL', error.toString());
+        }
+      }
+    }
+    
+    async function testExpertService() {
+      logToConsole('\n👨‍⚕️ Testing Expert Service...');
+      
+      try {
+        const expertsList = await expertService.fetchExpertsList(null, null, null, 1, 10);
+        if (Array.isArray(expertsList)) {
+          logTest('Expert: Fetch List', 'PASS', `Found ${expertsList.length} experts`);
+        } else {
+          logTest('Expert: Fetch List', 'FAIL', 'Not an array');
+        }
+      } catch (error) {
+        logTest('Expert: Fetch List', 'FAIL', error.toString());
+      }
+    }
+    
+    async function testCenterService() {
+      logToConsole('\n🏢 Testing Center Service...');
+      
+      try {
+        const centersList = await centerService.fetchCenters(null, null, null, 1, 10);
+        if (Array.isArray(centersList)) {
+          logTest('Center: Fetch List', 'PASS', `Found ${centersList.length} centers`);
+        } else {
+          logTest('Center: Fetch List', 'FAIL', 'Not an array');
+        }
+      } catch (error) {
+        logTest('Center: Fetch List', 'FAIL', error.toString());
+      }
+    }
+    
+    async function testLogService() {
+      logToConsole('\n📊 Testing Log Service...');
+      
+      if (!authToken) {
+        logTest('Log Service Tests', 'SKIP', 'No auth token');
+        return;
+      }
+      
+      try {
+        await logService.fetchDashboardLogs();
+        logTest('Log: Fetch Dashboard', 'PASS');
+      } catch (error) {
+        logTest('Log: Fetch Dashboard', 'FAIL', error.toString());
+      }
+    }
+    
+    async function testAppointmentService() {
+      logToConsole('\n📅 Testing Appointment Service...');
+      
+      if (!authToken || !userId) {
+        logTest('Appointment Service Tests', 'SKIP', 'No auth token or user ID');
+        return;
+      }
+      
+      try {
+        const appointments = await appointmentService.fetchUserAppointments(userId);
+        if (Array.isArray(appointments)) {
+          logTest('Appointment: Fetch User Appointments', 'PASS', `Found ${appointments.length}`);
+        } else {
+          logTest('Appointment: Fetch User Appointments', 'FAIL', 'Not an array');
+        }
+      } catch (error) {
+        logTest('Appointment: Fetch User Appointments', 'FAIL', error.toString());
+      }
+    }
+    
+    async function testAdminService() {
+      logToConsole('\n👑 Testing Admin Service...');
+      
+      if (!authToken) {
+        logTest('Admin Service Tests', 'SKIP', 'No auth token');
+        return;
+      }
+      
+      try {
+        await adminService.fetchAdminUsers(1, 10);
+        logTest('Admin: Fetch Users', 'PASS');
+      } catch (error) {
+        if (error.toString().includes('403')) {
+          logTest('Admin: Fetch Users', 'SKIP', 'Not admin (expected)');
+        } else {
+          logTest('Admin: Fetch Users', 'FAIL', error.toString());
+        }
+      }
+    }
+    
+    window.runTests = runAllTests;
+    window.clearResults = () => {
+      testResults = { passed: [], failed: [], skipped: [] };
+      document.getElementById('console').innerHTML = '';
+      document.getElementById('results').innerHTML = '<div class="loading"><p>Click "Run All Tests" to begin testing</p></div>';
+      document.getElementById('stats').style.display = 'none';
+    };
+    window.exportResults = () => {
+      const dataStr = JSON.stringify(testResults, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `api-test-results-${Date.now()}.json`;
+      link.click();
+    };
+  </script>
+</body>
+</html>

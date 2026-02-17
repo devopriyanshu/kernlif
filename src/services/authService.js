@@ -1,40 +1,46 @@
-import axios from "axios";
-import { APIENDPOINT, BASE_URL } from "./api";
 import { publicAxios, secureAxios } from "./authAxios";
+import { APIENDPOINT } from "./api";
 
-export const signup = async (email, password) => {
+export const signup = async (email, password, role = 'user') => {
   try {
     const response = await publicAxios.post(APIENDPOINT.SIGNUP, {
       email,
       password,
+      role,
     });
-    return response.data;
-    // console.log(response);
+    return response; // publicAxios already returns response.data
   } catch (error) {
-    throw error.response.data.error;
+    throw error.response?.data?.error || error.message;
   }
 };
 
 export const login = async (email, password) => {
   try {
-    const response = await axios.post(`${BASE_URL}auth/login`, {
+    const response = await publicAxios.post(APIENDPOINT.LOGIN, {
       email,
       password,
     });
-    return response.data;
+    return response; // publicAxios already returns response.data
   } catch (error) {
-    throw error.response.data.error;
+    throw error.response?.data?.error || error.message;
   }
 };
 
 export const getUserMe = async () => {
-  const res = await secureAxios.get(`users/me`);
-  console.log("getuserme", res);
-
-  return res;
+  try {
+    const res = await secureAxios.get(APIENDPOINT.GET_USER_ME);
+    return res.data; // Return user data
+  } catch (error) {
+    throw error.response?.data?.error || error.message;
+  }
 };
 
 export const updateUserProfile = async (updatedData) => {
-  const res = await secureAxios.post("users/update", updatedData);
-  return res.data;
+  try {
+    const res = await secureAxios.post(APIENDPOINT.UPDATE_USER, updatedData);
+    return res.data;
+  } catch (error) {
+    throw error.response?.data?.error || error.message;
+  }
 };
+

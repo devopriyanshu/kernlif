@@ -242,7 +242,7 @@ const WellnessCenters = () => {
 
                 {/* Amenities Preview */}
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {center.amenities.slice(0, 2).map((amenity, index) => (
+                  {center.amenities?.slice(0, 2).map((amenity, index) => (
                     <span
                       key={index}
                       className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full"
@@ -250,7 +250,7 @@ const WellnessCenters = () => {
                       {amenity}
                     </span>
                   ))}
-                  {center.amenities.length > 2 && (
+                  {(center.amenities?.length || 0) > 2 && (
                     <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
                       +{center.amenities.length - 2} more
                     </span>

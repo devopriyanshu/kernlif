@@ -31,42 +31,50 @@ const WellnessCenterDetails = () => {
   const processWellnessCenterData = (apiData) => {
     if (!apiData) return {};
 
-    // Process amenities
-    const amenities =
-      apiData.amenities?.length > 0
-        ? apiData.amenities.map((item) => item.value)
-        : [];
+    // Helper to safely extract values from array of objects or simple arrays
+    const extractValues = (arr) => {
+      if (!arr || arr.length === 0) return [];
+      // Check if first item has a 'value' property (relation table format)
+      if (arr[0] && typeof arr[0] === 'object' && 'value' in arr[0]) {
+        return arr.map((item) => item.value);
+      }
+      // Otherwise return as-is (simple array)
+      return arr;
+    };
 
-    // Process equipment
-    const equipment =
-      apiData.equipment?.length > 0
-        ? apiData.equipment.map((item) => item.value)
-        : [];
+    // Process amenities - handle both center_amenities relation and direct array
+    const amenities = extractValues(apiData.center_amenities || apiData.amenities);
 
-    // Process services
-    const services = apiData.services?.length > 0 ? apiData.services : [];
+    // Process equipment - handle both center_equipment relation and direct array  
+    const equipment = extractValues(apiData.center_equipment || apiData.equipment);
+
+    // Process services - handle both center_services relation and direct array
+    const services = extractValues(apiData.center_services || apiData.services);
 
     // Process trainers
     const trainers =
-      apiData.trainers?.length > 0
-        ? apiData.trainers.map((trainer) => ({
-            ...trainer,
-            image: trainer.image || "/images/trainer-default.jpg",
-          }))
-        : [];
+      (apiData.center_trainers || apiData.trainers || []).map((trainer) => ({
+        name: trainer.name || '',
+        specialty: trainer.specialization || trainer.specialty || '',
+        bio: trainer.bio || '',
+        image: trainer.image || "/images/trainer-default.jpg",
+      }));
 
     // Process pricing
     const pricingObj = {};
-    if (apiData.pricing?.length > 0) {
-      apiData.pricing.forEach((item) => {
-        pricingObj[item.type] = `$${item.price}${
-          item.type === "monthly"
+    const pricingData = apiData.center_pricing || apiData.pricing || [];
+    if (pricingData.length > 0) {
+      pricingData.forEach((item) => {
+        const type = item.plan_name || item.type;
+        const price = item.price;
+        pricingObj[type] = `$${price}${
+          type === "monthly" || type === "Monthly"
             ? "/month"
-            : item.type === "annual"
+            : type === "annual" || type === "Annual"
             ? "/year"
-            : item.type === "dayPass"
+            : type === "dayPass" || type === "Day Pass"
             ? "/day"
-            : item.type === "classPackages"
+            : type === "classPackages" || type === "Class Packages"
             ? "/10 classes"
             : "/session"
         }`;
@@ -74,10 +82,43 @@ const WellnessCenterDetails = () => {
     }
 
     // Process images
-    const images =
-      apiData.images?.length > 0
-        ? apiData.images.map((img) => img.image_url)
-        : [];
+    const images = (apiData.center_images || apiData.images || []).map((img) => 
+      img.image_url || img.url || img
+    );
+    
+    // Add center image as first image if no images exist
+    if (images.length === 0 && apiData.centerImage) {
+      images.push(apiData.centerImage);
+    }
+
+    // Process schedule - extract time from DateTime objects
+    const scheduleData = (apiData.center_schedule || apiData.schedule || []);
+    const schedule = scheduleData.map((day) => ({
+      day_of_week: day.day_of_week || day.day,
+      is_open: day.is_open !== undefined ? day.is_open : day.isOpen,
+      opening_time: day.opening_time ? formatTime(day.opening_time) : null,
+      closing_time: day.closing_time ? formatTime(day.closing_time) : null,
+    }));
+
+    // Helper function to format time from DateTime or time string
+    function formatTime(timeValue) {
+      if (!timeValue) return null;
+      
+      // If it's already a simple time string (HH:MM), return it
+      if (typeof timeValue === 'string' && /^\d{2}:\d{2}$/.test(timeValue)) {
+        return timeValue;
+      }
+      
+      // If it's a DateTime string or Date object, extract the time
+      try {
+        const date = new Date(timeValue);
+        const hours = date.getUTCHours().toString().padStart(2, '0');
+        const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+      } catch (e) {
+        return null;
+      }
+    }
 
     return {
       name: apiData.name || "",
@@ -86,9 +127,9 @@ const WellnessCenterDetails = () => {
       address: apiData.address || "",
       phone: apiData.phone || "",
       email: apiData.email || "",
-      website: apiData.website?.replace("https://", "") || "",
+      website: apiData.website?.replace("https://", "").replace("http://", "") || "",
       offers: apiData.offers || "",
-      center_image: apiData.center_image || "",
+      center_image: apiData.centerImage || apiData.center_image || "",
       latitude: apiData.latitude || "",
       longitude: apiData.longitude || "",
       images,
@@ -97,11 +138,11 @@ const WellnessCenterDetails = () => {
       services,
       trainers,
       pricing: pricingObj,
-      schedule: apiData.schedule || [],
-      rating: 5, // No rating data in API
-      reviews: 100, // No reviews data in API
-      testimonials: [], // No testimonials data in API
-      upcomingClasses: [], // No upcoming classes data in API
+      schedule,
+      rating: apiData.rating || 5,
+      reviews: apiData.totalReviews || 100,
+      testimonials: [], // No testimonials data in API yet
+      upcomingClasses: [], // No upcoming classes data in API yet
     };
   };
 

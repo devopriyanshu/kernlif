@@ -49,10 +49,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const signup = async (email, password) => {
+  const signup = async (email, password, role = 'user') => {
     setLoading(true); // Set loading to true during signup
     try {
-      const data = await signupApi(email, password);
+      const data = await signupApi(email, password, role);
       localStorage.setItem("token", data.token);
       setToken(data.token); // This will trigger useEffect which calls fetchUser()
       // Don't call fetchUser() here - let useEffect handle it
@@ -69,9 +69,36 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   };
 
+  // Role-based access control functions
+  const hasRole = (requiredRole) => {
+    if (!user) return false;
+    return user.role === requiredRole;
+  };
+
+  const hasAnyRole = (roles) => {
+    if (!user) return false;
+    return roles.includes(user.role);
+  };
+
+  const isAdmin = () => hasRole('admin');
+  const isExpert = () => hasRole('expert');
+  const isCenter = () => hasRole('center');
+
   return (
     <AuthContext.Provider
-      value={{ token, user, login, signup, logout, loading }}
+      value={{ 
+        token, 
+        user, 
+        login, 
+        signup, 
+        logout, 
+        loading,
+        hasRole,
+        hasAnyRole,
+        isAdmin,
+        isExpert,
+        isCenter,
+      }}
     >
       {children}
     </AuthContext.Provider>

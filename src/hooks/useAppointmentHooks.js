@@ -1,37 +1,26 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  fetchAppointmentsByUserId,
-  fetchAppointmentsByExpertId,
-  fetchAppointmentsByUserAndExpert,
   createAppointment,
-  deleteAppointment,
-  updateAppointmentStatus,
+  fetchAppointment,
+  fetchUserAppointments,
+  updateAppointment,
 } from "../services/appointmentService";
 
 // Get appointments by user ID
 export const useUserAppointments = (userId) =>
   useQuery({
     queryKey: ["appointments", "user", userId],
-    queryFn: () => fetchAppointmentsByUserId(userId),
+    queryFn: () => fetchUserAppointments(userId),
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-// Get appointments by expert ID
-export const useExpertAppointments = (expertId) =>
+// Get single appointment by ID
+export const useAppointment = (appointmentId) =>
   useQuery({
-    queryKey: ["appointments", "expert", expertId],
-    queryFn: () => fetchAppointmentsByExpertId(expertId),
-    enabled: !!expertId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-
-// Get appointments by both user and expert ID
-export const useUserExpertAppointments = (userId, expertId) =>
-  useQuery({
-    queryKey: ["appointments", "userExpert", userId, expertId],
-    queryFn: () => fetchAppointmentsByUserAndExpert(userId, expertId),
-    enabled: !!userId && !!expertId,
+    queryKey: ["appointment", appointmentId],
+    queryFn: () => fetchAppointment(appointmentId),
+    enabled: !!appointmentId,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -51,35 +40,18 @@ export const useCreateAppointment = () => {
   });
 };
 
-// Delete appointment mutation
-export const useDeleteAppointment = () => {
+// Update appointment mutation
+export const useUpdateAppointment = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: deleteAppointment,
+    mutationFn: ({ id, updateData }) => updateAppointment(id, updateData),
     onSuccess: () => {
       // Invalidate and refetch appointment queries
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
     },
     onError: (error) => {
-      console.error("Error deleting appointment:", error);
-    },
-  });
-};
-
-// Update appointment status mutation
-export const useUpdateAppointmentStatus = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ appointmentId, status }) =>
-      updateAppointmentStatus(appointmentId, status),
-    onSuccess: () => {
-      // Invalidate and refetch appointment queries
-      queryClient.invalidateQueries({ queryKey: ["appointments"] });
-    },
-    onError: (error) => {
-      console.error("Error updating appointment status:", error);
+      console.error("Error updating appointment:", error);
     },
   });
 };

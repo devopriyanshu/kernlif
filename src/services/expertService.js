@@ -1,4 +1,5 @@
-import { secureAxios } from "./authAxios";
+import { publicAxios, secureAxios } from "./authAxios";
+import { APIENDPOINT } from "./api";
 
 export const fetchExpertsList = async (
   search,
@@ -14,28 +15,34 @@ export const fetchExpertsList = async (
     if (sortBy) params.sortBy = sortBy;
     params.page = page;
     params.limit = limit;
-    console.log(params);
 
-    const response = await secureAxios.get("experts/list", { params });
-    console.log("rsponse service", response.data);
-
-    // ✅ Always return fallback if undefined
+    const response = await publicAxios.get(APIENDPOINT.EXPERTS_LIST, { params });
     return response.data || [];
   } catch (error) {
     console.error("Error fetching experts:", error);
-    return []; // fallback to empty array instead of undefined
+    return [];
   }
 };
 
 export const fetchExpertDetails = async (id) => {
   try {
-    const response = await secureAxios.get(`/experts/${id}`);
-
-    return response;
-
-    // ✅ Returns data on success
+    const response = await publicAxios.get(`${APIENDPOINT.EXPERTS_DETAIL}/${id}`);
+    return response.data;
   } catch (error) {
     console.error("Error fetching expert details:", error);
-    return null; // ⚠️ Return null (or empty object) instead of undefined
+    return null;
+  }
+};
+
+export const registerExpert = async (formData) => {
+  try {
+    const response = await publicAxios.post(APIENDPOINT.EXPERTS_REGISTER, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.error || error.message;
   }
 };

@@ -15,6 +15,7 @@ import {
   FaArrowLeft,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { registerExpert } from "../services/expertService";
 
 const ExpertRegistrationPage = () => {
   // Main form state
@@ -25,7 +26,9 @@ const ExpertRegistrationPage = () => {
     bio: "",
     languages: ["English"],
     profilePic: null,
+    profilePicPreview: null,
     backgroundImage: null,
+    backgroundImagePreview: null,
   });
 
   // Additional state for multi-part sections
@@ -80,7 +83,8 @@ const ExpertRegistrationPage = () => {
     if (files && files[0]) {
       setFormData({
         ...formData,
-        [name]: files[0], // keep File
+        [name]: files[0], // keep File object
+        [`${name}Preview`]: URL.createObjectURL(files[0]), // create preview URL
       });
     }
   };
@@ -183,56 +187,77 @@ const ExpertRegistrationPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formDataData = new FormData();
+    const formDataToSend = new FormData();
 
     // Basic fields
-    formDataData.append("name", formData.name);
-    formDataData.append("category", formData.category);
-    formDataData.append("experience", formData.experience);
-    formDataData.append("bio", formData.bio);
+    formDataToSend.append("name", formData.name);
+    formDataToSend.append("category", formData.category);
+    formDataToSend.append("experience", formData.experience);
+    formDataToSend.append("bio", formData.bio);
 
-    // Languages
     // Languages
     if (formData.languages?.length) {
       formData.languages.forEach((lang) => {
-        formDataData.append("languages", lang); // multiple form-data fields with same key
+        formDataToSend.append("languages", lang);
       });
     }
 
     // Profile & background images
     if (formData.profilePic) {
-      formDataData.append("profilePic", formData.profilePic); // send actual file, not just preview URL
+      formDataToSend.append("profilePic", formData.profilePic);
     }
     if (formData.backgroundImage) {
-      formDataData.append("backgroundImage", formData.backgroundImage);
+      formDataToSend.append("backgroundImage", formData.backgroundImage);
     }
 
-    // Contact
-    formDataData.append("contact", JSON.stringify(contact));
+    // Contact info - flatten to individual fields
+    formDataToSend.append("phone", contact.phone);
+    formDataToSend.append("email", contact.email);
+    formDataToSend.append("website", contact.website);
+    formDataToSend.append("location", contact.location);
 
-    // Qualifications, specialties, services, availability, faq
-    formDataData.append("qualifications", JSON.stringify(qualifications));
-    formDataData.append("specialties", JSON.stringify(specialties));
-    formDataData.append("services", JSON.stringify(services));
-    formDataData.append("availability", JSON.stringify(availability));
-    formDataData.append("faq", JSON.stringify(faq));
-    console.log();
+    // Transform qualifications & specialties - extract values from objects to simple arrays
+    const qualificationsArray = qualifications
+      .map((q) => q.value)
+      .filter((v) => v.trim() !== "");
+    const specialtiesArray = specialties
+      .map((s) => s.value)
+      .filter((v) => v.trim() !== "");
+
+    formDataToSend.append("qualifications", JSON.stringify(qualificationsArray));
+    formDataToSend.append("specialties", JSON.stringify(specialtiesArray));
+
+    // Services - already in correct format
+    formDataToSend.append("services", JSON.stringify(services));
+
+    // Transform availability from object to array with DateTime values
+    const availabilityArray = Object.keys(availability).map((day) => {
+      const dayData = availability[day];
+      return {
+        day: day,
+        selected: dayData.selected,
+        startTime: dayData.selected && dayData.startTime
+          ? new Date(`1970-01-01T${dayData.startTime}:00Z`).toISOString()
+          : null,
+        endTime: dayData.selected && dayData.endTime
+          ? new Date(`1970-01-01T${dayData.endTime}:00Z`).toISOString()
+          : null,
+      };
+    });
+
+    formDataToSend.append("availability", JSON.stringify(availabilityArray));
+
+    // FAQs - rename from 'faq' to 'faqs'
+    formDataToSend.append("faqs", JSON.stringify(faq));
 
     try {
-      const res = await fetch("http://localhost:4000/experts/register", {
-        method: "POST",
-        body: formDataData,
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        alert("Expert registered successfully!");
-      } else {
-        alert("Error: " + data.message);
-      }
+      const data = await registerExpert(formDataToSend);
+      alert("Expert registered successfully!");
+      console.log("Registration response:", data);
+      // Optionally redirect or reset form
     } catch (err) {
-      console.error(err);
-      alert("Something went wrong!");
+      console.error("Registration error:", err);
+      alert("Error: " + (err || "Something went wrong!"));
     }
   };
 
@@ -409,9 +434,9 @@ const ExpertRegistrationPage = () => {
           </label>
           <div className="flex items-start space-x-4">
             <div className="relative">
-              {formData.profilePic ? (
+              {formData.profilePicPreview ? (
                 <img
-                  src={formData.profilePic}
+                  src={formData.profilePicPreview}
                   alt="Profile Preview"
                   className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
                 />
@@ -446,9 +471,9 @@ const ExpertRegistrationPage = () => {
           </label>
           <div className="flex items-start space-x-4">
             <div className="relative">
-              {formData.backgroundImage ? (
+              {formData.backgroundImagePreview ? (
                 <img
-                  src={formData.backgroundImage}
+                  src={formData.backgroundImagePreview}
                   alt="Background Preview"
                   className="w-32 h-16 rounded object-cover border-2 border-gray-200"
                 />

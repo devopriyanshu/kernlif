@@ -195,10 +195,33 @@ const WellnessExpertDetails = () => {
   // Generate time slots for selected date
   const getTimeSlotsForDate = (dateData) => {
     if (!dateData?.schedule?.selected) return [];
-    return generateTimeSlots(
-      dateData.schedule.start_time,
-      dateData.schedule.end_time
-    );
+    
+    // Helper to extract time string from DateTime or time string
+    const extractTime = (timeValue) => {
+      if (!timeValue) return null;
+      
+      // If it's already HH:MM format
+      if (typeof timeValue === 'string' && /^\d{2}:\d{2}$/.test(timeValue)) {
+        return timeValue;
+      }
+      
+      // If it's a DateTime, extract time
+      try {
+        const date = new Date(timeValue);
+        const hours = date.getUTCHours().toString().padStart(2, '0');
+        const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+      } catch (e) {
+        return null;
+      }
+    };
+    
+    const startTime = extractTime(dateData.schedule.start_time || dateData.schedule.startTime);
+    const endTime = extractTime(dateData.schedule.end_time || dateData.schedule.endTime);
+    
+    if (!startTime || !endTime) return [];
+    
+    return generateTimeSlots(startTime, endTime);
   };
 
   // Function to render star ratings
@@ -250,21 +273,26 @@ const WellnessExpertDetails = () => {
     category: expertdata.category,
     experience: expertdata.experience,
     bio: expertdata.bio,
-    qualifications: expertdata.qualifications?.map((q) => q.value) || [],
-    specialties: expertdata.specialties?.map((s) => s.value) || [],
+    // Helper to safely extract values
+    qualifications: (expertdata.expert_qualifications || expertdata.qualifications || []).map((q) => 
+      (typeof q === 'object' && q.value) ? q.value : q
+    ),
+    specialties: (expertdata.expert_specialties || expertdata.specialties || []).map((s) => 
+      (typeof s === 'object' && s.value) ? s.value : s
+    ),
     languages: expertdata.languages || [],
     services:
-      expertdata.services?.map((service) => ({
+      (expertdata.expert_services || expertdata.services || []).map((service) => ({
         id: service.id,
         name: service.name,
         format: service.format,
         duration: `${service.duration} mins`,
         price: `$${service.price}`,
-      })) || [],
+      })),
     availability: {
       days:
-        expertdata.schedules?.filter((s) => s.selected).map((s) => s.day) || [],
-      schedules: expertdata.schedules || [],
+        (expertdata.availability || expertdata.schedules || []).filter((s) => s.selected).map((s) => s.day) || [],
+      schedules: expertdata.availability || expertdata.schedules || [],
     },
     contact: {
       phone: expertdata.phone || "Not provided",
@@ -282,12 +310,15 @@ const WellnessExpertDetails = () => {
       yearsOfPractice: expertdata.experience
         ? parseInt(expertdata.experience)
         : 0,
-      certificationsCount: expertdata.qualifications?.length || 0,
+      certificationsCount: (expertdata.expert_qualifications || expertdata.qualifications || []).length,
     },
-    rating: 5, // This would come from API if available
-    reviewCount: 100, // This would come from API if available
+    rating: expertdata.rating || 5,
+    reviewCount: expertdata.totalReviews || 100,
     reviews: [], // This would come from API if available
-    faq: expertdata.faq || [],
+    faq: (expertdata.expert_faqs || expertdata.faq || []).map((f) => ({
+      question: f.question,
+      answer: f.answer,
+    })),
   };
 
   // Generate dates and time slots based on actual data

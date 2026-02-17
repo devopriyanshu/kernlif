@@ -3,6 +3,7 @@ import { FaGoogle, FaEnvelope, FaLock } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import { login, signup } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
+import { BASE_URL } from "../services/api";
 
 const LoginSignup = () => {
   const [isSignup, setIsSignup] = useState(false);
@@ -57,7 +58,7 @@ const LoginSignup = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "https://api.wlnest.app/auth/google";
+    window.location.href = `${BASE_URL}/auth/google`;
   };
 
   return (
