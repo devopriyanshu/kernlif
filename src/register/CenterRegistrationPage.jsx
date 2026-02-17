@@ -19,6 +19,7 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { registerCenter } from "../services/centerService";
 
 const WellnessCenterRegistration = () => {
   const [basicData, setBasicData] = useState({
@@ -218,30 +219,85 @@ const WellnessCenterRegistration = () => {
       formData.append("images", img.file);
     });
 
-    // Example: amenities, equipment, services as JSON
-    formData.append("amenities", JSON.stringify(amenities));
-    formData.append("equipment", JSON.stringify(equipment));
-    formData.append("services", JSON.stringify(services));
-    formData.append("trainers", JSON.stringify(trainers));
-    formData.append("pricingData", JSON.stringify(pricingData));
-    formData.append("offers", offers);
-    formData.append("schedule", JSON.stringify(schedule));
+    // Transform amenities & equipment - extract values from objects to simple arrays
+    const amenitiesArray = amenities
+      .map((a) => a.value)
+      .filter((v) => v.trim() !== "");
+    const equipmentArray = equipment
+      .map((e) => e.value)
+      .filter((v) => v.trim() !== "");
 
-    try {
-      const res = await fetch("http://localhost:4000/centers/register", {
-        method: "POST",
-        body: formData,
+    formData.append("amenities", JSON.stringify(amenitiesArray));
+    formData.append("equipment", JSON.stringify(equipmentArray));
+
+    // Transform services - extract just the service names to simple array
+    const servicesArray = services
+      .map((s) => s.name)
+      .filter((v) => v.trim() !== "");
+
+    formData.append("services", JSON.stringify(servicesArray));
+
+    // Transform trainers - rename 'specialty' to 'specialization'
+    const trainersArray = trainers.map((trainer) => ({
+      name: trainer.name,
+      specialization: trainer.specialty, // Rename field
+      bio: trainer.bio,
+    }));
+
+    formData.append("trainers", JSON.stringify(trainersArray));
+
+    // Transform pricing from object to array
+    const pricingArray = Object.entries(pricingData)
+      .filter(([key, value]) => value && value.trim() !== "")
+      .map(([key, value]) => {
+        // Remove $ sign if present
+        const price = value.replace("$", "").trim();
+        
+        // Map key to plan name and duration
+        const planMapping = {
+          monthly: { planName: "Monthly", duration: "month" },
+          annual: { planName: "Annual", duration: "year" },
+          dayPass: { planName: "Day Pass", duration: "day" },
+          classPackages: { planName: "Class Packages", duration: "package" },
+          personalTraining: { planName: "Personal Training", duration: "session" },
+        };
+
+        const plan = planMapping[key] || { planName: key, duration: "session" };
+        
+        return {
+          planName: plan.planName,
+          price: price,
+          duration: plan.duration,
+        };
       });
 
-      const data = await res.json();
-      if (data.success) {
-        alert("Center registered successfully!");
-      } else {
-        alert("Error: " + data.message);
-      }
+    formData.append("pricing", JSON.stringify(pricingArray));
+
+    // Append offers
+    formData.append("offers", offers);
+
+    // Transform schedule - convert times to DateTime format
+    const scheduleArray = schedule.map((day) => ({
+      day: day.day,
+      isOpen: day.isOpen,
+      openingTime: day.isOpen && day.openingTime
+        ? new Date(`1970-01-01T${day.openingTime}:00Z`).toISOString()
+        : null,
+      closingTime: day.isOpen && day.closingTime
+        ? new Date(`1970-01-01T${day.closingTime}:00Z`).toISOString()
+        : null,
+    }));
+
+    formData.append("schedule", JSON.stringify(scheduleArray));
+
+    try {
+      const data = await registerCenter(formData);
+      alert("Center registered successfully!");
+      console.log("Registration response:", data);
+      // Optionally redirect or reset form
     } catch (err) {
-      console.error(err);
-      alert("Something went wrong");
+      console.error("Registration error:", err);
+      alert("Error: " + (err || "Something went wrong!"));
     }
   };
 

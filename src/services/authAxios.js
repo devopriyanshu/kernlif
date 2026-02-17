@@ -1,8 +1,8 @@
 import axios from "axios";
-import { BASE_URL } from "./api";
+import { API_BASE_URL } from "./api";
 
 export const publicAxios = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_BASE_URL,
 });
 
 publicAxios.interceptors.request.use(
@@ -42,7 +42,7 @@ publicAxios.interceptors.response.use(
 );
 
 export const secureAxios = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_BASE_URL,
 });
 
 secureAxios.interceptors.request.use(
@@ -89,7 +89,7 @@ secureAxios.interceptors.response.use(
     // Optional: Handle token expiration or specific error codes
     if (error.response?.status === 401) {
       console.warn("Token expired or invalid. Redirect to login.");
-      await AsyncStorage.removeItem("access_token"); // Clear the invalid token
+      localStorage.removeItem("token"); // Clear the invalid token
       // Redirect user to login if needed (depends on your app flow)
     }
 

@@ -17,12 +17,15 @@ import Footer from "./components/Footer";
 import ProtectedRoute from "./utils/ProtectedRoutes";
 import WellnessExpertDashboard from "./register/Dashboards/ExpertDashboard";
 import ProductsPage from "./pages/Products/ProuductsPage";
+import UserSignup from "./pages/auth/UserSignup";
+import ExpertSignup from "./pages/auth/ExpertSignup";
+import CenterSignup from "./pages/auth/CenterSignup";
 
 const App = () => {
   const location = useLocation();
 
   // Routes where Header & Footer should be hidden
-  const hideLayoutRoutes = ["/expert_register", "/center_register"];
+  const hideLayoutRoutes = ["/expert_register", "/center_register", "/register/expert", "/register/center"];
 
   const hideLayout = hideLayoutRoutes.includes(location.pathname);
   return (
@@ -35,11 +38,18 @@ const App = () => {
           <Route path="/login" element={<LoginSignup />} />
           <Route path="/dashboard" element={<WellnessDashboard />} />
           <Route path="/experts" element={<WellnessExperts />} />
+          {/* Auth Routes */}
+          <Route path="/signup/user" element={<UserSignup />} />
+          <Route path="/signup/expert" element={<ExpertSignup />} />
+          <Route path="/signup/center" element={<CenterSignup />} />
+          
+          {/* Registration Routes */}
+          <Route path="/register/expert" element={<ExpertRegistrationPage />} />
+          <Route path="/register/center" element={<WellnessCenterRegistration />} />
+          
+          {/* Legacy Routes (keep for backward compatibility) */}
           <Route path="/expert_register" element={<ExpertRegistrationPage />} />
-          <Route
-            path="/expert_dashboard"
-            element={<WellnessExpertDashboard />}
-          />
+          <Route path="/expert_dashboard" element={<WellnessExpertDashboard />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route
             path="/center_register"

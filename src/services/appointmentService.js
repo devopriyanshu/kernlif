@@ -1,72 +1,38 @@
 import { secureAxios } from "./authAxios";
+import { APIENDPOINT } from "./api";
 
-// Fetch appointments by user ID
-export const fetchAppointmentsByUserId = async (userId) => {
-  try {
-    const response = await secureAxios.get(`/appointments/user/${userId}`);
-    return response.data?.data || [];
-  } catch (error) {
-    console.error("Error fetching user appointments:", error);
-    throw error;
-  }
-};
-
-// Fetch appointments by expert ID
-export const fetchAppointmentsByExpertId = async (expertId) => {
-  try {
-    const response = await secureAxios.get(`/appointments/expert/${expertId}`);
-    return response.data?.data || [];
-  } catch (error) {
-    console.error("Error fetching expert appointments:", error);
-    throw error;
-  }
-};
-
-// Fetch appointments by both user and expert ID
-export const fetchAppointmentsByUserAndExpert = async (userId, expertId) => {
-  try {
-    const response = await secureAxios.get(
-      `/appointments/user/${userId}/expert/${expertId}`
-    );
-    return response.data?.data || [];
-  } catch (error) {
-    console.error("Error fetching user-expert appointments:", error);
-    throw error;
-  }
-};
-
-// Create a new appointment
 export const createAppointment = async (appointmentData) => {
   try {
-    const response = await secureAxios.post("/appointments", appointmentData);
-    return response.data?.data || {};
+    const response = await secureAxios.post(APIENDPOINT.APPOINTMENTS, appointmentData);
+    return response.data;
   } catch (error) {
-    console.error("Error creating appointment:", error);
-    throw error;
+    throw error.response?.data?.error || error.message;
   }
 };
 
-// Delete an appointment
-export const deleteAppointment = async (appointmentId) => {
+export const fetchAppointment = async (id) => {
   try {
-    const response = await secureAxios.delete(`/appointments/${appointmentId}`);
+    const response = await secureAxios.get(`${APIENDPOINT.APPOINTMENTS}/${id}`);
     return response.data;
   } catch (error) {
-    console.error("Error deleting appointment:", error);
-    throw error;
+    throw error.response?.data?.error || error.message;
   }
 };
 
-// Update appointment status
-export const updateAppointmentStatus = async (appointmentId, status) => {
+export const fetchUserAppointments = async (userId) => {
   try {
-    const response = await secureAxios.patch(
-      `/appointments/${appointmentId}/status`,
-      { status }
-    );
+    const response = await secureAxios.get(`${APIENDPOINT.APPOINTMENTS}/user/${userId}`);
     return response.data;
   } catch (error) {
-    console.error("Error updating appointment status:", error);
-    throw error;
+    throw error.response?.data?.error || error.message;
+  }
+};
+
+export const updateAppointment = async (id, updateData) => {
+  try {
+    const response = await secureAxios.put(`${APIENDPOINT.APPOINTMENTS}/${id}`, updateData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.error || error.message;
   }
 };
