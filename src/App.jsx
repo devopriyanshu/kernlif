@@ -1,6 +1,8 @@
 import { Routes, Route, useLocation } from "react-router-dom"; // ❌ removed BrowserRouter here
 import Home from "./pages/Home";
-import LoginSignup from "./pages/LoginSignup";
+import UserAuth from "./pages/auth/UserAuth";
+import PartnerAuth from "./pages/auth/PartnerAuth";
+import VerifyEmail from "./pages/auth/VerifyEmail";
 import WellnessDashboard from "./pages/DashBoard";
 import MentalHealthTracking from "./pages/Trackers/HealthCheck";
 import PhysicalTracking from "./pages/Trackers/PhysicalHealthTracker";
@@ -17,15 +19,12 @@ import Footer from "./components/Footer";
 import ProtectedRoute from "./utils/ProtectedRoutes";
 import WellnessExpertDashboard from "./register/Dashboards/ExpertDashboard";
 import ProductsPage from "./pages/Products/ProuductsPage";
-import UserSignup from "./pages/auth/UserSignup";
-import ExpertSignup from "./pages/auth/ExpertSignup";
-import CenterSignup from "./pages/auth/CenterSignup";
 
 const App = () => {
   const location = useLocation();
 
   // Routes where Header & Footer should be hidden
-  const hideLayoutRoutes = ["/expert_register", "/center_register", "/register/expert", "/register/center"];
+  const hideLayoutRoutes = ["/expert_register", "/center_register", "/register/expert", "/register/center", "/verify-email"];
 
   const hideLayout = hideLayoutRoutes.includes(location.pathname);
   return (
@@ -35,13 +34,11 @@ const App = () => {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<LoginSignup />} />
+          <Route path="/login" element={<UserAuth />} />
+          <Route path="/partner-login" element={<PartnerAuth />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/dashboard" element={<WellnessDashboard />} />
           <Route path="/experts" element={<WellnessExperts />} />
-          {/* Auth Routes */}
-          <Route path="/signup/user" element={<UserSignup />} />
-          <Route path="/signup/expert" element={<ExpertSignup />} />
-          <Route path="/signup/center" element={<CenterSignup />} />
           
           {/* Registration Routes */}
           <Route path="/register/expert" element={<ExpertRegistrationPage />} />

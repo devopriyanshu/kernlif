@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaCamera,
   FaMapMarkerAlt,
@@ -18,10 +18,27 @@ import {
   FaArrowLeft,
   FaUser,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { registerCenter } from "../services/centerService";
+import { useAuth } from "../context/AuthContext";
 
 const WellnessCenterRegistration = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+        navigate('/login?role=center');
+        return;
+    }
+      
+    if (!user.isVerified) {
+      alert("Please verify your email address before registering a center.");
+      navigate('/login');
+      return;
+    }
+  }, [user, navigate]);
+
   const [basicData, setBasicData] = useState({
     name: "",
     category: "",
