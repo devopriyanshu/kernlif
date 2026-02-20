@@ -846,7 +846,9 @@ const WellnessDashboard = () => {
                 {userData?.appointments?.length > 0 && (
                   <div className="border-l-4 border-purple-500 pl-3 py-1">
                     <p className="text-sm font-medium text-gray-900">
-                      {userData.appointments[0].expert}
+                      {typeof userData.appointments[0].expert === 'object' 
+                        ? userData.appointments[0].expert?.name 
+                        : userData.appointments[0].expert}
                     </p>
                     <p className="text-xs text-gray-500">
                       {userData.appointments[0].type} •{" "}
@@ -1422,14 +1424,13 @@ const WellnessDashboard = () => {
                       <div className="flex justify-between">
                         <div>
                           <p className="font-medium text-gray-900">
-                            {appointment.expert_name}
+                            {appointment.expert ? appointment.expert.name : appointment.expert_name || "Unknown Expert"}
                           </p>
                           <p className="text-sm text-gray-500">
                             {appointment.type}
                           </p>
                           <p className="text-xs text-gray-400">
-                            {appointment.expert_email} •{" "}
-                            {appointment.expert_phone}
+                            {appointment.expert ? appointment.expert.category : appointment.expert_email}
                           </p>
                         </div>
                         <div className="text-right">
@@ -1549,10 +1550,10 @@ const WellnessDashboard = () => {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div>
                                 <div className="text-sm font-medium text-gray-900">
-                                  {appointment.expert_name}
+                                  {appointment.expert ? appointment.expert.name : appointment.expert_name || "Unknown Expert"}
                                 </div>
                                 <div className="text-sm text-gray-500">
-                                  {appointment.expert_email}
+                                  {appointment.expert ? appointment.expert.category : appointment.expert_email}
                                 </div>
                               </div>
                             </td>
