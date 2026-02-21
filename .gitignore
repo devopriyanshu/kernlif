@@ -32,3 +32,6 @@ dist-ssr
 # Keep the example file
 !.env.example
 
+.env*
+.DS_Store
+logs/

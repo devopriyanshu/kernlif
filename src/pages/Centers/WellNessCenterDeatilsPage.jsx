@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaStar,
   FaMapMarkerAlt,
@@ -6,174 +6,120 @@ import {
   FaGlobe,
   FaEnvelope,
   FaClock,
-  FaDollarSign,
-  FaCalendarAlt,
-  FaUsers,
-  FaDumbbell,
-  FaInfoCircle,
   FaChevronLeft,
   FaChevronRight,
   FaQuoteLeft,
+  FaCheckCircle,
 } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { useCenterDetail } from "../../hooks/useCenterHooks";
-
-// Mock hook for demonstration
 
 const WellnessCenterDetails = () => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [activeTab, setActiveTab] = useState("about");
   const { id } = useParams();
-  const { data: apiData, isLoading, error } = useCenterDetail(id);
-  console.log("data", apiData);
+  const { data: rawData, isLoading, error } = useCenterDetail(id);
+  const apiData = rawData?.data || rawData;
 
-  // Process API data without defaults
-  const processWellnessCenterData = (apiData) => {
-    if (!apiData) return {};
+  // Auto-advance carousel
+  useEffect(() => {
+    if (!apiData || activeTab !== "about") return;
+    const timer = setInterval(() => {
+      handleNextImage();
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [apiData, activeImageIndex, activeTab]);
 
-    // Helper to safely extract values from array of objects or simple arrays
-    const extractValues = (arr) => {
-      if (!arr || arr.length === 0) return [];
-      // Check if first item has a 'value' property (relation table format)
-      if (arr[0] && typeof arr[0] === 'object' && 'value' in arr[0]) {
-        return arr.map((item) => item.value);
-      }
-      // Otherwise return as-is (simple array)
-      return arr;
-    };
+  const processWellnessCenterData = (data) => {
+    if (!data) return {};
 
-    // Process amenities - handle both center_amenities relation and direct array
-    const amenities = extractValues(apiData.center_amenities || apiData.amenities);
-
-    // Process equipment - handle both center_equipment relation and direct array  
-    const equipment = extractValues(apiData.center_equipment || apiData.equipment);
-
-    // Process services - handle both center_services relation and direct array
-    const services = extractValues(apiData.center_services || apiData.services);
-
-    // Process trainers
-    const trainers =
-      (apiData.center_trainers || apiData.trainers || []).map((trainer) => ({
-        name: trainer.name || '',
-        specialty: trainer.specialization || trainer.specialty || '',
-        bio: trainer.bio || '',
-        image: trainer.image || "/images/trainer-default.jpg",
-      }));
-
-    // Process pricing
-    const pricingObj = {};
-    const pricingData = apiData.center_pricing || apiData.pricing || [];
-    if (pricingData.length > 0) {
-      pricingData.forEach((item) => {
-        const type = item.plan_name || item.type;
-        const price = item.price;
-        pricingObj[type] = `$${price}${
-          type === "monthly" || type === "Monthly"
-            ? "/month"
-            : type === "annual" || type === "Annual"
-            ? "/year"
-            : type === "dayPass" || type === "Day Pass"
-            ? "/day"
-            : type === "classPackages" || type === "Class Packages"
-            ? "/10 classes"
-            : "/session"
-        }`;
-      });
-    }
-
-    // Process images
-    const images = (apiData.center_images || apiData.images || []).map((img) => 
-      img.image_url || img.url || img
-    );
-    
-    // Add center image as first image if no images exist
-    if (images.length === 0 && apiData.centerImage) {
-      images.push(apiData.centerImage);
-    }
-
-    // Process schedule - extract time from DateTime objects
-    const scheduleData = (apiData.center_schedule || apiData.schedule || []);
-    const schedule = scheduleData.map((day) => ({
-      day_of_week: day.day_of_week || day.day,
-      is_open: day.is_open !== undefined ? day.is_open : day.isOpen,
-      opening_time: day.opening_time ? formatTime(day.opening_time) : null,
-      closing_time: day.closing_time ? formatTime(day.closing_time) : null,
-    }));
-
-    // Helper function to format time from DateTime or time string
-    function formatTime(timeValue) {
-      if (!timeValue) return null;
-      
-      // If it's already a simple time string (HH:MM), return it
-      if (typeof timeValue === 'string' && /^\d{2}:\d{2}$/.test(timeValue)) {
-        return timeValue;
-      }
-      
-      // If it's a DateTime string or Date object, extract the time
-      try {
-        const date = new Date(timeValue);
-        const hours = date.getUTCHours().toString().padStart(2, '0');
-        const minutes = date.getUTCMinutes().toString().padStart(2, '0');
-        return `${hours}:${minutes}`;
-      } catch (e) {
-        return null;
-      }
+    const images = (data.center_images || []).map((img) => img.image_url);
+    if (images.length === 0 && data.centerImage) {
+      images.push(data.centerImage);
+    } else if (images.length === 0) {
+      images.push(
+        "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2920&auto=format&fit=crop"
+      );
     }
 
     return {
-      name: apiData.name || "",
-      category: apiData.category || "",
-      description: apiData.description || "",
-      address: apiData.address || "",
-      phone: apiData.phone || "",
-      email: apiData.email || "",
-      website: apiData.website?.replace("https://", "").replace("http://", "") || "",
-      offers: apiData.offers || "",
-      center_image: apiData.centerImage || apiData.center_image || "",
-      latitude: apiData.latitude || "",
-      longitude: apiData.longitude || "",
+      name: data.name || "Wellness Center",
+      category: data.category || "Health & Wellness",
+      description: data.description || "No description provided.",
+      address: data.address || "Location not provided",
+      phone: data.phone || "Not provided",
+      email: data.email || "Not provided",
+      website: data.website?.replace(/^https?:\/\//, "") || "",
+      offers: data.offers || "",
+      latitude: data.latitude || "",
+      longitude: data.longitude || "",
       images,
-      amenities,
-      equipment,
-      services,
-      trainers,
-      pricing: pricingObj,
-      schedule,
-      rating: apiData.rating || 5,
-      reviews: apiData.totalReviews || 100,
-      testimonials: [], // No testimonials data in API yet
-      upcomingClasses: [], // No upcoming classes data in API yet
+      amenities: (data.center_amenities || []).map((a) => a.value),
+      equipment: (data.center_equipment || []).map((e) => e.value),
+      services: (data.center_services || []).map((service) => ({
+        name: service.name,
+        description: service.description || "No description",
+        icon: service.icon || "✨",
+      })),
+      trainers: (data.center_trainers || []).map((trainer) => ({
+        name: trainer.name || "",
+        specialty: trainer.specialty || "",
+        bio: trainer.bio || "",
+        image:
+          trainer.image ||
+          "https://res.cloudinary.com/drer12ar3/image/upload/v1757876592/1501beba-54fc-46dd-a4c1-541520e924de_wwcw8l.jpg",
+      })),
+      pricing: (data.center_pricing || []).reduce((acc, curr) => {
+        acc[curr.type] = curr.price;
+        return acc;
+      }, {}),
+      schedule: (data.center_schedule || []).map((day) => {
+        const formatTime = (isoString) => {
+          if (!isoString) return "";
+          try {
+            const date = new Date(isoString);
+            return date.toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+              timeZone: "UTC", // Backend dates seem to be "1970-01-01T08:00:00.000Z"
+            });
+          } catch (e) {
+            return "";
+          }
+        };
+        return {
+          day_of_week: day.day_of_week,
+          is_open: day.is_open,
+          opening_time: formatTime(day.opening_time),
+          closing_time: formatTime(day.closing_time),
+        };
+      }),
+      rating: Number(data.rating) || 5.0,
+      reviews: data.totalReviews || 0,
+      testimonials: [], // Not yet in backend
     };
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">
-            Loading wellness center details...
-          </p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900"></div>
       </div>
     );
   }
 
-  if (error) {
+  if (error || !apiData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <p className="text-red-600 text-xl">
-            Error loading wellness center details
-          </p>
-          <p className="text-gray-600 mt-2">Please try again later</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="text-slate-600 font-medium">
+          Error loading wellness center details. Please try again.
         </div>
       </div>
     );
   }
 
   const wellnessCenter = processWellnessCenterData(apiData);
-  console.log("wellnessCenter", wellnessCenter);
 
   const handlePrevImage = () => {
     setActiveImageIndex((prevIndex) =>
@@ -193,224 +139,186 @@ const WellnessCenterDetails = () => {
       stars.push(
         <FaStar
           key={i}
-          className={i <= rating ? "text-yellow-500" : "text-gray-300"}
+          className={i <= rating ? "text-yellow-400" : "text-yellow-100"}
         />
       );
     }
-    return stars;
+    return <div className="flex gap-1">{stars}</div>;
   };
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "about":
         return (
-          <div className=" space-y-4 min-w-3/4  max-w-7xl">
-            <p className="text-gray-700 leading-relaxed">
-              {wellnessCenter.description || "No description available."}
-            </p>
-
-            <div className="mt-6">
-              <h3 className="text-xl font-semibold text-blue-700 mb-3">
-                Amenities
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto space-y-12">
+            <div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-6">
+                About the Center
               </h3>
-              {wellnessCenter.amenities.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {wellnessCenter.amenities.map((amenity, index) => (
-                    <div key={index} className="flex items-center">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full mr-2"></div>
-                      <span>{amenity}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500">
-                  No amenities information available.
-                </p>
-              )}
+              <p className="text-slate-600 leading-relaxed text-lg">
+                {wellnessCenter.description}
+              </p>
             </div>
 
-            <div className="mt-6">
-              <h3 className="text-xl font-semibold text-blue-700 mb-3">
-                Equipment
-              </h3>
-              {wellnessCenter.equipment.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {wellnessCenter.equipment.map((equipment, index) => (
-                    <div key={index} className="flex items-center">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full mr-2"></div>
-                      <span>{equipment}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500">
-                  No equipment information available.
-                </p>
-              )}
-            </div>
+            {(wellnessCenter.amenities.length > 0 ||
+              wellnessCenter.equipment.length > 0) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {wellnessCenter.amenities.length > 0 && (
+                  <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+                    <h3 className="text-xl font-bold text-slate-900 mb-6">
+                      Amenities
+                    </h3>
+                    <ul className="space-y-4">
+                      {wellnessCenter.amenities.map((amenity, index) => (
+                        <li key={index} className="flex items-start">
+                          <FaCheckCircle className="text-slate-900 mt-1 mr-3 shrink-0" />
+                          <span className="text-slate-700 font-medium">
+                            {amenity}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {wellnessCenter.equipment.length > 0 && (
+                  <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+                    <h3 className="text-xl font-bold text-slate-900 mb-6">
+                      Equipment
+                    </h3>
+                    <ul className="space-y-4">
+                      {wellnessCenter.equipment.map((eq, index) => (
+                        <li key={index} className="flex items-start">
+                          <FaCheckCircle className="text-slate-900 mt-1 mr-3 shrink-0" />
+                          <span className="text-slate-700 font-medium">
+                            {eq}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         );
 
       case "services":
         return (
-          <div className="grid grid-cols-1 w-3/4 md:grid-cols-2 gap-4 max-w-7xl">
-            {wellnessCenter.services.length > 0 ? (
-              wellnessCenter.services.map((service, index) => (
-                <div
-                  key={index}
-                  className="bg-white p-4 rounded-lg shadow-md border border-blue-100 hover:border-blue-300 transition-all"
-                >
-                  <div className="flex items-start">
-                    <span className="text-2xl mr-3">{service.icon}</span>
-                    <div>
-                      <h3 className="font-semibold text-blue-700">
-                        {service.name}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {service.description}
-                      </p>
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {wellnessCenter.services.length > 0 ? (
+                wellnessCenter.services.map((service, index) => (
+                  <div
+                    key={index}
+                    className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all group"
+                  >
+                    <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                      {service.icon}
                     </div>
+                    <h3 className="text-xl font-bold text-slate-900 mb-3">
+                      {service.name}
+                    </h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      {service.description}
+                    </p>
                   </div>
+                ))
+              ) : (
+                <div className="col-span-full text-center text-slate-500 py-12 bg-white rounded-3xl border border-slate-100">
+                  No services listed yet.
                 </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center text-gray-500">
-                No services information available.
-              </div>
-            )}
+              )}
+            </div>
           </div>
         );
 
       case "trainers":
         return (
-          <div className="grid grid-cols-1 min-w-3/4 md:grid-cols-3 gap-6 max-w-7xl">
-            {wellnessCenter.trainers.length > 0 ? (
-              wellnessCenter.trainers.map((trainer, index) => (
-                <div
-                  key={index}
-                  className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-all w-80"
-                >
-                  <div className="h-48 bg-gray-200 relative">
-                    <img
-                      src={trainer.image}
-                      alt={trainer.name}
-                      className="w-full h-full object-cover"
-                    />
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {wellnessCenter.trainers.length > 0 ? (
+                wellnessCenter.trainers.map((trainer, index) => (
+                  <div
+                    key={index}
+                    className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all group"
+                  >
+                    <div className="aspect-[4/5] relative overflow-hidden bg-slate-100">
+                      <img
+                        src={trainer.image}
+                        alt={trainer.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+                        {trainer.specialty}
+                      </p>
+                      <h3 className="text-lg font-bold text-slate-900 mb-2">
+                        {trainer.name}
+                      </h3>
+                      <p className="text-slate-600 text-sm line-clamp-3">
+                        {trainer.bio}
+                      </p>
+                    </div>
                   </div>
-                  <div className="p-4">
-                    <h3 className="text-lg font-medium text-blue-700">
-                      {trainer.name}
-                    </h3>
-                    <p className="text-sm font-medium text-blue-500">
-                      {trainer.specialty}
-                    </p>
-                    <p className="text-sm text-gray-600 mt-2">{trainer.bio}</p>
-                  </div>
+                ))
+              ) : (
+                <div className="col-span-full text-center text-slate-500 py-12 bg-white rounded-3xl border border-slate-100">
+                  No trainers listed yet.
                 </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center text-gray-500">
-                No trainers information available.
-              </div>
-            )}
+              )}
+            </div>
           </div>
         );
 
       case "pricing":
         return (
-          <div className="space-y-6 min-w-3/4 max-w-7xl">
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto space-y-8">
             {wellnessCenter.offers && (
-              <div className="bg-blue-50 p-5 rounded-lg shadow-md border border-blue-100">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-xl font-bold text-blue-700">
-                    Current Offer
+              <div className="bg-slate-900 text-white p-8 rounded-3xl shadow-lg relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-slate-800 rounded-full blur-3xl -mr-20 -mt-20 opacity-50 pointer-events-none" />
+                <div className="relative z-10">
+                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold tracking-wide uppercase mb-4">
+                    Special Offer
+                  </div>
+                  <h3 className="text-2xl md:text-3xl font-bold mb-2">
+                    {wellnessCenter.offers}
                   </h3>
-                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm">
-                    Active
-                  </span>
+                  <p className="text-slate-400">
+                    Sign up today to take advantage of this limited-time offer!
+                  </p>
                 </div>
-                <p className="text-lg font-medium">{wellnessCenter.offers}</p>
-                <p className="text-sm text-gray-600 mt-2">
-                  Sign up today to take advantage of this limited-time offer!
-                </p>
               </div>
             )}
 
             {Object.keys(wellnessCenter.pricing).length > 0 ? (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {wellnessCenter.pricing.monthly && (
-                    <div className="bg-white p-5 rounded-lg shadow-md border border-gray-200 hover:border-blue-300 transition-all">
-                      <h3 className="text-xl font-semibold text-blue-700 mb-2">
-                        Monthly Plan
-                      </h3>
-                      <p className="text-2xl font-bold">
-                        {wellnessCenter.pricing.monthly}
-                      </p>
-                      <p className="text-sm text-gray-600 mt-2">
-                        Flexible month-to-month membership with no long-term
-                        commitment.
-                      </p>
-                    </div>
-                  )}
-
-                  {wellnessCenter.pricing.annual && (
-                    <div className="bg-white p-5 rounded-lg shadow-md border border-gray-200 hover:border-blue-300 transition-all">
-                      <h3 className="text-xl font-semibold text-blue-700 mb-2">
-                        Annual Plan
-                      </h3>
-                      <p className="text-2xl font-bold">
-                        {wellnessCenter.pricing.annual}
-                      </p>
-                      <p className="text-sm text-gray-600 mt-2">
-                        Our best value! Save over 15% compared to monthly
-                        payments.
-                      </p>
-                    </div>
-                  )}
-
-                  {wellnessCenter.pricing.dayPass && (
-                    <div className="bg-white p-5 rounded-lg shadow-md border border-gray-200 hover:border-blue-300 transition-all">
-                      <h3 className="text-xl font-semibold text-blue-700 mb-2">
-                        Day Pass
-                      </h3>
-                      <p className="text-2xl font-bold">
-                        {wellnessCenter.pricing.dayPass}
-                      </p>
-                      <p className="text-sm text-gray-600 mt-2">
-                        Try our facilities without commitment. Perfect for
-                        visitors.
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-4">
-                  <h3 className="text-lg font-semibold text-blue-700 mb-2">
-                    Additional Options
-                  </h3>
-                  <ul className="space-y-2">
-                    {wellnessCenter.pricing.classPackages && (
-                      <li className="flex justify-between">
-                        <span>Class Packages:</span>
-                        <span className="font-medium">
-                          {wellnessCenter.pricing.classPackages}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {Object.entries(wellnessCenter.pricing).map(
+                  ([type, price], index) => (
+                    <div
+                      key={index}
+                      className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:border-slate-300 transition-all flex justify-between items-center"
+                    >
+                      <div>
+                        <h3 className="text-lg font-bold text-slate-900 mb-1">
+                          {type}
+                        </h3>
+                        <p className="text-slate-400 text-sm font-medium">
+                          Per Session/Visit
+                        </p>
+                      </div>
+                      <div className="text-3xl font-extrabold text-slate-900">
+                        {price.replace("$", "")}
+                        <span className="text-lg text-slate-400 font-medium ml-1">
+                          $
                         </span>
-                      </li>
-                    )}
-                    {wellnessCenter.pricing.personalTraining && (
-                      <li className="flex justify-between">
-                        <span>Personal Training:</span>
-                        <span className="font-medium">
-                          {wellnessCenter.pricing.personalTraining}
-                        </span>
-                      </li>
-                    )}
-                  </ul>
-                </div>
-              </>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
             ) : (
-              <div className="text-center text-gray-500">
+              <div className="text-center text-slate-500 py-12 bg-white rounded-3xl border border-slate-100">
                 No pricing information available.
               </div>
             )}
@@ -419,103 +327,95 @@ const WellnessCenterDetails = () => {
 
       case "schedule":
         return (
-          <div className="space-y-6 w-3/4 max-w-7xl">
-            <div>
-              <h3 className="text-xl font-semibold text-blue-700 mb-3">
-                Operating Hours
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-3xl mx-auto">
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+              <h3 className="text-2xl font-bold text-slate-900 mb-8 flex items-center">
+                <FaClock className="mr-3 text-slate-400" /> Operating Hours
               </h3>
-              <div className="bg-white p-4 rounded-lg shadow-md">
-                {wellnessCenter.schedule &&
-                wellnessCenter.schedule.length > 0 ? (
-                  <div className="space-y-3">
-                    {wellnessCenter.schedule.map((day, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between"
-                      >
-                        <div className="flex items-center">
-                          <FaClock className="text-blue-500 mr-2" />
-                          <span className="font-medium">
-                            {day.day_of_week}:
+              {wellnessCenter.schedule.length > 0 ? (
+                <div className="space-y-4">
+                  {wellnessCenter.schedule.map((day, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between py-3 border-b border-slate-50 last:border-0"
+                    >
+                      <span className="font-bold text-slate-700 capitalize w-32">
+                        {day.day_of_week}
+                      </span>
+                      {day.is_open ? (
+                        <div className="flex-1 flex justify-end items-center gap-3">
+                          <span className="bg-slate-50 px-4 py-2 rounded-xl text-slate-600 font-medium text-sm border border-slate-100">
+                            {day.opening_time}
+                          </span>
+                          <span className="text-slate-300">-</span>
+                          <span className="bg-slate-50 px-4 py-2 rounded-xl text-slate-600 font-medium text-sm border border-slate-100">
+                            {day.closing_time}
                           </span>
                         </div>
-                        {day.is_open ? (
-                          <span>
-                            {day.opening_time} - {day.closing_time}
+                      ) : (
+                        <div className="flex-1 flex justify-end">
+                          <span className="bg-rose-50 text-rose-500 px-4 py-2 rounded-xl text-sm font-bold border border-rose-100">
+                            Closed
                           </span>
-                        ) : (
-                          <span className="text-gray-500">Closed</span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-gray-500">
-                    No schedule information available
-                  </div>
-                )}
-              </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-slate-500 text-center py-8">
+                  No schedule information available.
+                </div>
+              )}
             </div>
           </div>
         );
 
       case "reviews":
         return (
-          <div className="space-y-6 min-w-3/4 max-w-7xl">
-            {wellnessCenter.rating > 0 ? (
-              <div className="flex items-center justify-center">
-                <div className="flex items-center">
-                  <span className="text-3xl font-bold text-blue-700 mr-2">
-                    {wellnessCenter.rating}
-                  </span>
-                  <div className="flex mr-2">
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center justify-between bg-white p-8 rounded-3xl border border-slate-100 shadow-sm mb-8">
+              <div className="flex items-center mb-6 md:mb-0">
+                <span className="text-5xl font-extrabold text-slate-900 mr-4">
+                  {wellnessCenter.rating.toFixed(1)}
+                </span>
+                <div>
+                  <div className="mb-1">
                     {renderStars(Math.round(wellnessCenter.rating))}
                   </div>
-                  <span className="text-gray-500">
-                    ({wellnessCenter.reviews} reviews)
+                  <span className="text-slate-500 font-medium">
+                    Based on {wellnessCenter.reviews} reviews
                   </span>
                 </div>
-                <button className="text-sm bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors">
-                  Write a Review
-                </button>
               </div>
-            ) : (
-              <div className="text-center text-gray-500">
-                No rating information available.
-              </div>
-            )}
+              <button className="w-full md:w-auto bg-slate-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-slate-800 transition-colors focus:ring-4 focus:ring-slate-900/20 active:scale-[0.98]">
+                Write a Review
+              </button>
+            </div>
 
             {wellnessCenter.testimonials.length > 0 ? (
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {wellnessCenter.testimonials.map((testimonial, index) => (
                   <div
                     key={index}
-                    className="bg-white p-4 rounded-lg shadow-md border border-gray-200"
+                    className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm relative"
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium">{testimonial.name}</h4>
-                      <div className="flex">
-                        {renderStars(testimonial.rating)}
-                      </div>
+                    <FaQuoteLeft className="absolute top-8 right-8 text-4xl text-slate-100" />
+                    <div className="flex mb-4">
+                      {renderStars(testimonial.rating)}
                     </div>
-                    <div className="flex">
-                      <FaQuoteLeft className="text-gray-300 text-xl mr-2 mt-1 flex-shrink-0" />
-                      <p className="text-gray-700">{testimonial.comment}</p>
-                    </div>
+                    <p className="text-slate-700 leading-relaxed mb-6 block relative z-10">
+                      "{testimonial.comment}"
+                    </p>
+                    <h4 className="font-bold text-slate-900">
+                      {testimonial.name}
+                    </h4>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center text-gray-500">
-                No testimonials available.
-              </div>
-            )}
-
-            {wellnessCenter.testimonials.length > 0 && (
-              <div className="text-center">
-                <button className="text-blue-600 font-medium hover:text-blue-800 transition-colors">
-                  View All Reviews →
-                </button>
+              <div className="text-center text-slate-500 py-12 bg-white rounded-3xl border border-slate-100">
+                No testimonials available yet. Be the first to review!
               </div>
             )}
           </div>
@@ -527,170 +427,205 @@ const WellnessCenterDetails = () => {
   };
 
   return (
-    <div className=" mx-auto p-4 lg:pt-24 md:p-6 md:pt-12 bg-gray-100">
-      {/* Header Section */}
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-blue-700">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 selection:bg-slate-200">
+      {/* Cinematic Image Carousel */}
+      <div className="relative w-full h-[60vh] md:h-[70vh] bg-slate-900 group">
+        {wellnessCenter.images.map((img, index) => (
+          <div
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === activeImageIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+            }`}
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-black/30 z-10" />
+            <img
+              src={img}
+              alt={`${wellnessCenter.name} - ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ))}
+
+        {/* Carousel Controls */}
+        {wellnessCenter.images.length > 1 && (
+          <>
+            <button
+              onClick={handlePrevImage}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/10 backdrop-blur-md text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/20 transition-all opacity-0 group-hover:opacity-100"
+            >
+              <FaChevronLeft />
+            </button>
+            <button
+              onClick={handleNextImage}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/10 backdrop-blur-md text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/20 transition-all opacity-0 group-hover:opacity-100"
+            >
+              <FaChevronRight />
+            </button>
+            <div className="absolute bottom-32 left-0 right-0 z-20 flex justify-center space-x-2">
+              {wellnessCenter.images.map((_, index) => (
+                <button
+                  key={index}
+                  className={`h-1.5 rounded-full transition-all ${
+                    index === activeImageIndex
+                      ? "w-8 bg-white"
+                      : "w-2 bg-white/50 hover:bg-white/80"
+                  }`}
+                  onClick={() => setActiveImageIndex(index)}
+                />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Hero Header Text */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+          <div className="max-w-3xl">
+            <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md text-white rounded-full text-sm font-bold tracking-widest uppercase mb-4 shadow-sm border border-white/10">
+              {wellnessCenter.category}
+            </span>
+            <h1 className="text-4xl md:text-5xl lg:text-7xl font-extrabold text-white mb-4 tracking-tight drop-shadow-md">
               {wellnessCenter.name}
             </h1>
-            <p className="text-gray-600 text-lg">{wellnessCenter.category}</p>
-          </div>
-          <div className="mt-4 md:mt-0 flex flex-col md:items-end">
-            <div className="flex items-center">
-              <div className="flex mr-2">
-                {renderStars(Math.round(wellnessCenter.rating))}
+            <div className="flex flex-wrap items-center text-white/90 gap-4 md:gap-8 font-medium">
+              <div className="flex items-center gap-2">
+                {renderStars(wellnessCenter.rating)}
+                <span className="font-bold ml-1">
+                  {wellnessCenter.rating.toFixed(1)}
+                </span>
+                <span className="text-white/60">
+                  ({wellnessCenter.reviews})
+                </span>
               </div>
-              <span className="text-lg font-semibold">
-                {wellnessCenter.rating}
-              </span>
-              <span className="text-gray-500 ml-1">
-                ({wellnessCenter.reviews})
-              </span>
+              <div className="flex items-center gap-2">
+                <FaMapMarkerAlt className="text-white/60" />
+                {wellnessCenter.address}
+              </div>
             </div>
-            <button className="mt-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors text-sm md:text-base font-medium">
-              Book a Free Trial
-            </button>
           </div>
         </div>
       </div>
 
-      {/* Image Carousel */}
-      <div className="w-full my-12 px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <div className="relative h-64 md:h-[500px] overflow-hidden rounded-lg">
-              <img
-                src={wellnessCenter.images[activeImageIndex]}
-                alt="Wellness Center"
-                className="w-full h-full object-cover"
-              />
-              <button
-                onClick={handlePrevImage}
-                className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white w-8 h-8 rounded-full flex items-center justify-center"
-              >
-                <FaChevronLeft />
-              </button>
-              <button
-                onClick={handleNextImage}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white w-8 h-8 rounded-full flex items-center justify-center"
-              >
-                <FaChevronRight />
-              </button>
-              <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
-                {wellnessCenter.images.map((_, index) => (
+      {/* Main Content Layout */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-30">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+          {/* Left Column (Main Tabbed Content) */}
+          <div className="flex-1 min-w-0">
+            {/* Tabs Navigation */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-2 mb-8 overflow-x-auto scrollbar-hide">
+              <div className="flex space-x-1 min-w-max">
+                {[
+                  "about",
+                  "services",
+                  "trainers",
+                  "pricing",
+                  "schedule",
+                  "reviews",
+                ].map((tab) => (
                   <button
-                    key={index}
-                    className={`w-2 h-2 rounded-full ${
-                      index === activeImageIndex
-                        ? "bg-white"
-                        : "bg-white bg-opacity-50"
+                    key={tab}
+                    className={`px-6 py-3 rounded-xl font-bold capitalize transition-all ${
+                      activeTab === tab
+                        ? "bg-slate-900 text-white shadow-md"
+                        : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                     }`}
-                    onClick={() => setActiveImageIndex(index)}
-                  ></button>
+                    onClick={() => setActiveTab(tab)}
+                  >
+                    {tab}
+                  </button>
                 ))}
               </div>
             </div>
+
+            {/* Tab Body */}
+            <div className="mb-12">{renderTabContent()}</div>
           </div>
 
-          {/* Contact & Map Container */}
-          <div className="grid grid-cols-1 gap-6 h-full">
-            {/* Contact Details Card */}
-            <div className="bg-white p-4 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold text-blue-700 mb-3">
-                Contact Details
-              </h2>
-              <div className="space-y-3">
-                <p className="flex items-center text-gray-700">
-                  <FaMapMarkerAlt className="mr-3 text-blue-500" />
-                  {wellnessCenter.address}
-                </p>
-                <p className="flex items-center text-gray-700">
-                  <FaPhoneAlt className="mr-3 text-green-500" />
-                  {wellnessCenter.phone}
-                </p>
-                <p className="flex items-center text-gray-700">
-                  <FaEnvelope className="mr-3 text-red-500" />
-                  {wellnessCenter.email}
-                </p>
-                <p className="flex items-center text-gray-700">
-                  <FaGlobe className="mr-3 text-purple-500" />
+          {/* Right Column (Sidebar) */}
+          <div className="lg:w-[380px] shrink-0">
+            <div className="sticky top-8 space-y-6">
+              {/* Quick Contact Card */}
+              <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                <h3 className="text-xl font-bold text-slate-900 mb-6">
+                  Get in Touch
+                </h3>
+                <div className="space-y-5">
                   <a
-                    href={`https://${wellnessCenter.website}`}
-                    className="text-blue-500 hover:underline"
+                    href={`tel:${wellnessCenter.phone}`}
+                    className="flex items-center gap-4 text-slate-700 hover:text-slate-900 font-medium group"
                   >
-                    {wellnessCenter.website}
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-colors">
+                      <FaPhoneAlt />
+                    </div>
+                    {wellnessCenter.phone}
                   </a>
-                </p>
+                  <a
+                    href={`mailto:${wellnessCenter.email}`}
+                    className="flex items-center gap-4 text-slate-700 hover:text-slate-900 font-medium group"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-colors">
+                      <FaEnvelope />
+                    </div>
+                    {wellnessCenter.email}
+                  </a>
+                  {wellnessCenter.website && (
+                    <a
+                      href={`https://${wellnessCenter.website}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-4 text-slate-700 hover:text-slate-900 font-medium group wrap-break-word"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-colors shrink-0">
+                        <FaGlobe />
+                      </div>
+                      <span className="line-clamp-1 break-all">
+                        {wellnessCenter.website}
+                      </span>
+                    </a>
+                  )}
+                </div>
+
+                <div className="mt-8">
+                  <button className="w-full bg-slate-900 text-white rounded-xl py-4 font-bold hover:bg-slate-800 transition-colors shadow-sm focus:ring-4 focus:ring-slate-900/20 active:scale-[0.98]">
+                    Book a Free Trial
+                  </button>
+                </div>
+              </div>
+
+              {/* Map Card */}
+              <div className="bg-white rounded-3xl p-2 shadow-sm border border-slate-100 overflow-hidden">
+                <div className="w-full aspect-square rounded-2xl overflow-hidden bg-slate-100 relative group">
+                  {wellnessCenter.latitude && wellnessCenter.longitude ? (
+                    <>
+                      <iframe
+                        src={`https://maps.google.com/maps?q=${wellnessCenter.latitude},${wellnessCenter.longitude}&hl=es;z=14&output=embed`}
+                        className="w-full h-full border-0 grayscale hover:grayscale-0 transition-all duration-500"
+                        allowFullScreen
+                        loading="lazy"
+                        title="Google Map"
+                      ></iframe>
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${wellnessCenter.latitude},${wellnessCenter.longitude}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute inset-0 z-10 hidden group-hover:flex items-center justify-center bg-black/5 backdrop-blur-[2px]"
+                      >
+                        <span className="bg-white px-4 py-2 rounded-full font-bold text-sm shadow-md flex items-center gap-2">
+                          <FaMapMarkerAlt /> Open in Maps
+                        </span>
+                      </a>
+                    </>
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 p-6 text-center">
+                      <FaMapMarkerAlt className="text-4xl mb-3 text-slate-200" />
+                      <p className="font-medium text-sm">
+                        Map data not available
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-
-            {/* Google Map */}
-            <div className="bg-white p-0 rounded-lg shadow-md h-full">
-              <a
-                href={`https://www.google.com/maps?q=${wellnessCenter.latitude},${wellnessCenter.longitude}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <iframe
-                  src={`https://www.google.com/maps/embed/v1/view?key=API_KEYcenter=${wellnessCenter.latitude},${wellnessCenter.longitude}&zoom=15`}
-                  className="w-full h-64 md:h-[calc(500px-6rem)] rounded-lg pointer-events-none"
-                  allowFullScreen
-                  loading="lazy"
-                  title="Google Map"
-                ></iframe>
-              </a>
-            </div>
           </div>
-        </div>
-      </div>
-
-      {/* Tabs Navigation */}
-      <div className=" bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="flex justify-around overflow-x-auto scrollbar-hide border-b">
-          {[
-            "about",
-            "services",
-            "trainers",
-            "pricing",
-            "schedule",
-            "reviews",
-          ].map((tab) => (
-            <button
-              key={tab}
-              className={`px-4 py-3 font-medium whitespace-nowrap ${
-                activeTab === tab
-                  ? "text-blue-600 border-b-2 border-blue-600"
-                  : "text-gray-600 hover:text-blue-600"
-              }`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          ))}
-        </div>
-
-        {/* Tab Content */}
-        <div className="flex p-6 justify-center">{renderTabContent()}</div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="mt-8 bg-blue-600 text-white p-6 rounded-lg shadow-md text-center">
-        <h2 className="text-2xl font-bold mb-2">
-          Ready to Start Your Wellness Journey?
-        </h2>
-        <p className="mb-4">
-          Join {wellnessCenter.name} today and experience the perfect balance of
-          mind and body wellness.
-        </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <button className="bg-white text-blue-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors">
-            Book a Free Trial
-          </button>
-          <button className="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
-            View Membership Options
-          </button>
         </div>
       </div>
     </div>
