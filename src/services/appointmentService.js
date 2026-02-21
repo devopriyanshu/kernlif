@@ -36,3 +36,12 @@ export const updateAppointment = async (id, updateData) => {
     throw error.response?.data?.error || error.message;
   }
 };
+
+export const deleteAppointment = async (id) => {
+  try {
+    const response = await secureAxios.delete(`${APIENDPOINT.APPOINTMENTS}/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.error || error.message;
+  }
+};

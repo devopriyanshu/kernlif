@@ -35,6 +35,7 @@ import {
   useUpdateMealLog,
   useUpdateSleepLog,
 } from "../hooks/useLogHook";
+import { useDeleteAppointment } from "../hooks/useAppointmentHooks";
 
 const WellnessDashboard = () => {
   const [token, setToken] = useState(null);
@@ -61,6 +62,7 @@ const WellnessDashboard = () => {
     isSuccess: isAddSleepSuccess,
   } = useAddSleepLog();
   const updateSleepMutation = useUpdateSleepLog();
+  const deleteAppointmentMutation = useDeleteAppointment();
 
   // if (isLoading) {
   //   return (
@@ -81,6 +83,7 @@ const WellnessDashboard = () => {
   // }
   // Form states
   const [newMeal, setNewMeal] = useState({
+    id: null,
     name: "",
     calories: "",
     protein: "",
@@ -104,6 +107,7 @@ const WellnessDashboard = () => {
   }, [selectedDate]);
 
   const [newSleep, setNewSleep] = useState({
+    id: null,
     date: new Date().toISOString().split("T")[0],
     hours: "",
     quality: "",
@@ -111,6 +115,7 @@ const WellnessDashboard = () => {
   });
 
   const [newActivity, setNewActivity] = useState({
+    id: null,
     activity: "",
     date: "",
     duration: "",
@@ -151,200 +156,29 @@ const WellnessDashboard = () => {
     }
   };
 
-  // Sample data
+  // User Data Fallback
   const userData = dashboardLogs || {
-    name: "Alex Johnson",
-    dailyCalories: 1850,
-    caloriesGoal: 2200,
-    protein: 85,
-    carbs: 210,
-    fat: 62,
-    sleepHours: 7.5,
-    sleepQuality: 85,
-    physicalActivityLogs: [
-      {
-        id: 1,
-        date: "2025-04-12",
-        activity: "Running",
-        duration: 45, // in minutes
-        calories: 350,
-        notes: "Felt great!",
-      },
-    ],
-    upcomingMeals: [
-      {
-        id: 1,
-        name: "Protein Smoothie",
-        time: "8:00 AM",
-        calories: 320,
-        protein: 24,
-        carbs: 45,
-        fat: 6,
-        category: "breakfast",
-      },
-      {
-        id: 2,
-        name: "Grilled Chicken Salad",
-        time: "12:30 PM",
-        calories: 420,
-        protein: 35,
-        carbs: 25,
-        fat: 18,
-        category: "lunch",
-      },
-      {
-        id: 3,
-        name: "Baked Salmon with Veggies",
-        time: "6:30 PM",
-        calories: 580,
-        protein: 42,
-        carbs: 30,
-        fat: 28,
-        category: "dinner",
-      },
-    ],
-    courses: [
-      {
-        id: 1,
-        name: "Mindful Eating Basics",
-        progress: 65,
-        nextLesson: "Portion Control Strategies",
-        description:
-          "Learn how to be present and mindful during meals for better digestion and satisfaction.",
-        totalLessons: 8,
-        completedLessons: 5,
-      },
-      {
-        id: 2,
-        name: "Stress Management",
-        progress: 30,
-        nextLesson: "Breathing Techniques",
-        description:
-          "Discover techniques to manage stress and prevent stress-related eating.",
-        totalLessons: 10,
-        completedLessons: 3,
-      },
-      {
-        id: 3,
-        name: "Nutritional Fundamentals",
-        progress: 15,
-        nextLesson: "Understanding Macronutrients",
-        description:
-          "Master the basics of nutrition science and how to apply it to your daily life.",
-        totalLessons: 12,
-        completedLessons: 2,
-      },
-    ],
-    appointments: [
-      {
-        id: 1,
-        expert: "Dr. Sarah Williams",
-        type: "Nutritionist",
-        date: "Mar 12, 2025",
-        time: "10:00 AM",
-        location: "Virtual",
-        notes: "Discuss meal plan adjustments",
-      },
-      {
-        id: 2,
-        expert: "James Chen",
-        type: "Sleep Specialist",
-        date: "Mar 15, 2025",
-        time: "2:30 PM",
-        location: "Sleep Center",
-        notes: "Follow-up on sleep tracking data",
-      },
-      {
-        id: 3,
-        expert: "Dr. Maria Rodriguez",
-        type: "Wellness Coach",
-        date: "Mar 18, 2025",
-        time: "11:15 AM",
-        location: "Virtual",
-        notes: "Monthly progress check-in",
-      },
-    ],
-    sleepLogs: [
-      {
-        id: 1,
-        date: "2025-03-01",
-        hours: 8.2,
-        quality: 90,
-        notes: "Felt well-rested",
-      },
-      {
-        id: 2,
-        date: "2025-03-02",
-        hours: 7.5,
-        quality: 85,
-        notes: "Woke up once",
-      },
-      {
-        id: 3,
-        date: "2025-03-03",
-        hours: 6.8,
-        quality: 75,
-        notes: "Trouble falling asleep",
-      },
-      {
-        id: 4,
-        date: "2025-03-04",
-        hours: 7.9,
-        quality: 88,
-        notes: "Used sleep meditation",
-      },
-    ],
-    meals: [
-      {
-        id: 1,
-        date: "2025-03-01",
-        calories: 2100,
-        protein: 95,
-        carbs: 225,
-        fat: 70,
-        meals: [
-          {
-            name: "Oatmeal with Berries",
-            category: "breakfast",
-            calories: 350,
-          },
-          { name: "Turkey Wrap", category: "lunch", calories: 450 },
-          { name: "Stir Fry", category: "dinner", calories: 580 },
-        ],
-      },
-      {
-        id: 2,
-        date: "2025-03-02",
-        calories: 1950,
-        protein: 88,
-        carbs: 210,
-        fat: 65,
-        meals: [
-          { name: "Greek Yogurt", category: "breakfast", calories: 280 },
-          { name: "Quinoa Bowl", category: "lunch", calories: 420 },
-          { name: "Grilled Fish", category: "dinner", calories: 520 },
-        ],
-      },
-      {
-        id: 3,
-        date: "2025-03-03",
-        calories: 2050,
-        protein: 92,
-        carbs: 230,
-        fat: 68,
-        meals: [
-          { name: "Protein Shake", category: "breakfast", calories: 310 },
-          { name: "Chicken Salad", category: "lunch", calories: 440 },
-          { name: "Pasta with Veggies", category: "dinner", calories: 550 },
-        ],
-      },
-    ],
+    name: "User",
+    dailyCalories: 0,
+    caloriesGoal: 2000,
+    protein: 0,
+    carbs: 0,
+    fat: 0,
+    sleepHours: 0,
+    sleepQuality: 0,
+    activityLogs: [],
+    physicalActivityLogs: [],
+    upcomingMeals: [],
+    courses: [],
+    appointments: [],
+    sleepLogs: [],
+    meals: [],
   };
   const getTodayISODate = () => new Date().toISOString().split("T")[0]; // "2025-07-14"
-  const todaysSleepLog = userData.sleepLogs.find((log) =>
+  const todaysSleepLog = (userData.sleepLogs || []).find((log) =>
     log.date.startsWith(getTodayISODate())
   );
-  const todaysMeals = userData.meals.filter((meal) =>
+  const todaysMeals = (userData.meals || []).filter((meal) =>
     meal.date.startsWith(getTodayISODate())
   );
 
@@ -543,7 +377,7 @@ const WellnessDashboard = () => {
         ? selectedDate.split("T")[0]
         : new Date(selectedDate).toISOString().split("T")[0];
 
-    console.log("Adding meal for date:", normalizedDate);
+    console.log("Adding/updating meal for date:", normalizedDate);
 
     const mealToAdd = {
       ...newMeal,
@@ -554,76 +388,102 @@ const WellnessDashboard = () => {
       fat: parseInt(newMeal.fat) || 0,
     };
 
-    console.log("Meal to add:", mealToAdd);
+    const resetForm = () => {
+      setShowAddMealForm(false);
+      setNewMeal({
+        id: null,
+        name: "",
+        calories: "",
+        protein: "",
+        carbs: "",
+        fat: "",
+        time: "",
+        category: "breakfast",
+        date: normalizedDate,
+      });
+    };
 
-    addMealMutation.mutate(mealToAdd, {
-      onSuccess: () => {
-        console.log("Meal added successfully");
-        setShowAddMealForm(false);
-        setNewMeal({
-          name: "",
-          calories: "",
-          protein: "",
-          carbs: "",
-          fat: "",
-          time: "",
-          category: "breakfast",
-          date: normalizedDate,
-        });
-      },
-      onError: (error) => {
-        console.error("Failed to add meal log:", error);
-      },
-    });
+    if (newMeal.id) {
+      updateMealMutation.mutate({ logId: newMeal.id, data: mealToAdd }, {
+        onSuccess: resetForm,
+        onError: (error) => console.error("Failed to update meal log:", error),
+      });
+    } else {
+      addMealMutation.mutate(mealToAdd, {
+        onSuccess: resetForm,
+        onError: (error) => console.error("Failed to add meal log:", error),
+      });
+    }
   };
 
   const handleAddSleep = (e) => {
     e.preventDefault();
-    addSleep(
-      { ...newSleep },
-      {
-        onSuccess: () => {
-          setShowAddSleepForm(false);
-          setNewSleep({
-            date: new Date().toISOString().split("T")[0],
-            hours: "",
-            quality: "",
-            notes: "",
-          });
-        },
-        onError: (error) => {
-          console.error("Failed to add sleep log:", error);
-        },
-      }
-    );
+
+    const resetForm = () => {
+      setShowAddSleepForm(false);
+      setNewSleep({
+        id: null,
+        date: new Date().toISOString().split("T")[0],
+        hours: "",
+        quality: "",
+        notes: "",
+      });
+    };
+
+    const sleepPayload = {
+      ...newSleep,
+      quality: newSleep.quality.toString(),
+    };
+
+    if (newSleep.id) {
+      updateSleepMutation.mutate({ logId: newSleep.id, data: sleepPayload }, {
+        onSuccess: resetForm,
+        onError: (error) => console.error("Failed to update sleep log:", error),
+      });
+    } else {
+      addSleep(sleepPayload, {
+        onSuccess: resetForm,
+        onError: (error) => console.error("Failed to add sleep log:", error),
+      });
+    }
   };
 
   const handleActivityChange = (e) => {
     const { name, value } = e.target;
     setNewActivity((prev) => ({ ...prev, [name]: value }));
   };
+  
   const handleAddActivity = (e) => {
     e.preventDefault();
 
-    addActivityMutation.mutate(
-      { ...newActivity },
-      {
-        onSuccess: () => {
-          console.log("Activity added:", newActivity);
-          setShowAddActivityForm(false);
-          setNewActivity({
-            activity: "",
-            date: "",
-            duration: "",
-            calories: "",
-            notes: "",
-          });
-        },
-        onError: (error) => {
-          console.error("Failed to add activity log:", error);
-        },
-      }
-    );
+    const resetForm = () => {
+      setShowAddActivityForm(false);
+      setNewActivity({
+        id: null,
+        activity: "",
+        date: "",
+        duration: "",
+        calories: "",
+        notes: "",
+      });
+    };
+
+    const activityPayload = {
+      ...newActivity,
+      activities: newActivity.activity,
+    };
+
+    if (newActivity.id) {
+      updateActivityMutation.mutate({ logId: newActivity.id, data: activityPayload }, {
+        onSuccess: resetForm,
+        onError: (error) => console.error("Failed to update activity log:", error),
+      });
+    } else {
+      addActivityMutation.mutate(activityPayload, {
+        onSuccess: resetForm,
+        onError: (error) => console.error("Failed to add activity log:", error),
+      });
+    }
   };
 
   // Progress bar component
@@ -843,42 +703,51 @@ const WellnessDashboard = () => {
               </div>
 
               <div className="space-y-4">
-                {userData?.appointments?.length > 0 && (
-                  <div className="border-l-4 border-purple-500 pl-3 py-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      {typeof userData.appointments[0].expert === 'object' 
-                        ? userData.appointments[0].expert?.name 
-                        : userData.appointments[0].expert}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {userData.appointments[0].type} •{" "}
-                      {userData.appointments[0].date},{" "}
-                      {userData.appointments[0].time}
-                    </p>
+                {(!userData?.appointments?.length && !userData?.upcomingMeals?.length && !userData?.courses?.length) ? (
+                  <div className="text-center py-6 bg-gray-50 rounded-lg border border-gray-100">
+                    <Calendar className="mx-auto h-8 w-8 text-gray-400 mb-2" />
+                    <p className="text-sm text-gray-500">No upcoming events right now</p>
                   </div>
-                )}
+                ) : (
+                  <>
+                    {userData?.appointments?.length > 0 && (
+                      <div className="border-l-4 border-purple-500 pl-3 py-1">
+                        <p className="text-sm font-medium text-gray-900">
+                          {typeof userData.appointments[0].expert === 'object' 
+                            ? userData.appointments[0].expert?.name 
+                            : userData.appointments[0].expert}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {userData.appointments[0].type} •{" "}
+                          {new Date(userData.appointments[0].appointmentDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })},{" "}
+                          {new Date(userData.appointments[0].appointmentDate).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
+                        </p>
+                      </div>
+                    )}
 
-                {userData?.upcomingMeals?.length > 0 && (
-                  <div className="border-l-4 border-green-500 pl-3 py-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      {userData.upcomingMeals[0].name}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Meal • {userData.upcomingMeals[0].time} •{" "}
-                      {userData.upcomingMeals[0].calories} cal
-                    </p>
-                  </div>
-                )}
+                    {userData?.upcomingMeals?.length > 0 && (
+                      <div className="border-l-4 border-green-500 pl-3 py-1">
+                        <p className="text-sm font-medium text-gray-900">
+                          {userData.upcomingMeals[0].name}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Meal • {userData.upcomingMeals[0].time} •{" "}
+                          {userData.upcomingMeals[0].calories} cal
+                        </p>
+                      </div>
+                    )}
 
-                {userData?.courses?.length > 0 && (
-                  <div className="border-l-4 border-blue-500 pl-3 py-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      {userData.courses[0].nextLesson}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {userData.courses[0].name} • Next lesson
-                    </p>
-                  </div>
+                    {userData?.courses?.length > 0 && (
+                      <div className="border-l-4 border-blue-500 pl-3 py-1">
+                        <p className="text-sm font-medium text-gray-900">
+                          {userData.courses[0].nextLesson}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {userData.courses[0].name} • Next lesson
+                        </p>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
 
@@ -909,34 +778,79 @@ const WellnessDashboard = () => {
               </div>
 
               <div className="space-y-4">
-                {todayLogs?.meals?.map((meal) => (
-                  <div
-                    key={meal?.id}
-                    className="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg border border-gray-100"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="bg-green-100 p-2 rounded-lg">
-                        <Utensils className="h-5 w-5 text-green-600" />
+                {todayLogs?.meals?.length > 0 ? (
+                  todayLogs.meals.map((meal) => (
+                    <div
+                      key={meal?.id}
+                      className="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg border border-gray-100"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="bg-green-100 p-2 rounded-lg">
+                          <Utensils className="h-5 w-5 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{meal.name}</p>
+                          <p className="text-sm text-gray-500">
+                            {meal?.category?.charAt(0).toUpperCase() +
+                              meal?.category?.slice(1)}{" "}
+                            • {meal?.time}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{meal.name}</p>
-                        <p className="text-sm text-gray-500">
-                          {meal?.category?.charAt(0).toUpperCase() +
-                            meal?.category?.slice(1)}{" "}
-                          • {meal?.time}
+                      <div className="text-right flex flex-col items-end">
+                        <p className="font-medium text-gray-900">
+                          {meal?.calories} cal
                         </p>
+                        <p className="text-xs text-gray-500 mb-1">
+                          {meal?.protein}g P • {meal?.carbs}g C • {meal?.fat}g F
+                        </p>
+                        <button
+                          onClick={() => {
+                            setNewMeal({
+                              id: meal.id,
+                              name: meal.name,
+                              calories: meal.calories,
+                              protein: meal.protein,
+                              carbs: meal.carbs,
+                              fat: meal.fat,
+                              time: meal.time,
+                              category: meal.category || "meal",
+                              date: new Date().toISOString().split("T")[0],
+                            });
+                            setShowAddMealForm(true);
+                          }}
+                          className="text-blue-600 hover:text-blue-800 text-xs font-medium"
+                        >
+                          Edit
+                        </button>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-medium text-gray-900">
-                        {meal?.calories} cal
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {meal?.protein}g P • {meal?.carbs}g C • {meal?.fat}g F
-                      </p>
-                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-6 bg-gray-50 rounded-lg border border-gray-100">
+                    <Utensils className="mx-auto h-8 w-8 text-gray-400 mb-2" />
+                    <p className="text-sm text-gray-500">No meals logged for today</p>
+                    <button
+                      onClick={() => {
+                        setNewMeal({
+                          id: null,
+                          name: "",
+                          calories: "",
+                          protein: "",
+                          carbs: "",
+                          fat: "",
+                          time: "",
+                          category: "breakfast",
+                          date: new Date().toISOString().split("T")[0],
+                        });
+                        setShowAddMealForm(true);
+                      }}
+                      className="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    >
+                      Add your first meal
+                    </button>
                   </div>
-                ))}
+                )}
               </div>
             </div>
 
@@ -1029,28 +943,57 @@ const WellnessDashboard = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Notes
                     </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {userData?.activityLogs?.map((log) => (
-                    <tr key={log.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatDate(log.date)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {log.activity}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {log.duration}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {log.calories}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {log.notes || "—"}
+                  {userData?.activityLogs?.length > 0 ? (
+                    userData.activityLogs.map((log) => (
+                      <tr key={log.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {formatDate(log.date)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {log.activity}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {log.duration}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {log.calories}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {log.notes || "—"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <button
+                            onClick={() => {
+                              setNewActivity({
+                                id: log.id,
+                                activity: log.activity,
+                                date: log.date.split('T')[0],
+                                duration: log.duration,
+                                calories: log.calories,
+                                notes: log.notes || "",
+                              });
+                              setShowAddActivityForm(true);
+                            }}
+                            className="text-indigo-600 hover:text-indigo-900 font-medium"
+                          >
+                            Edit
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">
+                        No activity logs yet. Start by adding your first activity!
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1148,11 +1091,30 @@ const WellnessDashboard = () => {
                           <p className="text-xs text-gray-400">{meal.time}</p>
                         )}
                       </div>
-                      <div className="text-right">
+                      <div className="text-right flex flex-col items-end">
                         <p className="font-medium">{meal.calories} cal</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 mb-1">
                           P: {meal.protein}g | C: {meal.carbs}g | F: {meal.fat}g
                         </p>
+                        <button
+                          onClick={() => {
+                            setNewMeal({
+                              id: meal.id,
+                              name: meal.name,
+                              calories: meal.calories,
+                              protein: meal.protein,
+                              carbs: meal.carbs,
+                              fat: meal.fat,
+                              time: meal.time,
+                              category: meal.category || "meal",
+                              date: selectedDate, // we are already on the selected date tab
+                            });
+                            setShowAddMealForm(true);
+                          }}
+                          className="text-blue-600 hover:text-blue-800 text-xs font-medium"
+                        >
+                          Edit
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -1360,25 +1322,53 @@ const WellnessDashboard = () => {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Notes
                       </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {userData?.sleepLogs?.map((log) => (
-                      <tr key={log.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatDate(log.date)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {log.hours}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {log.quality}%
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {log.notes || "—"}
+                    {userData?.sleepLogs?.length > 0 ? (
+                      userData.sleepLogs.map((log) => (
+                        <tr key={log.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {formatDate(log.date)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {log.hours}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {log.quality}%
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {log.notes || "—"}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <button
+                              onClick={() => {
+                                setNewSleep({
+                                  id: log.id,
+                                  date: log.date.split('T')[0],
+                                  hours: log.hours,
+                                  quality: log.quality,
+                                  notes: log.notes || "",
+                                });
+                                setShowAddSleepForm(true);
+                              }}
+                              className="text-indigo-600 hover:text-indigo-900 font-medium"
+                            >
+                              Edit
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
+                          No sleep logs yet. Start tracking your sleep!
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -1402,19 +1392,19 @@ const WellnessDashboard = () => {
             {/* Upcoming Appointments Section */}
             <div className="space-y-4 mb-8">
               <h3 className="text-lg font-medium">Upcoming Appointments</h3>
-              {userData?.appointments?.filter(
+              {(userData?.appointments || []).filter(
                 (appointment) =>
-                  new Date(appointment.appointment_date) > new Date()
+                  new Date(appointment.appointmentDate) > new Date()
               ).length > 0 ? (
                 userData?.appointments
                   ?.filter(
                     (appointment) =>
-                      new Date(appointment.appointment_date) > new Date()
+                      new Date(appointment.appointmentDate) > new Date()
                   )
                   ?.sort(
                     (a, b) =>
-                      new Date(a.appointment_date) -
-                      new Date(b.appointment_date)
+                      new Date(a.appointmentDate) -
+                      new Date(b.appointmentDate)
                   )
                   ?.map((appointment) => (
                     <div
@@ -1436,7 +1426,7 @@ const WellnessDashboard = () => {
                         <div className="text-right">
                           <p className="font-medium text-gray-900">
                             {new Date(
-                              appointment.appointment_date
+                              appointment.appointmentDate
                             ).toLocaleDateString("en-US", {
                               weekday: "short",
                               year: "numeric",
@@ -1446,7 +1436,7 @@ const WellnessDashboard = () => {
                           </p>
                           <p className="text-sm text-gray-500">
                             {new Date(
-                              appointment.appointment_date
+                              appointment.appointmentDate
                             ).toLocaleTimeString("en-US", {
                               hour: "2-digit",
                               minute: "2-digit",
@@ -1468,13 +1458,29 @@ const WellnessDashboard = () => {
                           </span> */}
                         </div>
                       </div>
-                      {appointment.notes && (
-                        <div className="mt-3 p-2 bg-gray-50 rounded">
-                          <p className="text-sm text-gray-700">
-                            {appointment.notes}
-                          </p>
+                      <div className="flex justify-between items-center mt-3">
+                        <div className="w-full">
+                          {appointment.notes && (
+                            <div className="p-2 bg-gray-50 rounded mb-2">
+                              <p className="text-sm text-gray-700">
+                                {appointment.notes}
+                              </p>
+                            </div>
+                          )}
                         </div>
-                      )}
+                        <div className="ml-4 flex-shrink-0">
+                          <button
+                            onClick={() => {
+                              if (window.confirm("Are you sure you want to cancel this appointment?")) {
+                                deleteAppointmentMutation.mutate(appointment.id);
+                              }
+                            }}
+                            className="text-red-600 hover:text-red-800 text-sm font-medium"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   ))
               ) : (
@@ -1488,9 +1494,9 @@ const WellnessDashboard = () => {
             {/* Past Appointments Section */}
             <div>
               <h3 className="text-lg font-medium mb-4">Past Appointments</h3>
-              {userData?.appointments?.filter(
+              {(userData?.appointments || []).filter(
                 (appointment) =>
-                  new Date(appointment.appointment_date) <= new Date()
+                  new Date(appointment.appointmentDate) <= new Date()
               ).length > 0 ? (
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
@@ -1520,18 +1526,18 @@ const WellnessDashboard = () => {
                       {userData?.appointments
                         ?.filter(
                           (appointment) =>
-                            new Date(appointment.appointment_date) <= new Date()
+                            new Date(appointment.appointmentDate) <= new Date()
                         )
                         ?.sort(
                           (a, b) =>
-                            new Date(b.appointment_date) -
-                            new Date(a.appointment_date)
+                            new Date(b.appointmentDate) -
+                            new Date(a.appointmentDate)
                         )
                         ?.map((appointment) => (
                           <tr key={appointment.id} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {new Date(
-                                appointment.appointment_date
+                                appointment.appointmentDate
                               ).toLocaleDateString("en-US", {
                                 year: "numeric",
                                 month: "short",
@@ -1540,7 +1546,7 @@ const WellnessDashboard = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {new Date(
-                                appointment.appointment_date
+                                appointment.appointmentDate
                               ).toLocaleTimeString("en-US", {
                                 hour: "2-digit",
                                 minute: "2-digit",

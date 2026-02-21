@@ -4,6 +4,7 @@ import {
   fetchAppointment,
   fetchUserAppointments,
   updateAppointment,
+  deleteAppointment,
 } from "../services/appointmentService";
 
 // Get appointments by user ID
@@ -49,9 +50,26 @@ export const useUpdateAppointment = () => {
     onSuccess: () => {
       // Invalidate and refetch appointment queries
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboardLogs"] });
     },
     onError: (error) => {
       console.error("Error updating appointment:", error);
+    },
+  });
+};
+
+// Delete appointment mutation
+export const useDeleteAppointment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteAppointment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboardLogs"] });
+    },
+    onError: (error) => {
+      console.error("Error deleting appointment:", error);
     },
   });
 };
